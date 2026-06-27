@@ -26,11 +26,22 @@ const DEFAULT_TARGET = [
   '}',
 ].join('\n');
 
+export interface CompletionResult {
+  lang: string;
+  wpm: number;
+  accuracy: number;
+  chars: number;
+  correct: number;
+  durationMs: number;
+}
+
 export interface TypingOptions {
   /** 구문 강조 언어 (registerLanguage 로 등록된 키) */
   lang: string;
   /** 따라칠 목표 코드 (미지정 시 기본 JPA 예시) */
   target?: string;
+  /** 모든 위치를 입력 완료했을 때 1회 호출 */
+  onComplete?: (result: CompletionResult) => void;
 }
 
 /**
@@ -61,6 +72,7 @@ export function initTypingEngine(opts: TypingOptions): void {
   const synByLine: (TokenType | null)[][] = [];
 
   let startTime: number | null = null;
+  let completed = false;
 
   wrap.innerHTML = '';
   let offset = 0;
@@ -169,16 +181,28 @@ export function initTypingEngine(opts: TypingOptions): void {
     }
     const pct = totalChars ? Math.round((typed / totalChars) * 100) : 0;
     const acc = attempts ? Math.round((correct / attempts) * 100) : 100;
+    let wpm = 0;
+    if (startTime !== null) {
+      const min = (Date.now() - startTime) / 60000;
+      if (min > 0) wpm = Math.round(correct / 5 / min);
+    }
     if (progPct) progPct.textContent = pct + '%';
     if (progFill) progFill.style.width = pct + '%';
     if (accVal) accVal.textContent = acc + '%';
-    if (wpmVal) {
-      let wpm = 0;
-      if (startTime !== null) {
-        const min = (Date.now() - startTime) / 60000;
-        if (min > 0) wpm = Math.round(correct / 5 / min);
-      }
-      wpmVal.textContent = String(wpm);
+    if (wpmVal) wpmVal.textContent = String(wpm);
+
+    // 완료 감지 — 모든 위치를 입력하면 1회 콜백
+    if (!completed && totalChars > 0 && typed === totalChars) {
+      completed = true;
+      const durationMs = startTime !== null ? Date.now() - startTime : 0;
+      opts.onComplete?.({
+        lang: opts.lang,
+        wpm,
+        accuracy: acc,
+        chars: totalChars,
+        correct,
+        durationMs,
+      });
     }
   }
 
@@ -254,6 +278,7 @@ export function initTypingEngine(opts: TypingOptions): void {
       renderLine(li);
     }
     startTime = null;
+    completed = false;
     updateStats();
     focusLine(0, 0);
   }

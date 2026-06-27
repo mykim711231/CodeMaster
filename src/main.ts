@@ -22,6 +22,8 @@ import { javaAdapter } from './syntax/lang/java';
 import { pythonAdapter } from './syntax/lang/python';
 import { initTypingEngine } from './engine/typing';
 import { registerServiceWorker } from './pwa';
+import { saveSession } from './storage/db';
+import { appStore } from './store';
 
 // 구문 강조 언어 어댑터 등록
 registerLanguage('java', javaAdapter);
@@ -35,7 +37,14 @@ initMenu();
 initAccordion();
 
 // 타이핑 트레이너 (현재는 Java JPA 예시 — 이후 학습팩에서 target 주입)
-initTypingEngine({ lang: 'java' });
+initTypingEngine({
+  lang: 'java',
+  onComplete: (result) => {
+    // 학습 세션을 IndexedDB에 기록 (소스 원문 아님 — 지표만)
+    void saveSession({ ts: Date.now(), ...result });
+    appStore.getState().recordCompletion(result.wpm);
+  },
+});
 
 // PWA
 registerServiceWorker();
