@@ -69,19 +69,6 @@
 
   <!-- SIDEBAR (학습 콘텐츠 전용) -->
   <nav class="sidebar">
-    <!-- 1) 학습팩 선택 (2개 → 세그먼트 토글) -->
-    <div class="pack-select-wrap">
-      <div class="sidebar-label">학습팩</div>
-      <div class="pack-seg" id="packSeg" role="tablist">
-        <button class="pack-seg-btn active" data-pack="java" role="tab" aria-selected="true">
-          <i data-lucide="coffee"></i> Spring <span class="pack-seg-cnt">15</span>
-        </button>
-        <button class="pack-seg-btn" data-pack="python" role="tab" aria-selected="false">
-          <i data-lucide="brain"></i> Python <span class="pack-seg-cnt">10</span>
-        </button>
-      </div>
-    </div>
-
     <!-- 진행 요약 + 이어서 연습 -->
     <div class="resume-card">
       <div class="resume-top">
@@ -94,70 +81,13 @@
     </div>
     <div class="sidebar-divider"></div>
 
-    <!-- 2) 학습 로드맵 (컴팩트 리스트) -->
+    <!-- 학습팩 트리 — 팩 클릭 시 문제 목록 펼침, 문제 클릭 시 이동 (trainer가 채움) -->
     <div class="accordion open">
       <button class="acc-header">
-        <i data-lucide="map"></i><span class="acc-title" id="roadmapTitle">Spring Boot 로드맵</span>
-        <span class="acc-count" id="roadmapCount">1/5</span><i data-lucide="chevron-down" class="acc-chevron"></i>
+        <i data-lucide="layers"></i><span class="acc-title">학습팩</span><i data-lucide="chevron-down" class="acc-chevron"></i>
       </button>
       <div class="acc-body">
-        <div class="lvl-list" id="snippetList">
-
-          <button class="lvl-item done">
-            <span class="lvl-icon" style="color:var(--green)"><i data-lucide="check-circle-2"></i></span>
-            <div class="lvl-body">
-              <div class="lvl-line"><span class="lvl-title">Java Core</span><span class="lvl-num2" style="color:var(--green)">100%</span></div>
-              <div class="lvl-sub">Class · Lambda · Stream · Optional</div>
-              <div class="lvl-track"><div class="lvl-track-fill" style="width:100%;background:var(--green)"></div></div>
-            </div>
-          </button>
-
-          <button class="lvl-item done">
-            <span class="lvl-icon" style="color:var(--green)"><i data-lucide="check-circle-2"></i></span>
-            <div class="lvl-body">
-              <div class="lvl-line"><span class="lvl-title">Spring Core</span><span class="lvl-num2" style="color:var(--green)">100%</span></div>
-              <div class="lvl-sub">DI · AOP · Bean 등록 패턴</div>
-              <div class="lvl-track"><div class="lvl-track-fill" style="width:100%;background:var(--green)"></div></div>
-            </div>
-          </button>
-
-          <button class="lvl-item done">
-            <span class="lvl-icon" style="color:var(--green)"><i data-lucide="check-circle-2"></i></span>
-            <div class="lvl-body">
-              <div class="lvl-line"><span class="lvl-title">Spring Boot MVC</span><span class="lvl-num2" style="color:var(--green)">89%</span></div>
-              <div class="lvl-sub">REST API · Validation · OpenAPI</div>
-              <div class="lvl-track"><div class="lvl-track-fill" style="width:89%;background:var(--green)"></div></div>
-            </div>
-          </button>
-
-          <button class="lvl-item active">
-            <span class="lvl-icon" style="color:var(--blue)"><i data-lucide="play-circle"></i></span>
-            <div class="lvl-body">
-              <div class="lvl-line"><span class="lvl-title">Database — JPA</span><span class="lvl-num2" style="color:var(--blue)">34%</span></div>
-              <div class="lvl-sub">Entity · Repository · JPQL · Transaction</div>
-              <div class="lvl-track"><div class="lvl-track-fill" style="width:34%;background:var(--blue)"></div></div>
-            </div>
-          </button>
-
-          <button class="lvl-item locked" disabled>
-            <span class="lvl-icon"><i data-lucide="lock"></i></span>
-            <div class="lvl-body">
-              <div class="lvl-line"><span class="lvl-title">Concurrency</span><span class="lvl-num2">잠김</span></div>
-              <div class="lvl-sub">Thread · Future · Lock</div>
-              <div class="lvl-track"><div class="lvl-track-fill" style="width:0%"></div></div>
-            </div>
-          </button>
-
-          <button class="lvl-item locked" disabled>
-            <span class="lvl-icon"><i data-lucide="lock"></i></span>
-            <div class="lvl-body">
-              <div class="lvl-line"><span class="lvl-title">Gateway & MSA</span><span class="lvl-num2">잠김</span></div>
-              <div class="lvl-sub">Route · Filter · CircuitBreaker</div>
-              <div class="lvl-track"><div class="lvl-track-fill" style="width:0%"></div></div>
-            </div>
-          </button>
-
-        </div>
+        <div id="packTree"></div>
       </div>
     </div>
     <div class="sidebar-divider"></div>

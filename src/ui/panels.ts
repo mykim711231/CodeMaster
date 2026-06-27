@@ -54,7 +54,7 @@ export function initPanels(): void {
   // 드로어 안에서 항목 선택 시 자동 닫기 (모바일) — 팩 토글 제외
   sidebar.addEventListener('click', (e: Event) => {
     const target = e.target as HTMLElement | null;
-    if (isMobile() && target?.closest('.sidebar-item, .lvl-item:not(.locked), .resume-btn')) {
+    if (isMobile() && target?.closest('.sidebar-item, .snip-item, .resume-btn')) {
       closeDrawers();
     }
   });
