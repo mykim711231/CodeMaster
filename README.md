@@ -48,10 +48,16 @@ git commit -m "변경 내용"
 git push
 ```
 
-## 로드맵
+## 목표 아키텍처 — Phase 3 풀스택
 
-- **Phase 1 (현재)**: 단일 HTML · Python 구문강조 · 외부 CDN 제거 · SW · GitHub Pages
-- **Phase 2**: Vite + Vanilla TS · Tree-Sitter(폴더 분석, **PC 전용**) · IndexedDB · Cloudflare Pages(COEP)
-- **Phase 3**: Vitest · Playwright · 상태관리 체계화
+단일 HTML 유지 단계 없이 처음부터 **Vite + TypeScript 풀스택**으로 구성한다.
 
-자세한 기술 스택·NFR·리스크는 [`prd.md` §13](prd.md) 참조.
+- **빌드/프레임워크**: Vite 5 + Vanilla TypeScript
+- **분석(PC 전용)**: web-tree-sitter(Worker Pool) + regex 폴백
+- **저장**: idb(IndexedDB) + 학습팩 Cache Storage(온디맨드)
+- **PWA**: vite-plugin-pwa(Workbox)
+- **상태**: Zustand · **구문강조**: regex SYN(TS)
+- **테스트**: Vitest + Playwright(WebKit) + BrowserStack
+- **배포**: Cloudflare Pages(COEP/COOP/CSP) — 현재는 GitHub Pages 부트스트랩
+
+현 `index.html` 프로토타입을 위 풀스택으로 이식한다. 권장 빌드 순서·기술 스택·NFR·리스크는 [`prd.md` §13](prd.md) 참조.
