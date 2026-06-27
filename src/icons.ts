@@ -32,6 +32,7 @@ import {
   Database,
   RotateCcw,
   SkipForward,
+  SkipBack,
   PieChart,
   AlertTriangle,
 } from 'lucide';
@@ -70,6 +71,7 @@ export function initIcons(): void {
       Database,
       RotateCcw,
       SkipForward,
+      SkipBack,
       PieChart,
       AlertTriangle,
     },
