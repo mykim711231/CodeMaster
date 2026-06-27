@@ -26,7 +26,6 @@ manifest.json   # PWA 매니페스트
 sw.js           # Service Worker (오프라인 캐시)
 icon.svg        # 앱 아이콘
 prd.md          # 제품 요구사항 정의서 (기술 스택 적대적 검토 포함)
-DesignPlan.md   # 초기 디자인 계획
 ```
 
 ## 로컬 실행
