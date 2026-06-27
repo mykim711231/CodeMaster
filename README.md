@@ -71,7 +71,7 @@ git push
 | **폰트/아이콘** | self-host woff2(JetBrains Mono·Inter) · lucide(npm ESM) |
 | **테스트** | Vitest(단위) · Playwright WebKit(E2E) · BrowserStack(실기기) |
 | **콘텐츠 파이프라인** | 팩 JSON 스키마 · 언어별 CI 린트 게이트 · OSS 추출(Tree-Sitter) · sha256/semver |
-| **배포** | Cloudflare Pages(COEP/COOP/CSP) · Lighthouse CI — *현재는 GitHub Pages 부트스트랩* |
+| **배포** | Cloudflare Pages(COEP/COOP/CSP) · Lighthouse CI — *현재는 GitHub Pages + GitHub Actions 빌드* |
 
 > 현 `index.html` 프로토타입을 위 풀스택으로 이식한다. 권장 빌드 순서·NFR·리스크는 [`prd.md` §13](prd.md) 참조.
 
@@ -101,14 +101,18 @@ git push
 
 ## 구현 진행 (Phase 3 빌드 — §13.2)
 
+**Step 1 — 스캐폴드 ✅ 완료** (라이브 배포 검증)
+
 - [x] 의존성 설치 + 버전 확정 (Node 24 · Vite 8 · TS 6 · ESLint/Prettier)
 - [x] GitHub `workflow` 스코프 재인증 (Actions 배포용)
 - [x] 콘텐츠 버전 정책 (Java 21 · Spring Boot 3.4 · Python 3.12)
 - [x] 설정 파일 (vite.config · tsconfig · eslint · prettier)
-- [ ] index.html → Vite 구조 전면 재편 (CSS/JS 분리 · 외부 CDN 제거)
-- [ ] 폰트 self-host(@fontsource) + lucide npm 연결
-- [ ] GitHub Actions 배포 워크플로우
-- [ ] 빌드 검증 → 배포
+- [x] index.html → `src/main.ts` + `src/styles.css` 분리 · 외부 CDN 전면 제거
+- [x] 폰트 self-host(@fontsource) + lucide npm(33 아이콘 트리셰이킹)
+- [x] GitHub Actions 배포 워크플로우 + Pages를 Actions 소스로 전환
+- [x] 빌드 검증 → 배포 (https://mykim711231.github.io/CodeMaster/ · JS gzip 6KB)
+
+**다음 — Step 2** (§13.2): 엔진 TS 모듈화·타입화(`@ts-nocheck` 제거), `registerLanguage` 골격, Zustand·idb, 학습팩 Cache Storage
 
 ## 라이선스
 
