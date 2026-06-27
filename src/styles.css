@@ -569,6 +569,130 @@ body {
   font-family: var(--mono);
 }
 
+/* 학습팩 팝업 메뉴 (버거 스타일) */
+.pack-menu {
+  position: relative;
+  padding: 0 12px;
+}
+.pack-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  background: var(--sub);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  transition: border-color 0.15s;
+}
+.pack-menu-btn:hover {
+  border-color: var(--blue);
+}
+.pack-menu-btn > i,
+.pack-menu-btn > svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+.pack-menu-label {
+  flex-shrink: 0;
+}
+.pack-menu-cur {
+  flex: 1;
+  min-width: 0;
+  text-align: right;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pack-menu-chev {
+  transition: transform 0.2s;
+  color: var(--muted);
+}
+.pack-menu.open .pack-menu-chev {
+  transform: rotate(180deg);
+}
+.pack-menu-pop {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 12px;
+  right: 12px;
+  max-height: 62vh;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
+  padding: 6px;
+  z-index: 60;
+  display: none;
+}
+.pack-menu.open .pack-menu-pop {
+  display: block;
+}
+
+/* 팝업 내부 — 레벨 행 */
+.pack-levels {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 1px 0 4px 8px;
+}
+.level-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 7px 9px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 12.5px;
+  text-align: left;
+  transition: background 0.15s;
+}
+.level-row:hover:not(.empty) {
+  background: var(--sub);
+}
+.level-row.current {
+  color: var(--blue);
+}
+.level-row.empty {
+  cursor: default;
+  opacity: 0.5;
+}
+.level-no {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.level-name {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.level-snips {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px 0 4px 18px;
+}
+
 /* ── 아코디언 ── */
 .accordion {
   border-bottom: 1px solid transparent;

@@ -81,14 +81,15 @@
     </div>
     <div class="sidebar-divider"></div>
 
-    <!-- 학습팩 트리 — 팩 클릭 시 문제 목록 펼침, 문제 클릭 시 이동 (trainer가 채움) -->
-    <div class="accordion open">
-      <button class="acc-header">
-        <i data-lucide="layers"></i><span class="acc-title">학습팩</span><i data-lucide="chevron-down" class="acc-chevron"></i>
+    <!-- 학습팩 메뉴 — 버튼 클릭 시 팝업 서브메뉴(팩 → 문제), trainer가 채움 -->
+    <div class="pack-menu" id="packMenu">
+      <button class="pack-menu-btn" id="packMenuBtn" type="button" aria-haspopup="true" aria-expanded="false">
+        <i data-lucide="layers"></i>
+        <span class="pack-menu-label">학습팩</span>
+        <span class="pack-menu-cur" id="packMenuCur"></span>
+        <i data-lucide="chevron-down" class="pack-menu-chev"></i>
       </button>
-      <div class="acc-body">
-        <div id="packTree"></div>
-      </div>
+      <div class="pack-menu-pop" id="packMenuPop"></div>
     </div>
     <div class="sidebar-divider"></div>
 

@@ -9,4 +9,4 @@ export const PACKS: Record<string, Pack> = {
 };
 
 export { springBootPack, pythonAiPack };
-export type { Pack, Snippet, Lang } from './types';
+export type { Pack, Level, Snippet, Lang } from './types';
