@@ -30,8 +30,9 @@ export function initTrainer(): void {
   }
   let cur = 0;
 
-  const expandedPacks = new Set<string>();
-  const expandedLevels = new Set<string>(); // `${packKey}:${levelNo}`
+  // 단일 펼침 — 한 번에 팩 하나, 레벨 하나만 펼쳐짐
+  let openPack: string | null = null;
+  let openLevel: string | null = null; // `${packKey}:${levelNo}`
   const lvlKey = (packKey: string, levelNo: number): string => `${packKey}:${levelNo}`;
 
   const pos = (): Pos => FLAT[cur];
@@ -58,7 +59,7 @@ export function initTrainer(): void {
 
     for (const packKey of PACK_KEYS) {
       const pack = PACKS[packKey];
-      const packOpen = expandedPacks.has(packKey);
+      const packOpen = openPack === packKey;
 
       const prow = document.createElement('button');
       prow.type = 'button';
@@ -76,7 +77,12 @@ export function initTrainer(): void {
       prow.append(pchev, pname, pcnt);
       prow.addEventListener('click', (e) => {
         e.stopPropagation();
-        toggle(expandedPacks, packKey);
+        if (openPack === packKey) {
+          openPack = null;
+        } else {
+          openPack = packKey;
+        }
+        openLevel = null; // 팩 바뀌면(또는 닫으면) 레벨 펼침 초기화
         renderTree();
       });
       pop.append(prow);
@@ -88,7 +94,7 @@ export function initTrainer(): void {
       for (const lvl of pack.levels) {
         const has = lvl.snippets.length > 0;
         const key = lvlKey(packKey, lvl.no);
-        const lvlOpen = expandedLevels.has(key);
+        const lvlOpen = openLevel === key;
         const isCurLevel = packKey === p.packKey && lvl.no === p.levelNo;
 
         const lrow = document.createElement('button');
@@ -114,7 +120,7 @@ export function initTrainer(): void {
         lrow.append(lchev, lno, lname, lcnt);
         lrow.addEventListener('click', (e) => {
           e.stopPropagation();
-          toggle(expandedLevels, key);
+          openLevel = openLevel === key ? null : key;
           renderTree();
         });
         levelsWrap.append(lrow);
@@ -153,9 +159,9 @@ export function initTrainer(): void {
     if (fileEl) fileEl.textContent = snip.file;
     if (curEl) curEl.textContent = `${pack.name} · ${snip.title}`;
     appStore.getState().setLang(pack.lang);
-    // 현재 위치는 펼쳐 보이게
-    expandedPacks.add(p.packKey);
-    expandedLevels.add(lvlKey(p.packKey, p.levelNo));
+    // 현재 위치만 펼쳐 보이게
+    openPack = p.packKey;
+    openLevel = lvlKey(p.packKey, p.levelNo);
     renderTree();
   }
 
@@ -172,11 +178,6 @@ export function initTrainer(): void {
     if (FLAT.length === 0) return;
     cur = (cur + dir + FLAT.length) % FLAT.length;
     show();
-  }
-
-  function toggle(set: Set<string>, key: string): void {
-    if (set.has(key)) set.delete(key);
-    else set.add(key);
   }
 
   menuBtn?.addEventListener('click', (e) => {
