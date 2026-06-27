@@ -12,20 +12,6 @@ const SYN_VAR: Record<TokenType, string> = {
   id: 'var(--typed)',
 };
 
-const DEFAULT_TARGET = [
-  '@Entity',
-  '@Table(name = "users")',
-  'public class UserEntity implements Serializable {',
-  '',
-  '    @Id',
-  '    @GeneratedValue(strategy = GenerationType.IDENTITY)',
-  '    private Long id;',
-  '',
-  '    @Column(nullable = false, unique = true)',
-  '    private String username;',
-  '}',
-].join('\n');
-
 export interface CompletionResult {
   lang: string;
   wpm: number;
@@ -36,92 +22,38 @@ export interface CompletionResult {
 }
 
 export interface TypingOptions {
-  /** 구문 강조 언어 (registerLanguage 로 등록된 키) */
-  lang: string;
-  /** 따라칠 목표 코드 (미지정 시 기본 JPA 예시) */
-  target?: string;
   /** 모든 위치를 입력 완료했을 때 1회 호출 */
   onComplete?: (result: CompletionResult) => void;
+}
+
+export interface TypingController {
+  /** 새 스니펫 로드 (코드 + 구문강조 언어) */
+  load(code: string, lang: string): void;
 }
 
 /**
  * 라인 단위 타이핑 트레이너.
  * 각 줄이 독립 textarea → 중간 수정이 다른 줄에 영향 없음(연쇄 오타 방지),
- * 클릭·방향키로 줄 사이 자유 이동.
+ * 클릭·방향키로 줄 사이 자유 이동. load()로 스니펫 교체.
  */
-export function initTypingEngine(opts: TypingOptions): void {
-  const TARGET = opts.target ?? DEFAULT_TARGET;
+export function initTypingEngine(opts: TypingOptions = {}): TypingController {
   const wrap = document.getElementById('ttWrap');
-  if (!wrap) return;
+  if (!wrap) return { load: () => {} };
 
   const wpmVal = document.getElementById('wpmVal');
   const accVal = document.getElementById('accVal');
   const progPct = document.getElementById('progPct');
   const progFill = document.getElementById('progFill');
 
-  const LINES = TARGET.split('\n');
-  const totalChars = LINES.reduce((a, l) => a + l.length, 0);
-
-  const adapter = getAdapter(opts.lang);
-  const wholeSyn: (TokenType | null)[] = adapter
-    ? adapter(TARGET)
-    : new Array<TokenType | null>(TARGET.length).fill(null);
-
-  const inputs: HTMLTextAreaElement[] = [];
-  const spansByLine: HTMLSpanElement[][] = [];
-  const synByLine: (TokenType | null)[][] = [];
-
+  // 스니펫마다 갱신되는 상태
+  let LINES: string[] = [];
+  let totalChars = 0;
+  let curLang = 'java';
+  let inputs: HTMLTextAreaElement[] = [];
+  let spansByLine: HTMLSpanElement[][] = [];
+  let synByLine: (TokenType | null)[][] = [];
   let startTime: number | null = null;
   let completed = false;
-
-  wrap.innerHTML = '';
-  let offset = 0;
-  LINES.forEach((lineText, li) => {
-    const row = document.createElement('div');
-    row.className = 'tt-line';
-
-    const num = document.createElement('div');
-    num.className = 'tt-gutter-num';
-    num.textContent = String(li + 1);
-
-    const body = document.createElement('div');
-    body.className = 'tt-line-body';
-
-    const render = document.createElement('div');
-    render.className = 'tt-render';
-    render.setAttribute('aria-hidden', 'true');
-
-    const spans: HTMLSpanElement[] = [];
-    for (let i = 0; i < lineText.length; i++) {
-      const s = document.createElement('span');
-      s.textContent = lineText[i];
-      render.appendChild(s);
-      spans.push(s);
-    }
-
-    const input = document.createElement('textarea');
-    input.className = 'tt-line-input';
-    input.rows = 1;
-    input.spellcheck = false;
-    input.autocapitalize = 'off';
-    input.autocomplete = 'off';
-    input.setAttribute('wrap', 'off');
-    input.setAttribute('autocorrect', 'off');
-    input.setAttribute('aria-label', `${li + 1}번째 줄`);
-
-    body.append(render, input);
-    row.append(num, body);
-    wrap.append(row);
-
-    inputs.push(input);
-    spansByLine.push(spans);
-    synByLine.push(wholeSyn.slice(offset, offset + lineText.length));
-    offset += lineText.length + 1; // +개행
-
-    input.addEventListener('input', () => onInput(li));
-    input.addEventListener('focus', () => setActive(li));
-    input.addEventListener('keydown', (e: KeyboardEvent) => onKeydown(e, li));
-  });
 
   function setActive(li: number): void {
     const rows = wrap!.children;
@@ -191,12 +123,11 @@ export function initTypingEngine(opts: TypingOptions): void {
     if (accVal) accVal.textContent = acc + '%';
     if (wpmVal) wpmVal.textContent = String(wpm);
 
-    // 완료 감지 — 모든 위치를 입력하면 1회 콜백
     if (!completed && totalChars > 0 && typed === totalChars) {
       completed = true;
       const durationMs = startTime !== null ? Date.now() - startTime : 0;
       opts.onComplete?.({
-        lang: opts.lang,
+        lang: curLang,
         wpm,
         accuracy: acc,
         chars: totalChars,
@@ -212,7 +143,6 @@ export function initTypingEngine(opts: TypingOptions): void {
     const en = input.selectionEnd ?? 0;
     const len = input.value.length;
 
-    // 줄바꿈 → 다음 줄로 이동 (빈 줄이면 들여쓰기 자동 채움)
     if (e.key === 'Enter') {
       e.preventDefault();
       const next = li + 1;
@@ -222,7 +152,6 @@ export function initTypingEngine(opts: TypingOptions): void {
       focusLine(next, next < inputs.length ? inputs[next].value.length : 0);
       return;
     }
-    // Tab → 4칸(Shift+Tab → 이전 줄)
     if (e.key === 'Tab') {
       e.preventDefault();
       if (e.shiftKey) {
@@ -234,7 +163,6 @@ export function initTypingEngine(opts: TypingOptions): void {
       }
       return;
     }
-    // 방향키 — 줄 사이 자유 이동 (열 위치 보존)
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       focusLine(li + 1, s);
@@ -255,13 +183,12 @@ export function initTypingEngine(opts: TypingOptions): void {
       focusLine(li + 1, 0);
       return;
     }
-    // 줄 맨 앞에서 Backspace → 이전 줄 끝으로 이동(줄 삭제 없이)
     if (e.key === 'Backspace' && s === 0 && en === 0 && li > 0) {
       e.preventDefault();
       focusLine(li - 1, inputs[li - 1].value.length);
       return;
     }
-    // 중간 입력은 '삽입'이 아닌 '덮어쓰기' → 줄 안에서 뒤 글자 밀림 방지
+    // 줄 안 중간 입력은 '삽입'이 아닌 '덮어쓰기' → 뒤 글자 밀림 방지
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
       if (s === en && s < len) {
         e.preventDefault();
@@ -283,17 +210,84 @@ export function initTypingEngine(opts: TypingOptions): void {
     focusLine(0, 0);
   }
 
+  function load(code: string, lang: string): void {
+    curLang = lang;
+    LINES = code.split('\n');
+    totalChars = LINES.reduce((a, l) => a + l.length, 0);
+    const adapter = getAdapter(lang);
+    const wholeSyn: (TokenType | null)[] = adapter
+      ? adapter(code)
+      : new Array<TokenType | null>(code.length).fill(null);
+
+    inputs = [];
+    spansByLine = [];
+    synByLine = [];
+    startTime = null;
+    completed = false;
+
+    wrap!.innerHTML = '';
+    let offset = 0;
+    LINES.forEach((lineText, li) => {
+      const row = document.createElement('div');
+      row.className = 'tt-line';
+
+      const num = document.createElement('div');
+      num.className = 'tt-gutter-num';
+      num.textContent = String(li + 1);
+
+      const body = document.createElement('div');
+      body.className = 'tt-line-body';
+
+      const render = document.createElement('div');
+      render.className = 'tt-render';
+      render.setAttribute('aria-hidden', 'true');
+
+      const spans: HTMLSpanElement[] = [];
+      for (let i = 0; i < lineText.length; i++) {
+        const sp = document.createElement('span');
+        sp.textContent = lineText[i];
+        render.appendChild(sp);
+        spans.push(sp);
+      }
+
+      const input = document.createElement('textarea');
+      input.className = 'tt-line-input';
+      input.rows = 1;
+      input.spellcheck = false;
+      input.autocapitalize = 'off';
+      input.autocomplete = 'off';
+      input.setAttribute('wrap', 'off');
+      input.setAttribute('autocorrect', 'off');
+      input.setAttribute('aria-label', `${li + 1}번째 줄`);
+
+      body.append(render, input);
+      row.append(num, body);
+      wrap!.append(row);
+
+      inputs.push(input);
+      spansByLine.push(spans);
+      synByLine.push(wholeSyn.slice(offset, offset + lineText.length));
+      offset += lineText.length + 1;
+
+      input.addEventListener('input', () => onInput(li));
+      input.addEventListener('focus', () => setActive(li));
+      input.addEventListener('keydown', (e: KeyboardEvent) => onKeydown(e, li));
+    });
+
+    for (let li = 0; li < inputs.length; li++) renderLine(li);
+    updateStats();
+    focusLine(0, 0);
+  }
+
+  // 액션 버튼은 1회만 연결 (현재 상태를 클로저로 참조)
   for (const id of ['focusBtn', 'continueBtn']) {
-    document
-      .getElementById(id)
-      ?.addEventListener('click', () => focusLine(0, inputs[0].value.length));
+    document.getElementById(id)?.addEventListener('click', () => {
+      if (inputs.length) focusLine(0, inputs[0].value.length);
+    });
   }
   for (const id of ['restartBtn', 'restartBtn2']) {
     document.getElementById(id)?.addEventListener('click', reset);
   }
 
-  // 초기 렌더 + 첫 줄 포커스
-  for (let li = 0; li < inputs.length; li++) renderLine(li);
-  updateStats();
-  focusLine(0, 0);
+  return { load };
 }
