@@ -242,16 +242,8 @@
           </div>
         </div>
 
-        <!-- 실제 따라치기 영역: 목표 코드 위에 투명 입력창을 겹쳐 글자별 정오 표시 -->
-        <div class="tt-wrap" id="ttWrap">
-          <div class="tt-gutter" id="ttGutter"></div>
-          <div class="tt-area">
-            <div class="tt-render" id="ttRender" aria-hidden="true"></div>
-            <textarea class="tt-input" id="ttInput" wrap="off" spellcheck="false"
-              autocapitalize="off" autocomplete="off" autocorrect="off"
-              aria-label="코드 따라치기 입력"></textarea>
-          </div>
-        </div>
+        <!-- 따라치기 영역(라인 단위) — 엔진이 줄별 입력 행을 생성 -->
+        <div class="tt-wrap" id="ttWrap"></div>
 
         <div class="typing-footer">
           <div class="wpm-display"><span class="wpm-val" id="wpmVal">0</span> WPM</div>

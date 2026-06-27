@@ -987,47 +987,53 @@ body {
   min-height: 0;
 }
 
-/* 따라치기 영역: 어두운 자체 표면 → 다크/라이트 어디서나 일관 대비 */
+/* 따라치기 영역 — 라인 단위(각 줄이 독립 입력). 어두운 자체 표면으로 일관 대비 */
 .tt-wrap {
   flex: 1;
   min-height: 260px;
   display: flex;
+  flex-direction: column;
   background: var(--editor-bg);
-  overflow: hidden;
+  overflow: auto;
+  padding: 8px 0;
   cursor: text;
+  font-family: var(--mono);
 }
-.tt-gutter {
+.tt-line {
+  display: flex;
+  align-items: stretch;
+}
+.tt-line.active {
+  background: rgba(59, 130, 246, 0.07);
+}
+.tt-gutter-num {
   flex-shrink: 0;
   width: 46px;
-  padding: 14px 0;
+  padding: 0 12px;
   text-align: right;
   color: var(--editor-gutter);
   user-select: none;
   border-right: 1px solid var(--border);
-  font-family: var(--mono);
   font-size: 12px;
-  line-height: 24px; /* render 와 줄높이 통일 → 번호 정렬 */
+  line-height: 24px;
 }
-.tt-gutter > div {
-  padding: 0 12px;
-}
-.tt-gutter > div.cur {
+.tt-line.active .tt-gutter-num {
   color: var(--blue);
   font-weight: 700;
 }
-
-.tt-area {
+.tt-line-body {
   position: relative;
   flex: 1;
+  min-height: 24px; /* 빈 줄도 높이 유지 */
   overflow: hidden;
 }
 .tt-render,
-.tt-input {
+.tt-line-input {
   margin: 0;
-  padding: 14px 16px;
+  padding: 0 16px;
   font-family: var(--mono);
   font-size: 13.5px;
-  line-height: 24px; /* gutter 와 줄높이 통일 */
+  line-height: 24px;
   letter-spacing: 0;
   white-space: pre;
   tab-size: 4;
@@ -1036,54 +1042,35 @@ body {
 }
 /* 미입력(고스트) — 대비를 충분히 높여 잘 보이게 */
 .tt-render {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  color: var(--ghost); /* 고스트(미입력) */
+  min-height: 24px;
+  color: var(--ghost);
   pointer-events: none;
 }
-/* 정타는 JS가 글자별 문법색을 inline 으로 부여 (코드가 색으로 살아남) */
-/* 오타는 IDE 처럼 물결 밑줄 */
+/* 정타는 JS가 글자별 문법색을 inline 으로 부여 / 오타는 IDE 처럼 물결 밑줄 */
 .tt-render .bad {
-  /* 완전 오타: 빨강 물결 */
   text-decoration: underline wavy var(--red);
   text-decoration-skip-ink: none;
   text-underline-offset: 3px;
 }
 .tt-render .case {
-  /* 대소문자 오타: 황색 물결 */
   text-decoration: underline wavy var(--gold);
   text-decoration-skip-ink: none;
   text-underline-offset: 3px;
 }
-/* 현재 위치(캐럿) — 배경 채움 대신 얇은 세로 막대 → 고스트 글자를 가리지 않음 */
-.tt-render .cur {
-  border-radius: 1px;
-  animation: caretBlink 1.1s step-end infinite;
-}
-@keyframes caretBlink {
-  0%,
-  55% {
-    box-shadow: inset 2px 0 0 var(--blue);
-  }
-  56%,
-  100% {
-    box-shadow: inset 2px 0 0 transparent;
-  }
-}
-.tt-input {
+/* 입력 오버레이 — 투명 글자 + 보이는 네이티브 캐럿(줄 안 자유 이동·클릭 위치 지정) */
+.tt-line-input {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   resize: none;
   background: transparent;
-  color: transparent; /* 글자는 아래 render가 표시 */
-  caret-color: transparent; /* 캐럿은 .cur 로 직접 표시 */
+  color: transparent;
+  caret-color: var(--blue);
   outline: none;
-  overflow: auto;
+  overflow: hidden;
 }
-.tt-input::selection {
+.tt-line-input::selection {
   background: rgba(59, 130, 246, 0.2);
 }
 .wpm-display {
