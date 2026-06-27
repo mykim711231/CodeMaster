@@ -32,6 +32,7 @@
       <button class="menu-link"><i data-lucide="folder-open"></i> 프로젝트 가져오기</button>
       <button class="menu-link"><i data-lucide="book-open"></i> 언어 공식 문서</button>
       <div class="menu-sep"></div>
+      <button class="menu-link" id="statsMenuItem"><i data-lucide="pie-chart"></i> 학습 통계</button>
       <button class="menu-link"><i data-lucide="settings"></i> 설정</button>
     </div>
   </div>
@@ -205,72 +206,15 @@
     <div class="rp-block">
       <div class="rp-title"><i data-lucide="book-open"></i>문제 설명</div>
       <div class="explain-concept" id="explainConcept"></div>
-      <ul class="explain-points" id="explainPoints"></ul>
+      <div class="explain-section" id="explainTermsWrap">
+        <div class="explain-sub">코드 뜯어보기</div>
+        <ul class="explain-terms" id="explainTerms"></ul>
+      </div>
+      <div class="explain-section" id="explainWhyWrap">
+        <div class="explain-sub">왜 쓰나요?</div>
+        <div class="explain-why" id="explainWhy"></div>
+      </div>
       <div class="explain-pitfall" id="explainPitfall"></div>
-    </div>
-
-    <!-- Skill Mastery -->
-    <div class="rp-block">
-      <div class="rp-title"><i data-lucide="pie-chart"></i>패턴 숙련도</div>
-      <div class="skill-row">
-        <span class="skill-label">JPA Entity</span>
-        <div class="skill-bar"><div class="skill-fill" style="width:72%;background:var(--blue)"></div></div>
-        <span class="skill-pct">72%</span>
-      </div>
-      <div class="skill-row">
-        <span class="skill-label">Spring MVC</span>
-        <div class="skill-bar"><div class="skill-fill" style="width:91%;background:var(--green)"></div></div>
-        <span class="skill-pct" style="color:var(--green)">91%</span>
-      </div>
-      <div class="skill-row">
-        <span class="skill-label">@Service DI</span>
-        <div class="skill-bar"><div class="skill-fill" style="width:95%;background:var(--green)"></div></div>
-        <span class="skill-pct" style="color:var(--green)">95%</span>
-      </div>
-      <div class="skill-row">
-        <span class="skill-label">AOP / Aspect</span>
-        <div class="skill-bar"><div class="skill-fill" style="width:58%;background:var(--gold)"></div></div>
-        <span class="skill-pct" style="color:var(--gold)">58%</span>
-      </div>
-      <div class="skill-row">
-        <span class="skill-label">Lambda</span>
-        <div class="skill-bar"><div class="skill-fill" style="width:84%;background:var(--blue)"></div></div>
-        <span class="skill-pct">84%</span>
-      </div>
-      <div class="skill-row">
-        <span class="skill-label">CompletableFuture</span>
-        <div class="skill-bar"><div class="skill-fill" style="width:31%;background:var(--red)"></div></div>
-        <span class="skill-pct" style="color:var(--red)">31%</span>
-      </div>
-    </div>
-
-    <!-- Recent Errors -->
-    <div class="rp-block">
-      <div class="rp-title"><i data-lucide="alert-triangle"></i>최근 오타 패턴</div>
-      <div class="error-item">
-        <div class="error-dot"></div>
-        <div>
-          <div class="error-code">@GeneratedValue</div>
-          <div class="error-desc">strategy 속성 순서 혼동 · 7회</div>
-        </div>
-      </div>
-      <div class="error-item">
-        <div class="error-dot"></div>
-        <div>
-          <div class="error-code">implements Serializable</div>
-          <div class="error-desc">Serializable 오타 · 4회</div>
-        </div>
-      </div>
-      <div class="error-item">
-        <div class="error-dot" style="background:var(--gold)"></div>
-        <div>
-          <div class="error-code" style="color:var(--gold)">@Column(nullable)</div>
-          <div class="error-desc">소문자 l·1 혼동 · 2회</div>
-        </div>
-      </div>
-      <button class="btn-ghost" style="width:100%;margin-top:8px;font-size:12px;">
-        <i data-lucide="repeat-2"></i>오답 집중 연습
-      </button>
     </div>
 
   </aside>
@@ -278,6 +222,84 @@
   <!-- 드로어 오버레이 -->
   <div class="overlay" id="overlay"></div>
 
+</div>
+
+<!-- 학습 통계 모달 (버거 메뉴 → 학습 통계) -->
+<div class="modal" id="statsModal">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-card">
+    <div class="modal-head">
+      <span class="modal-title"><i data-lucide="pie-chart"></i> 학습 통계</span>
+      <button class="modal-close" id="statsClose" aria-label="닫기">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- 패턴 숙련도 -->
+      <div class="rp-block">
+        <div class="rp-title"><i data-lucide="pie-chart"></i>패턴 숙련도</div>
+        <div class="skill-row">
+          <span class="skill-label">JPA Entity</span>
+          <div class="skill-bar"><div class="skill-fill" style="width:72%;background:var(--blue)"></div></div>
+          <span class="skill-pct">72%</span>
+        </div>
+        <div class="skill-row">
+          <span class="skill-label">Spring MVC</span>
+          <div class="skill-bar"><div class="skill-fill" style="width:91%;background:var(--green)"></div></div>
+          <span class="skill-pct" style="color:var(--green)">91%</span>
+        </div>
+        <div class="skill-row">
+          <span class="skill-label">@Service DI</span>
+          <div class="skill-bar"><div class="skill-fill" style="width:95%;background:var(--green)"></div></div>
+          <span class="skill-pct" style="color:var(--green)">95%</span>
+        </div>
+        <div class="skill-row">
+          <span class="skill-label">AOP / Aspect</span>
+          <div class="skill-bar"><div class="skill-fill" style="width:58%;background:var(--gold)"></div></div>
+          <span class="skill-pct" style="color:var(--gold)">58%</span>
+        </div>
+        <div class="skill-row">
+          <span class="skill-label">Lambda</span>
+          <div class="skill-bar"><div class="skill-fill" style="width:84%;background:var(--blue)"></div></div>
+          <span class="skill-pct">84%</span>
+        </div>
+        <div class="skill-row">
+          <span class="skill-label">CompletableFuture</span>
+          <div class="skill-bar"><div class="skill-fill" style="width:31%;background:var(--red)"></div></div>
+          <span class="skill-pct" style="color:var(--red)">31%</span>
+        </div>
+      </div>
+
+      <!-- 최근 오타 패턴 -->
+      <div class="rp-block">
+        <div class="rp-title"><i data-lucide="alert-triangle"></i>최근 오타 패턴</div>
+        <div class="error-item">
+          <div class="error-dot"></div>
+          <div>
+            <div class="error-code">@GeneratedValue</div>
+            <div class="error-desc">strategy 속성 순서 혼동 · 7회</div>
+          </div>
+        </div>
+        <div class="error-item">
+          <div class="error-dot"></div>
+          <div>
+            <div class="error-code">implements Serializable</div>
+            <div class="error-desc">Serializable 오타 · 4회</div>
+          </div>
+        </div>
+        <div class="error-item">
+          <div class="error-dot" style="background:var(--gold)"></div>
+          <div>
+            <div class="error-code" style="color:var(--gold)">@Column(nullable)</div>
+            <div class="error-desc">소문자 l·1 혼동 · 2회</div>
+          </div>
+        </div>
+        <button class="btn-ghost" style="width:100%;margin-top:8px;font-size:12px;">
+          <i data-lucide="repeat-2"></i>오답 집중 연습
+        </button>
+      </div>
+
+    </div>
+  </div>
 </div>
 
 <script type="module" src="/src/main.ts"></script>

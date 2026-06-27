@@ -1,10 +1,17 @@
 export type Lang = 'java' | 'python';
 
-// 문제 설명 — 우패널에 표시(언어 습득용)
+// 코드 요소(키워드·기호) 설명 — 입문자용 "코드 뜯어보기"
+export interface Term {
+  t: string; // 코드 요소 (예: "@Entity", "final", "->")
+  d: string; // 쉬운 설명
+}
+
+// 문제 설명 — 우패널에 표시(입문자 언어 습득용)
 export interface Explain {
-  concept: string; // 한 줄 개념
-  points?: string[]; // 핵심 포인트
-  pitfall?: string; // 자주 틀리는 부분
+  concept: string; // 쉬운 말·비유로 개념 설명
+  terms?: Term[]; // 코드 뜯어보기 (요소별)
+  why?: string; // 왜/언제 쓰나
+  pitfall?: string; // 입문자가 자주 틀리는 부분
 }
 
 export interface Snippet {

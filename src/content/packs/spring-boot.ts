@@ -1,7 +1,7 @@
 import type { Level, Pack, Snippet } from '../types';
 
 // Spring Boot 3.4.x · Java 21 (LTS) — PRD §7 / §8.1
-// 짧은(5~15줄) 실무 패턴 + 문제 설명(언어 습득). 문법 검증은 추후 §13.6 CI 파이프라인.
+// 짧은 실무 패턴 + 입문자용 설명(개념·코드 뜯어보기·왜·주의).
 
 // ── L1 Java Core (20문제) ──
 const javaCore: Snippet[] = [
@@ -20,12 +20,18 @@ const javaCore: Snippet[] = [
     }
 }`,
     explain: {
-      concept: '필드와 생성자로 객체의 상태를 캡슐화하는 기본 단위.',
-      points: [
-        'private 필드로 외부 접근 차단',
-        'final 로 불변(immutable) 보장',
-        '생성자에서 모든 필드 초기화',
+      concept:
+        '클래스(class)는 데이터(필드)와 동작을 하나로 묶는 "설계도"예요. 이 설계도로 점(객체)을 여러 개 찍어낼 수 있어요. 여기 Point는 x, y 좌표를 가집니다.',
+      terms: [
+        { t: 'public', d: '어디서나 사용할 수 있게 공개' },
+        { t: 'class Point', d: 'Point 라는 이름의 설계도 정의' },
+        { t: 'private', d: '클래스 밖에서 직접 못 건드리게 보호' },
+        { t: 'final', d: '한 번 정해지면 못 바꿈(상수처럼)' },
+        { t: 'Point(int x, int y)', d: '객체를 만들 때 호출되는 생성자' },
+        { t: 'this.x = x', d: 'this=이 객체 자신. 필드 x에 받은 값을 저장' },
       ],
+      why: '관련된 데이터를 묶어서 관리하고, 외부에서 함부로 바꾸지 못하게 보호하려고 써요.',
+      pitfall: '필드를 public 으로 열어두면 아무나 값을 바꿀 수 있어 위험해요.',
     },
   },
   {
@@ -42,12 +48,14 @@ const javaCore: Snippet[] = [
     }
 }`,
     explain: {
-      concept: '구현체가 지켜야 할 동작 계약. default 로 공통 동작 제공.',
-      points: [
-        '추상 메서드는 구현 클래스가 제공',
-        'default 메서드로 공통 로직 공유',
-        '다중 구현 가능',
+      concept:
+        '인터페이스는 "이런 동작을 할 수 있다"는 약속(계약)만 정하고, 실제 방법은 구현하는 클래스가 채워 넣어요.',
+      terms: [
+        { t: 'interface', d: '동작의 약속만 모아둔 틀' },
+        { t: 'double area();', d: '몸체가 없는 추상 메서드 — 구현 클래스가 작성' },
+        { t: 'default', d: '인터페이스가 직접 제공하는 기본 구현' },
       ],
+      why: '여러 클래스가 같은 방식으로 동작하도록 공통 규격을 정하려고 써요.',
     },
   },
   {
@@ -61,8 +69,12 @@ const javaCore: Snippet[] = [
     DELETED
 }`,
     explain: {
-      concept: '정해진 상수 집합을 타입으로 표현.',
-      points: ['오타·잘못된 값을 컴파일 시점에 차단', 'switch 와 함께 안전하게 분기'],
+      concept: '정해진 값들 중에서만 고르게 하는 타입이에요. 상태처럼 종류가 한정된 값에 씁니다.',
+      terms: [
+        { t: 'enum', d: '상수(고정값)들의 집합 타입' },
+        { t: 'ACTIVE, INACTIVE, DELETED', d: '가능한 값 목록' },
+      ],
+      why: '"active" 같은 문자열 오타를 막고, 정해진 값만 쓰게 안전장치를 두려고요.',
     },
   },
   {
@@ -77,9 +89,15 @@ const javaCore: Snippet[] = [
     }
 }`,
     explain: {
-      concept: '불변 데이터를 담는 객체(DTO/VO)를 한 줄로.',
-      points: ['생성자·접근자·equals·hashCode 자동 생성', 'compact 생성자로 값 검증'],
-      pitfall: 'record 는 불변 — 생성 후 필드를 바꿀 수 없다.',
+      concept:
+        '레코드(record)는 데이터만 담는 "간단한 상자"를 한 줄로 만들어 줘요. 한 번 만들면 값을 못 바꾸는(불변) 게 특징이에요.',
+      terms: [
+        { t: 'record', d: '불변 데이터 객체를 자동으로 만들어 줌' },
+        { t: '(long amount, String currency)', d: '상자에 담을 데이터 목록' },
+        { t: 'public Money { ... }', d: 'compact 생성자 — 값이 올바른지 검사' },
+      ],
+      why: 'DTO·값 객체를 짧고 안전하게 만들 때 써요(equals·toString 자동 생성).',
+      pitfall: 'record 의 필드는 생성 후 바꿀 수 없어요.',
     },
   },
   {
@@ -99,8 +117,13 @@ const javaCore: Snippet[] = [
     }
 }`,
     explain: {
-      concept: '타입 파라미터 T 로 어떤 타입이든 안전하게 보관.',
-      points: ['캐스팅 없이 꺼냄 → 타입 안전', 'Box<String>, Box<Integer> 재사용'],
+      concept:
+        'T는 "아무 타입이나 들어갈 빈칸"이에요. Box<String>으로 쓰면 문자열 상자, Box<Integer>면 정수 상자가 됩니다.',
+      terms: [
+        { t: '<T>', d: '타입 자리표시자 — 쓸 때 실제 타입으로 정해짐' },
+        { t: 'Box<String>', d: 'String 전용 상자로 사용' },
+      ],
+      why: '타입마다 똑같은 코드를 반복해 만들지 않으려고요.',
     },
   },
   {
@@ -115,8 +138,12 @@ const javaCore: Snippet[] = [
     }
 }`,
     explain: {
-      concept: '메서드 단위로 타입 파라미터를 선언.',
-      points: ['<T> 위치는 반환형 바로 앞', '호출 시 타입 추론'],
+      concept: '메서드 하나에만 "아무 타입이나" 빈칸 T를 붙이는 방식이에요.',
+      terms: [
+        { t: '<T>', d: '반환형 바로 앞에 둬서 이 메서드의 타입 선언' },
+        { t: 'static', d: '객체를 만들지 않고 클래스로 바로 호출' },
+        { t: 'cond ? a : b', d: '삼항 연산자 — 조건이 참이면 a, 아니면 b' },
+      ],
     },
   },
   {
@@ -131,8 +158,14 @@ record Ok(String value) implements Result {}
 
 record Err(String message) implements Result {}`,
     explain: {
-      concept: '허용된 구현만 갖는 봉인 계층(Java 17+).',
-      points: ['permits 로 하위 타입을 제한', 'switch 패턴 매칭과 함께 완전성 검사'],
+      concept:
+        '이 인터페이스를 구현할 수 있는 타입을 딱 정해두는 거예요(여기선 Ok, Err 둘만). 성공/실패처럼 경우가 정해진 곳에 좋아요.',
+      terms: [
+        { t: 'sealed', d: '봉인 — 허락된 타입만 구현 가능' },
+        { t: 'permits Ok, Err', d: '구현할 수 있는 타입 목록' },
+        { t: 'implements Result', d: 'Result 인터페이스를 구현' },
+      ],
+      why: '경우의 수를 제한해, switch에서 빠뜨림 없이 처리하도록 도와줘요.',
     },
   },
   {
@@ -145,9 +178,15 @@ List<String> upper = names.stream()
     .map(String::toUpperCase)
     .toList();`,
     explain: {
-      concept: '불변 리스트를 스트림으로 변환.',
-      points: ['List.of 는 불변(수정 시 예외)', 'map → toList 로 새 리스트'],
-      pitfall: 'List.of 결과에 add/remove 하면 UnsupportedOperationException.',
+      concept:
+        '여러 값을 순서대로 담는 목록(List)을 만들고, 스트림(stream)으로 한 번에 변환해요. 여기선 모두 대문자로 바꿉니다.',
+      terms: [
+        { t: 'List.of(...)', d: '고정(불변) 목록 만들기' },
+        { t: '.stream()', d: '값들을 하나씩 흐르게 만듦' },
+        { t: '.map(String::toUpperCase)', d: '각 값을 대문자로 변환' },
+        { t: '.toList()', d: '결과를 다시 목록으로 모음' },
+      ],
+      pitfall: 'List.of 로 만든 목록에 add/remove 하면 오류가 나요(불변).',
     },
   },
   {
@@ -160,8 +199,13 @@ scores.put("math", 90);
 scores.merge("math", 5, Integer::sum);
 scores.forEach((k, v) -> System.out.println(k + "=" + v));`,
     explain: {
-      concept: '키-값 저장과 누적 갱신.',
-      points: ['merge(key, delta, fn) 로 있으면 합치고 없으면 추가', 'forEach (k, v) 순회'],
+      concept: '이름표(키)에 값을 붙여 저장하는 사전 같은 자료구조예요.',
+      terms: [
+        { t: 'Map<String, Integer>', d: '문자열 키 → 정수 값' },
+        { t: 'put("math", 90)', d: '키에 값 넣기' },
+        { t: 'merge(key, 5, sum)', d: '있으면 합치고 없으면 새로 넣기' },
+        { t: 'forEach((k, v) -> ...)', d: '키·값을 하나씩 순회' },
+      ],
     },
   },
   {
@@ -175,8 +219,12 @@ scores.forEach((k, v) -> System.out.println(k + "=" + v));`,
     throw new UncheckedIOException(e);
 }`,
     explain: {
-      concept: '자원을 자동으로 닫는 예외 처리.',
-      points: ['try(...) 안에서 선언한 자원은 자동 close', 'AutoCloseable 구현 대상'],
+      concept: '파일 같은 자원을 다 쓰고 나면 자동으로 닫아주는 안전한 처리 방식이에요.',
+      terms: [
+        { t: 'try (var reader = ...)', d: '여기서 연 자원은 끝나면 자동으로 close' },
+        { t: 'catch (IOException e)', d: '입출력 오류가 나면 잡아서 처리' },
+        { t: 'throw', d: '예외를 다시 던져 위로 알림' },
+      ],
     },
   },
   {
@@ -191,8 +239,11 @@ scores.forEach((k, v) -> System.out.println(k + "=" + v));`,
     }
 }`,
     explain: {
-      concept: '도메인 의미를 가진 예외 정의.',
-      points: ['RuntimeException 상속 = unchecked(throws 불필요)', 'super(message) 로 메시지 전달'],
+      concept: '내 상황에 맞는 오류 종류를 직접 만들어 쓰는 거예요("찾을 수 없음" 같은).',
+      terms: [
+        { t: 'extends RuntimeException', d: '예외를 상속 — throws 선언 없이 던질 수 있음' },
+        { t: 'super(message)', d: '부모(예외)에게 오류 메시지를 전달' },
+      ],
     },
   },
   {
@@ -204,10 +255,12 @@ scores.forEach((k, v) -> System.out.println(k + "=" + v));`,
 Supplier<String> hello = () -> "hello";
 Runnable task = () -> System.out.println("run");`,
     explain: {
-      concept: '함수형 인터페이스를 간결한 식으로.',
-      points: [
-        'Function 입력→출력, Supplier 출력만, Runnable 인자·반환 없음',
-        '타입 추론으로 생략',
+      concept:
+        '람다는 이름 없는 짧은 함수예요. "입력 -> 결과" 형태로 동작 자체를 값처럼 담아 전달해요.',
+      terms: [
+        { t: 'n -> n * n', d: '입력 n을 받아 n*n을 반환' },
+        { t: '() -> "hello"', d: '입력 없이 "hello"를 반환' },
+        { t: 'Function / Supplier / Runnable', d: '함수의 종류(입력·출력 유무로 구분)' },
       ],
     },
   },
@@ -221,8 +274,13 @@ Runnable task = () -> System.out.println("run");`,
     .sorted()
     .toList();`,
     explain: {
-      concept: '조건 필터 → 정렬 → 수집 파이프라인.',
-      points: ['filter 로 조건 통과만 남김', '원본은 변경되지 않음'],
+      concept:
+        '조건에 맞는 값만 걸러내고, 정렬해서 모으는 흐름이에요. 여기선 짝수만 골라 정렬합니다.',
+      terms: [
+        { t: '.filter(n -> n % 2 == 0)', d: '짝수만 통과시킴 (% 는 나머지)' },
+        { t: '.sorted()', d: '오름차순 정렬' },
+        { t: '.toList()', d: '결과를 목록으로' },
+      ],
     },
   },
   {
@@ -233,8 +291,12 @@ Runnable task = () -> System.out.println("run");`,
     code: `Map<Boolean, List<Integer>> parts = numbers.stream()
     .collect(Collectors.partitioningBy(n -> n > 0));`,
     explain: {
-      concept: '스트림을 수집·분할·그룹화.',
-      points: ['partitioningBy 로 참/거짓 두 그룹', 'groupingBy 로 키별 그룹화'],
+      concept:
+        '스트림의 결과를 그룹으로 나눠 모으는 도구예요. 여기선 양수/음수 두 그룹으로 나눕니다.',
+      terms: [
+        { t: 'collect(...)', d: '흐른 값들을 하나로 모음' },
+        { t: 'partitioningBy(n -> n > 0)', d: '조건 참(true)/거짓(false) 두 그룹으로 분할' },
+      ],
     },
   },
   {
@@ -246,9 +308,14 @@ Runnable task = () -> System.out.println("run");`,
     .map(User::name)
     .orElse("guest");`,
     explain: {
-      concept: 'null 대신 "값의 부재"를 타입으로 표현.',
-      points: ['map 으로 null 안전 변환', 'orElse 로 기본값'],
-      pitfall: 'Optional 을 필드·파라미터로 남용하지 말 것(반환용 권장).',
+      concept:
+        '값이 없을 수도 있다는 걸 안전하게 표현해, 그 무서운 NullPointerException(널 오류)을 막아줘요.',
+      terms: [
+        { t: 'ofNullable(user)', d: 'null 일 수 있는 값을 감쌈' },
+        { t: '.map(User::name)', d: '값이 있으면 이름으로 변환' },
+        { t: '.orElse("guest")', d: '값이 없으면 기본값 "guest"' },
+      ],
+      pitfall: 'Optional 은 반환값에만 쓰는 게 좋아요(필드·파라미터 남용 금지).',
     },
   },
   {
@@ -261,8 +328,13 @@ Runnable task = () -> System.out.println("run");`,
     .thenApply(String::trim)
     .thenAccept(System.out::println);`,
     explain: {
-      concept: '비동기 작업을 파이프라인으로 연결.',
-      points: ['supplyAsync 결과 → thenApply 변환 → thenAccept 소비', '논블로킹'],
+      concept:
+        '오래 걸리는 일을 백그라운드에서 처리하고, 끝나면 이어서 다음 작업을 하는 비동기 방식이에요.',
+      terms: [
+        { t: 'supplyAsync(() -> fetch())', d: '백그라운드에서 실행해 결과를 만듦' },
+        { t: 'thenApply(String::trim)', d: '결과가 오면 변환' },
+        { t: 'thenAccept(println)', d: '최종 결과를 사용(출력)' },
+      ],
     },
   },
   {
@@ -276,9 +348,13 @@ Runnable task = () -> System.out.println("run");`,
     default -> 31;
 };`,
     explain: {
-      concept: '값을 반환하는 switch(Java 14+).',
-      points: ['-> 화살표 사용 → break 불필요', 'case 여러 값 콤마로'],
-      pitfall: '표현식 switch 는 모든 경우를 다뤄야(default 또는 완전성).',
+      concept: '조건에 따라 "값을 돌려주는" switch예요. 화살표(->)로 짧고 안전하게 씁니다.',
+      terms: [
+        { t: 'case FEB -> 28', d: 'FEB이면 28을 결과로' },
+        { t: '->', d: 'break 없이 바로 그 값을 돌려줌' },
+        { t: 'default', d: '나머지 모든 경우' },
+      ],
+      pitfall: '값을 돌려주는 switch는 모든 경우를 다뤄야 해요(보통 default 필요).',
     },
   },
   {
@@ -292,8 +368,13 @@ Runnable task = () -> System.out.println("run");`,
     default -> "unknown";
 };`,
     explain: {
-      concept: '타입으로 분기하며 변수에 바인딩(Java 21).',
-      points: ['case Type t 로 캐스팅 없이 사용', 'instanceof + 캐스팅 체인을 대체'],
+      concept:
+        '값의 타입을 보고 분기하면서, 그 타입으로 바로 변수까지 받아 쓰는 기능이에요(Java 21).',
+      terms: [
+        { t: 'case Circle c', d: 'Circle 타입이면 c로 바로 사용(형변환 자동)' },
+        { t: 'c.radius()', d: 'Circle의 메서드 호출' },
+      ],
+      why: 'instanceof 로 확인하고 다시 형변환하던 반복을 없애줘요.',
     },
   },
   {
@@ -308,8 +389,11 @@ Runnable task = () -> System.out.println("run");`,
     }
     """;`,
     explain: {
-      concept: '여러 줄 문자열을 이스케이프 없이(Java 15+).',
-      points: ['""" 로 감쌈', '공통 들여쓰기는 자동 제거'],
+      concept: '여러 줄 문자열을 줄바꿈·따옴표 신경 안 쓰고 그대로 쓰는 방법이에요(Java 15+).',
+      terms: [
+        { t: '"""', d: '여러 줄 문자열의 시작과 끝' },
+        { t: '들여쓰기', d: '공통 들여쓰기는 자동으로 정리됨' },
+      ],
     },
   },
   {
@@ -322,8 +406,12 @@ for (var n : numbers) {
     total += n;
 }`,
     explain: {
-      concept: '컬렉션·배열을 인덱스 없이 순회.',
-      points: ['for (var x : coll) 형태', 'var 로 타입 추론'],
+      concept: '목록의 값을 하나씩 꺼내 반복해요. 인덱스(i) 없이 간단합니다.',
+      terms: [
+        { t: 'for (var n : numbers)', d: 'numbers의 각 값을 차례로 n에' },
+        { t: 'var', d: '타입을 자동으로 추론' },
+        { t: 'total += n', d: 'total 에 n 을 더해 누적' },
+      ],
     },
   },
 ];
@@ -349,9 +437,17 @@ public class UserService {
     }
 }`,
   explain: {
-    concept: '비즈니스 로직 + 트랜잭션 경계를 담는 계층.',
-    points: ['생성자 주입 + final 로 불변 의존성', '@Transactional 로 트랜잭션 관리'],
-    pitfall: '필드 주입(@Autowired) 대신 생성자 주입을 권장.',
+    concept:
+      '서비스는 실제 "일 처리(비즈니스 로직)"를 담당하는 층이에요. 필요한 도구(Repository)를 받아서 씁니다.',
+    terms: [
+      { t: '@Service', d: '스프링이 관리하는 서비스 빈으로 등록' },
+      { t: 'private final UserRepository', d: '필요한 의존성(저장소)을 보관' },
+      { t: '생성자(UserRepository repository)', d: '스프링이 자동으로 넣어줌(의존성 주입)' },
+      { t: '@Transactional', d: 'DB 작업을 하나의 묶음으로 처리' },
+      { t: 'orElseThrow(...)', d: '없으면 예외 발생' },
+    ],
+    why: '컨트롤러는 요청만 받고, 실제 로직은 서비스에 모아 관리하려고요.',
+    pitfall: '필드에 @Autowired 다는 것보다 생성자 주입을 권장해요.',
   },
 };
 
@@ -376,8 +472,14 @@ public class UserController {
     }
 }`,
   explain: {
-    concept: 'HTTP 요청을 받는 REST 엔드포인트.',
-    points: ['@RestController = @Controller + @ResponseBody', '@PathVariable 로 URL 변수 바인딩'],
+    concept: '컨트롤러는 브라우저·앱의 HTTP 요청을 받아 응답을 돌려주는 "입구"예요.',
+    terms: [
+      { t: '@RestController', d: '결과를 JSON으로 돌려주는 컨트롤러' },
+      { t: '@RequestMapping("/api/users")', d: '이 컨트롤러의 공통 주소' },
+      { t: '@GetMapping("/{id}")', d: 'GET 요청 + URL의 {id} 처리' },
+      { t: '@PathVariable Long id', d: 'URL의 {id} 값을 변수로 받음' },
+    ],
+    why: '요청을 받아 서비스에 넘기고, 그 결과를 응답으로 변환하려고요.',
   },
 };
 
@@ -398,9 +500,17 @@ public class UserEntity implements Serializable {
     private String username;
 }`,
   explain: {
-    concept: 'DB 테이블과 매핑되는 영속 객체.',
-    points: ['@Entity + @Table 로 테이블 매핑', '@Id + @GeneratedValue 로 PK 전략'],
-    pitfall: 'JPA 는 기본(no-arg) 생성자가 필요하다.',
+    concept:
+      '엔티티는 DB의 한 줄(레코드)과 짝을 이루는 객체예요. 이 클래스가 곧 users 테이블이 됩니다.',
+    terms: [
+      { t: '@Entity', d: '이 클래스를 DB 테이블과 연결' },
+      { t: '@Table(name = "users")', d: '연결할 테이블 이름' },
+      { t: '@Id', d: '기본키(고유 식별자)' },
+      { t: '@GeneratedValue(IDENTITY)', d: 'DB가 id를 자동 증가시킴' },
+      { t: '@Column(nullable=false, unique=true)', d: '빈 값 금지 + 중복 금지' },
+    ],
+    why: 'SQL을 직접 쓰지 않고 객체로 DB를 다루려고요(ORM).',
+    pitfall: 'JPA 엔티티는 기본(매개변수 없는) 생성자가 필요해요.',
   },
 };
 
@@ -416,8 +526,14 @@ const repository: Snippet = {
     boolean existsByUsername(String username);
 }`,
   explain: {
-    concept: '인터페이스만 선언하면 CRUD 자동 구현.',
-    points: ['JpaRepository<엔티티, ID> 상속', '메서드 이름(findByX)으로 쿼리 자동 생성'],
+    concept:
+      '인터페이스만 선언하면 저장·조회 같은 기능을 스프링이 자동으로 만들어 줘요. 직접 SQL을 안 짜도 됩니다.',
+    terms: [
+      { t: 'extends JpaRepository<UserEntity, Long>', d: 'CRUD 자동 제공 <엔티티, 키 타입>' },
+      { t: 'findByUsername(String)', d: '메서드 이름만으로 조회 쿼리 자동 생성' },
+      { t: 'Optional<UserEntity>', d: '결과가 없을 수도 있음을 안전하게 표현' },
+    ],
+    why: '반복되는 DB 코드를 직접 작성하지 않으려고요.',
   },
 };
 

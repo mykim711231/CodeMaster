@@ -16,7 +16,10 @@ export function initTrainer(): void {
   const fileEl = document.getElementById('fileTabName');
   const curEl = document.getElementById('packMenuCur');
   const exConceptEl = document.getElementById('explainConcept');
-  const exPointsEl = document.getElementById('explainPoints');
+  const exTermsEl = document.getElementById('explainTerms');
+  const exTermsWrap = document.getElementById('explainTermsWrap');
+  const exWhyEl = document.getElementById('explainWhy');
+  const exWhyWrap = document.getElementById('explainWhyWrap');
   const exPitfallEl = document.getElementById('explainPitfall');
   const menuWrap = document.getElementById('packMenu');
   const menuBtn = document.getElementById('packMenuBtn');
@@ -155,13 +158,25 @@ export function initTrainer(): void {
   function renderExplain(snip: Snippet): void {
     const ex = snip.explain;
     if (exConceptEl) exConceptEl.textContent = ex?.concept ?? '이 문제의 설명은 준비 중입니다.';
-    if (exPointsEl) {
-      exPointsEl.innerHTML = '';
-      for (const pt of ex?.points ?? []) {
+    if (exTermsEl && exTermsWrap) {
+      exTermsEl.innerHTML = '';
+      const terms = ex?.terms ?? [];
+      for (const term of terms) {
         const li = document.createElement('li');
-        li.textContent = pt;
-        exPointsEl.append(li);
+        const t = document.createElement('span');
+        t.className = 't';
+        t.textContent = term.t;
+        const d = document.createElement('span');
+        d.className = 'd';
+        d.textContent = term.d;
+        li.append(t, d);
+        exTermsEl.append(li);
       }
+      exTermsWrap.style.display = terms.length ? '' : 'none';
+    }
+    if (exWhyEl && exWhyWrap) {
+      exWhyEl.textContent = ex?.why ?? '';
+      exWhyWrap.style.display = ex?.why ? '' : 'none';
     }
     if (exPitfallEl) {
       if (ex?.pitfall) {
