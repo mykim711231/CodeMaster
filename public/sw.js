@@ -1,60 +1,27 @@
-/* CodeMaster Service Worker — Phase 1
- * - 내비게이션(HTML): 네트워크 우선 → 항상 최신 index.html(새 자산 해시) 수신, 오프라인 시 캐시
- * - 그 외 GET(해시 자산·폰트 등): 캐시 우선(불변)
- * - 캐시명 버전업 + skipWaiting/claim 으로 새 배포 즉시 반영 (옛 캐시 누적 방지)
+/* CodeMaster Service Worker — 비활성화(킬 스위치)
+ * 그동안의 SW 캐시 staleness 로 인한 멈춤(무한 로딩)을 해소.
+ * fetch 핸들러가 없어 네트워크를 가로채지 않으며, 활성화 시 모든 캐시 삭제 +
+ * 자기 자신 등록 해제 + 열린 탭 새로고침으로 깨끗한 상태로 복구한다.
+ * (오프라인 PWA 는 추후 vite-plugin-pwa(Workbox)로 정식 재도입)
  */
-const CACHE = 'codemaster-v2';
-const SHELL = ['./', './index.html', './manifest.json', './icon.svg'];
-
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches
-      .open(CACHE)
-      .then((c) => c.addAll(SHELL))
-      .then(() => self.skipWaiting()),
-  );
-});
+self.addEventListener('install', () => self.skipWaiting());
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
-      .then(() => self.clients.claim()),
-  );
-});
-
-self.addEventListener('fetch', (event) => {
-  const { request } = event;
-  if (request.method !== 'GET') return;
-
-  // 내비게이션(문서) → 네트워크 우선
-  if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request)
-        .then((resp) => {
-          const copy = resp.clone();
-          caches.open(CACHE).then((c) => c.put('./index.html', copy)).catch(() => {});
-          return resp;
-        })
-        .catch(() => caches.match(request).then((r) => r || caches.match('./index.html'))),
-    );
-    return;
-  }
-
-  // 그 외 GET → 캐시 우선 (해시 자산은 불변이라 안전)
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) return cached;
-      return fetch(request)
-        .then((resp) => {
-          if (new URL(request.url).origin === location.origin) {
-            const copy = resp.clone();
-            caches.open(CACHE).then((c) => c.put(request, copy)).catch(() => {});
-          }
-          return resp;
-        })
-        .catch(() => cached);
-    }),
+    (async () => {
+      try {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((k) => caches.delete(k)));
+      } catch (e) {
+        /* ignore */
+      }
+      try {
+        await self.registration.unregister();
+      } catch (e) {
+        /* ignore */
+      }
+      const clients = await self.clients.matchAll({ type: 'window' });
+      for (const client of clients) client.navigate(client.url);
+    })(),
   );
 });
