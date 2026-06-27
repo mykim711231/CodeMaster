@@ -15,6 +15,9 @@ export function initTrainer(): void {
   const titleEl = document.getElementById('practiceTitle');
   const fileEl = document.getElementById('fileTabName');
   const curEl = document.getElementById('packMenuCur');
+  const exConceptEl = document.getElementById('explainConcept');
+  const exPointsEl = document.getElementById('explainPoints');
+  const exPitfallEl = document.getElementById('explainPitfall');
   const menuWrap = document.getElementById('packMenu');
   const menuBtn = document.getElementById('packMenuBtn');
   const pop = document.getElementById('packMenuPop');
@@ -149,6 +152,27 @@ export function initTrainer(): void {
     }
   }
 
+  function renderExplain(snip: Snippet): void {
+    const ex = snip.explain;
+    if (exConceptEl) exConceptEl.textContent = ex?.concept ?? '이 문제의 설명은 준비 중입니다.';
+    if (exPointsEl) {
+      exPointsEl.innerHTML = '';
+      for (const pt of ex?.points ?? []) {
+        const li = document.createElement('li');
+        li.textContent = pt;
+        exPointsEl.append(li);
+      }
+    }
+    if (exPitfallEl) {
+      if (ex?.pitfall) {
+        exPitfallEl.textContent = '⚠ ' + ex.pitfall;
+        exPitfallEl.style.display = '';
+      } else {
+        exPitfallEl.style.display = 'none';
+      }
+    }
+  }
+
   function show(): void {
     const p = pos();
     const pack = PACKS[p.packKey];
@@ -158,6 +182,7 @@ export function initTrainer(): void {
     if (titleEl) titleEl.textContent = `${lvl.name} · ${snip.title}`;
     if (fileEl) fileEl.textContent = snip.file;
     if (curEl) curEl.textContent = `${pack.name} · ${snip.title}`;
+    renderExplain(snip);
     appStore.getState().setLang(pack.lang);
     // 현재 위치만 펼쳐 보이게
     openPack = p.packKey;
