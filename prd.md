@@ -556,6 +556,839 @@ async function checkStorageQuota(): Promise<void> {
 | Python AI 패턴 숙련도 | 90% 이상 |
 | 주간 학습 지속률 | 70% 이상 |
 
+## 15. 학습 엔진 (간결한 적응형 반복)
+
+### 15.1 숙련도 점수 (Pattern Mastery Score)
+
+**저장 스키마** — IndexedDB `patterns` 스토어
+
+```typescript
+interface PatternRecord {
+  patternId: string;       // "{packId}_{snippetId}" 예: "java_l04_snip_001"
+  mastery: number;         // 0–100, EWMA
+  box: 1 | 2 | 3;
+  lastPracticed: number;   // timestamp
+  sessionCount: number;
+  expectedWpm: number;     // 최초 세션 시 팩에서 읽어 저장 (팩 삭제 대비)
+  globalRound: number;     // 출제 사이클 카운터 — IndexedDB 영속
+  charErrorMap: Record<string, number>; // EWMA 이동평균
+}
+```
+
+`patternId`는 `{packId}_{snippetId}` 조합으로 전역 고유성을 보장한다.
+
+**점수 공식**
+
+```
+완료 세션 (val.length === TARGET.length):
+  S = (정확도 × 0.6) + (속도점수 × 0.4)
+  속도점수 = min(100, round(실제WPM / record.expectedWpm × 100))
+  정확도   = round(correct / TARGET.length × 100)   ← 분모는 항상 TARGET.length
+
+중단 세션 (val.length < TARGET.length):
+  mastery 업데이트 건너뜀 — collectErrors()도 호출하지 않음
+```
+
+첫 세션 성적 S ≥ 80이면 `mastery` 초기값을 0 대신 **50**으로 부스트한다(콜드스타트 박스1 장기 묶임 방지).
+
+**EWMA 갱신**
+
+```typescript
+// α = 0.3 (3–4세션 수렴)
+M_new = 0.3 × S + 0.7 × M_old
+```
+
+| 범위 | 상태 | 색 |
+|------|------|----|
+| 0–39 | Weak | 빨강 |
+| 40–69 | Learning | 노랑 |
+| 70–89 | Proficient | 파랑 |
+| 90–100 | Master | 초록 |
+
+---
+
+### 15.2 취약 패턴 탐지 (Weak Pattern Detection)
+
+```typescript
+// 완료 세션 종료 시에만 호출
+function collectErrors(target: string, typed: string): void {
+  for (let i = 0; i < typed.length; i++) {
+    if (typed[i] === target[i]) continue;
+    const token = extractToken(target, i) ?? target[i];
+    const weight = typed[i].toLowerCase() === target[i].toLowerCase() ? 1 : 2;
+    charErrorMap[token] = (charErrorMap[token] ?? 0) + weight;
+  }
+}
+
+// 토큰 경계: 공백 + 코드 구분자 모두 사용
+const DELIMITERS = /[ (){};,=\[\].@<>]/;
+function extractToken(src: string, i: number): string | null {
+  // src를 DELIMITERS로 분할한 tokenRanges 배열에서
+  // i를 포함하는 범위를 이진탐색으로 찾아 반환
+  // 토큰 길이 1이면 null 반환
+}
+```
+
+`charErrorMap`은 EWMA 방식으로 갱신한다 (`α = 0.3`, 동일 세션 내 반복 등장은 1회 카운트).
+
+**WeakToken 스토어** (`errorRate` 내림차순 정렬):
+
+```typescript
+interface WeakToken {
+  token: string;
+  errorScore: number;
+  sessionsSeen: number;   // seenCount 대신 — 동일 세션 내 중복 1로 카운트
+  errorRate: number;      // errorScore / sessionsSeen
+}
+```
+
+임계값: `minSessionsSeen = 3`, `weakThreshold = 0.3`, `topN = 10`
+
+---
+
+### 15.3 반복 출제 — Leitner 3박스
+
+| 박스 | 진급 조건 | 강등 조건 | 출제 조건 |
+|------|-----------|-----------|-----------|
+| Box 1 | mastery ≥ 70 → Box 2 | — | 매 라운드 |
+| Box 2 | mastery ≥ 85 → Box 3 | mastery < 60 → Box 1 | round % 2 === 0 |
+| Box 3 | — | mastery < 70 → Box 2 | round % 5 === 0 |
+
+Box 2 강등 기준을 50이 아닌 **60**으로 설정해 mastery 50–69 구간의 장기 체류를 방지한다.
+
+**출제 선택 — 가중 카테고리 샘플링** (객체 복제 없음)
+
+```typescript
+// 신규 : Box1 : Box2 : Box3 = 2 : 5 : 2 : 1
+function pickNextSnippet(all, records, round): Snippet {
+  const candidates = buildCandidates(all, records, round);
+
+  // pool 복제 대신: 카테고리를 가중 확률로 선택 후 해당 카테고리에서 무작위 1개
+  const category = weightedPickCategory(RATIO, candidates);
+  if (category) return randomFrom(candidates[category]);
+
+  // 폴백: pool이 비어있으면 Box3 전체에서 출제(라운드 무관)
+  const box3All = all.filter(s => records.get(s.id)?.box === 3);
+  return randomFrom(box3All.length ? box3All : all);
+}
+```
+
+`round`는 `PatternRecord.globalRound`에 영속 저장한다. ITP 만료로 IndexedDB가 소멸되면 round=0에서 재시작되는데, 이때 Box2/Box3 조건 미충족으로 발생하는 단기 공백은 허용 가능한 트레이드오프로 수용한다.
+
+**세션 종료 훅 — 완료/중단 구분**
+
+```typescript
+// update() 내에서 완료 감지
+if (val.length >= TARGET.length && correctCount === TARGET.length) {
+  emitSessionEnd({ completed: true });
+}
+
+// 스킵 버튼에서
+emitSessionEnd({ completed: false });
+
+// 세션 종료 핸들러
+function onSessionEnd({ completed }: { completed: boolean }): void {
+  if (!completed) return; // 중단: mastery 업데이트, collectErrors 모두 건너뜀
+  collectErrors(TARGET, val);
+  const S = calcSessionScore();
+  updateMastery(S);
+  updateBox(record);
+  // IndexedDB 먼저 저장 → 완료 콜백에서 Zustand 갱신 (단방향)
+  saveToIndexedDB(record).then(() => store.setState({ weakTokens, currentBox }));
+}
+```
+
+**Zustand 역할**: UI 렌더링 캐시 전용. 진실의 출처는 IndexedDB.
+
+---
+
+### 15.4 콜드스타트
+
+```typescript
+function getStartSnippet(levelSnippets, records, currentRound): Snippet {
+  if (records.size === 0) return levelSnippets[0]; // 완전 신규 → L1 첫 번째
+  return pickNextSnippet(levelSnippets, records, currentRound);
+}
+```
+
+배치 테스트(선택사항): "이미 알아요" 버튼 → 조건 `정확도 ≥ 85% AND 실제WPM ≥ expectedWpm × 0.8`이면 `mastery = 60, box = 2`, 미달이면 기본값.
+
+`expectedWpm`은 최초 세션 시 팩에서 읽어 `PatternRecord.expectedWpm`에 저장. 팩 미존재 시 fallback `40`.
+
+---
+
+### 15.5 구현 체크리스트
+
+| 단계 | 작업 | 파일 위치 |
+|------|------|----------|
+| 1 | `PatternRecord` / `WeakToken` IndexedDB 스키마 | `src/store/db.ts` |
+| 2 | `patternId` 헬퍼 `buildPatternId(packId, snippetId)` | `src/store/db.ts` |
+| 3 | `collectErrors()` — DELIMITERS 기반 토큰 추출 | `src/engine/scoring.ts` |
+| 4 | `updateMastery()` + `updateBox()` | `src/engine/scoring.ts` |
+| 5 | `pickNextSnippet()` — 가중 카테고리 샘플링 | `src/engine/scheduler.ts` |
+| 6 | 완료/중단 이벤트 분기 (`emitSessionEnd`) | `src/engine/typingEngine.ts` |
+| 7 | Zustand `weakTokens` / `currentBox` 슬라이스 (IDB 동기화 후 갱신) | `src/store/learningStore.ts` |
+| 8 | 우측 패널 실데이터 연결 (하드코딩 제거) | `src/ui/WeakPanel.ts` |
+| 9 | IndexedDB 만료 감지 + JSON export 배너 | `src/storage/integrity.ts` |
+| 10 | Vitest: EWMA 수렴·박스 진급/강등·비율 샘플링·중단 세션 skip | `src/engine/__tests__/` |
+
+**미결 항목**
+- extractToken() 이진탐색 구현 — 현 엔진 tokenRanges 재사용 여부 확인 필요
+- Box2/Box3 라운드 조건이 ITP 만료 후 round=0 재시작으로 일시 중단되는 허용 범위 확정
+
+---
+
+## 16. UX · 정보구조 · 사용자 흐름
+
+### 16.1 화면 인벤토리
+
+| ID | 화면명 | 진입 | 이탈 |
+|----|--------|------|------|
+| S-100 | 타이핑 연습 (메인) | 앱 진입·레벨 선택·이어서 연습 | S-110·S-200·S-300·S-500 |
+| S-110 | 스니펫 완료 결과 | S-100 완료 | S-100(다음)·S-120(오답복습)·S-200 |
+| S-120 | 오답 복습 | S-110·사이드바 오답 반복 | S-100·S-110 |
+| S-200 | 레벨 선택 / 로드맵 | 사이드바 로드맵 아코디언·메뉴 | S-100·S-210 |
+| S-210 | 팩 다운로드 확인+진행 | S-200 미다운로드 레벨 탭 | S-200(취소)·S-100(완료) |
+| S-300 | 빠른 학습 (사이드바 인라인 패널) | 사이드바 빠른 학습 아코디언 | S-100(모드 선택 즉시) |
+| S-400 | 프로젝트 분석 — PC 전용 | 버거 메뉴 | S-420·S-100 |
+| S-420 | 분석 결과 요약 — PC 전용 | S-400 분석 완료 | S-100·S-400 |
+| S-500 | 설정 | 버거 메뉴 | 이전 화면 복귀 |
+
+> S-300은 독립 전환 화면이 아닌 **사이드바 확장 패널**이다. 별도 URL 없음.
+> S-410(분석 진행)은 S-400 인라인 진행률 + 사이드바 배지로 표시하고 독립 화면을 두지 않는다. 분석 중 타이핑 연습은 백그라운드 Worker 덕분에 S-100에서 동시에 가능하다.
+> S-210은 다운로드 확인과 진행률을 단일 화면 내 인라인으로 통합한다(S-411 별도 번호 없음).
+
+---
+
+### 16.2 핵심 사용자 흐름
+
+**흐름 A — 첫 진입 → 연습 → 결과**
+
+```
+앱 진입 → S-100 (Spring Boot L1 자동 선택, 첫 키 입력으로 즉시 연습)
+  → [스니펫 완료] S-110 (WPM·정확도·숙련도 Δ 표시)
+  → [다음 스니펫] S-100  /  [오답 복습] S-120  /  [레벨 선택] S-200
+```
+
+**흐름 B — 오답 복습**
+
+S-120은 오타가 발생한 **스니펫 전체**를 재출제한다(줄 단위 발췌는 MVP 제외 — 엔진 변경 불필요).
+3회 반복 후 미해결 패턴 → WeakToken 등급 격상 + S-300 취약 패턴 모드 우선 출제 대상 등록.
+
+**흐름 C — 프로젝트 분석 (PC 전용)**
+
+```
+S-400 폴더 선택 → 백그라운드 Worker 분석 시작
+  → 사이드바 배지 + 상단 배너에 진행률 표시 (S-100 타이핑 동시 가능)
+  → 완료 토스트 → S-420 결과 요약 → [바로 연습] S-100
+```
+
+폴더 선택 취소(`showDirectoryPicker` 거절): 조용히 무시.
+
+---
+
+### 16.3 온보딩
+
+**원칙: 5초 안에 타이핑 시작, 강제 튜토리얼 없음.**
+
+| 단계 | 발동 조건 | 표시 내용 | 비고 |
+|------|-----------|-----------|------|
+| 1 | IndexedDB 이력 없음 | 상단 배너 "Level 1부터 시작하세요" 1회 | `cm-onboarded` localStorage 플래그로 중복 차단 |
+| 2 | 첫 키 입력 전 | 에디터 포커스 힌트 "여기를 눌러 바로 타이핑" | 첫 키 입력 즉시 소멸 |
+| 3 | **첫 스니펫 완료 직후** (S-110) | `storage.persist()` 요청 배너 | 타이핑 중 팝업 금지 |
+| 4 | iOS 감지 + persist 미승인 | "홈 화면에 추가하면 데이터가 보호됩니다" | persist 배너 직후 순차 표시, 동시 2개 금지 |
+
+온보딩 질문(1문항) 제거. 학습 목표는 현재 레벨에서 자동 추론("현재 레벨: Java L1").
+
+---
+
+### 16.4 상태 디자인
+
+**빈 상태**
+
+| 조건 | 표시 |
+|------|------|
+| 오타 패턴 없음 | "아직 오타가 없습니다. 계속 연습하면 패턴이 쌓입니다." |
+| 오답 반복 큐 비어있음 | 배지 숨김, 클릭 시 토스트 |
+| 취약 패턴 없음 (S-300) | "모든 패턴 숙련도 70% 이상. 더 어려운 레벨에 도전하세요." |
+| 첫 방문 숙련도 블록 | "첫 연습을 시작하면 숙련도가 기록됩니다." |
+
+**에러 상태**
+
+| 에러 | 처리 |
+|------|------|
+| sha256 불일치 | 백그라운드 자동 재다운로드(메시지 없음). 재다운로드 전 접근 시도: "팩 업데이트 중..." 배너 |
+| 팩 다운로드 실패 | 인라인 "다운로드 실패 · 네트워크를 확인하세요" + [재시도] |
+| IndexedDB 쓰기 실패 | 하단 토스트 + [설정 열기] |
+| 저장 공간 80% 초과 | 상단 배너 + [팩 관리] |
+| WASM 로드 실패 | "경량 분석 모드로 전환" 자동 처리 |
+
+**오프라인 상태**
+
+| 상황 | 동작 |
+|------|------|
+| 팩 있음 | "오프라인 모드 · 다운로드된 팩으로 학습 가능" 배너 |
+| 팩 없음 | 에디터 비어있음 + "온라인에서 팩을 다운로드하세요" |
+| ITP 만료 감지 (IndexedDB 소멸) | "학습 기록이 초기화되었습니다. 백업 파일이 있다면 설정 > 데이터 가져오기로 복원하세요." |
+| ITP 만료 감지 (Cache Storage 팩 소멸) | "팩을 다시 받아야 합니다" + [다운로드] (별도 감지, 독립 안내) |
+
+---
+
+### 16.5 플랫폼별 차이
+
+| 기능 | 데스크톱 | 모바일 (iOS) |
+|------|----------|-------------|
+| 프로젝트 분석 | S-400 전체 제공 | 메뉴 항목 숨김 |
+| 사이드바 | 좌측 인라인 (> 1024px) | 오프캔버스 드로어 (≤ 1024px) |
+| 우패널 | 우측 인라인 | 오른쪽 드로어 |
+| storage.persist() | 호출(자동 승인) | 호출(PWA 설치 후 승인) |
+| XP/연속 배지 탑바 | **없음** — PRD 미정의, 제거 |  |
+
+드로어는 좌우 중 하나만 동시에 열린다. 사이드바 항목 선택 시 드로어 자동 닫힘 + 메인 포커스 복귀.
+
+모바일에서 `#sidebar-nav` 스킵링크는 `@media (max-width: 1024px) { display: none }`으로 숨긴다(드로어 닫힌 상태에서 포커스만 이동하는 SC 2.4.3 위반 방지).
+
+**미결 항목**
+- S-120 오답 복습에서 스니펫 전체 재출제 외 줄 단위 발췌 필요성 — 사용자 피드백 후 결정
+
+---
+
+## 17. 접근성 (WCAG 2.2)
+
+### 17.1 색각이상 — 비색상 단서
+
+| 상태 | 색 | 비색상 단서 | 스크린리더 |
+|------|----|-------------|-----------|
+| 정타 | 구문강조 | 밑줄 없음 | aria-live polite (1초 throttle) |
+| 오타(bad) | `--red` | `underline wavy` + `font-weight: 700` + `text-decoration-thickness: 2px` | polite 요약 |
+| 대소문자(case) | `--gold` | `underline dashed` + `text-decoration-thickness: 2px` | polite 요약 |
+| 캐럿(cur) | `--blue` | 2px 세로 막대 + `background: rgba(59,130,246,.18)` | — |
+| 미입력(ghost) | `--ghost` | 불투명도 0.45 | — |
+
+```css
+.tt-render .bad {
+  text-decoration: underline wavy var(--red);
+  text-decoration-thickness: 2px;
+  text-decoration-skip-ink: none;
+  text-underline-offset: 3px;
+  font-weight: 700;
+}
+.tt-render .case {
+  text-decoration: underline dashed var(--gold);
+  text-decoration-thickness: 2px;
+  text-decoration-skip-ink: none;
+  text-underline-offset: 3px;
+}
+```
+
+범례 기호: `—` (정타), `‐‐` (대소문자), `✕` (오타) — `aria-hidden="true"`로 스크린리더 중복 방지.
+
+---
+
+### 17.2 명도 대비 수정 (AA 4.5:1)
+
+```css
+:root {
+  --ghost:  #9BACC8;   /* 다크: 3.7:1 → 5.1:1 */
+  --syn-cm: #6B8CB5;   /* 다크: 주석 4.5:1 이상 (AA 필수 — 타이핑 대상 콘텐츠) */
+}
+[data-theme="light"] {
+  --ghost:  #64748B;   /* 라이트: 2.5:1 → 4.6:1 */
+  --syn-cm: #607080;   /* 라이트: 4.5:1 */
+  --gold:   #92580A;   /* 라이트: 4.6:1 → 6.2:1 */
+}
+```
+
+> 주석(`syn-cm`)은 타이핑 연습에서 실제 입력해야 할 콘텐츠이므로 AA Large(3:1) 예외 미적용, 일반 AA(4.5:1) 기준 적용.
+
+`.tt-input`과 `.tt-render`의 font-size 불일치 수정: 전역 `textarea { font-size: 16px }` override가 `.tt-input`에 적용되므로 `.tt-input { font-size: 13.5px !important }`를 명시적으로 재정의하여 두 레이어의 픽셀 일치를 유지한다.
+
+---
+
+### 17.3 `prefers-reduced-motion`
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  .tt-render .cur {
+    animation: none !important;
+    box-shadow: inset 2px 0 0 var(--blue) !important;
+    background-color: rgba(59,130,246,.18) !important;
+  }
+  .cursor { animation: none !important; opacity: 1 !important; }
+  .sidebar, .right-panel, .overlay { transition: none !important; }
+  .tt-render .bad  { text-decoration: underline solid var(--red) 2px; font-weight: 700; }
+  .tt-render .case { text-decoration: underline dashed var(--gold) 2px; }
+  .progress-bar-fill, .resume-fill { transition: none !important; }
+  .level-card:hover:not(.locked), .btn-primary:hover { transform: none !important; }
+}
+```
+
+CSS만으로 처리한다. JS `reducedMotion` 연동 코드는 Phase 3 이식 후 필요 시 추가.
+
+reduced-motion 환경에서 `.bad`에 `font-weight: 700`을 유지하여 비색상 단서 체계가 일반 모드와 동일하게 동작한다.
+
+---
+
+### 17.4 키보드 · 포커스 · ARIA
+
+**스킵링크**
+
+```html
+<a href="#tt-main" class="skip-link">타이핑 연습 영역으로 건너뛰기</a>
+<!-- #sidebar-nav 링크는 모바일(≤1024px)에서 숨김 -->
+```
+
+```css
+.skip-link { position: absolute; top: -100%; left: 0; z-index: 9999; }
+.skip-link:focus { top: 0; }
+@media (max-width: 1024px) {
+  .skip-link[href="#sidebar-nav"] { display: none; }
+}
+```
+
+**포커스 링** — `overflow:hidden`을 가진 `.tt-wrap`에는 `box-shadow`로 처리:
+
+```css
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
+.tt-wrap:focus-within { box-shadow: 0 0 0 3px var(--blue); }  /* outline 대신 box-shadow */
+.tt-input:focus-visible { outline: none; }
+[data-theme="dark"] :focus-visible { outline-color: #60A5FA; }
+```
+
+**Tab 트랩 해제 (SC 2.1.2)**
+
+```typescript
+if (e.key === 'Tab') {
+  if (e.shiftKey) return; // Shift+Tab: 브라우저 기본 동작 허용
+  e.preventDefault();
+  // 4칸 삽입 (기존 로직)
+}
+if (e.key === 'Escape') {
+  e.stopPropagation(); // 드롭다운 핸들러와 충돌 방지
+  input.blur();        // 타이핑 영역 포커스 해제 (continueBtn 강제 이동 금지)
+}
+```
+
+**aria-expanded 갱신**
+
+```typescript
+// 드롭다운
+menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+// 아코디언 — 정적 ID 사용 (Math.random() 금지)
+header.setAttribute('aria-controls', 'acc-body-roadmap'); // HTML에 고정 ID
+header.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+// display:none 대신 hidden 속성 사용 (일부 스크린리더 aria-controls 인식 보장)
+```
+
+**aria-live 전략**
+
+```html
+<div id="srLive" aria-live="polite" aria-atomic="false" class="sr-only"></div>
+<!-- assertive 영역 제거 — 글자별 즉각 알림은 스크린리더를 실질적으로 사용 불가 상태로 만듦 -->
+```
+
+```typescript
+// 1초 throttle로 정확도·WPM 요약만 전달
+if (now - lastSrUpdate > 1000 && srLive) {
+  const errorCount = /* bad+case span 수 */;
+  srLive.textContent = `정확도 ${acc}%, WPM ${wpm}, 오류 ${errorCount}자`;
+  lastSrUpdate = now;
+}
+// 오타 알림은 3자 연속 오타 또는 Enter(줄 완성) 시에만 polite로 전달
+```
+
+**textarea ARIA**
+
+```html
+<textarea
+  aria-label="코드 따라치기 입력. Shift+Tab 또는 Escape로 영역 탈출."
+  aria-describedby="tt-instructions">
+</textarea>
+<!-- aria-multiline 제거 — 네이티브 textarea는 암묵적 multiline textbox -->
+```
+
+---
+
+### 17.5 `user-scalable=no` 및 터치 타깃
+
+`user-scalable=no`는 WCAG SC 1.4.4(AA) 위반이나 iOS 10+ Safari는 이미 핀치줌을 강제 허용한다. Android에서는 타이핑 중 실수 줌 방지 필요. **P3 검토 보류** — iOS/Android 실기기 테스트 후 결정.
+
+```css
+/* .icon-btn: 34×34px → 44×44px (SC 2.5.5 AAA — SC 2.5.8 AA 24×24px는 이미 충족) */
+.icon-btn { width: 44px; height: 44px; }
+/* .pack-seg-btn: 최소 높이 44px 보장 */
+.pack-seg-btn { min-height: 44px; }
+```
+
+---
+
+### 17.6 이행 우선순위
+
+| 우선순위 | 항목 | WCAG |
+|:---:|------|------|
+| P0 | Tab 트랩 해제 (Shift+Tab·Escape) | SC 2.1.2 A |
+| P0 | 라이트 테마 ghost·syn-cm 대비 상향 | SC 1.4.3 AA |
+| P0 | `.tt-input` font-size 13.5px 명시 재정의 | 렌더 일치 |
+| P1 | 스킵링크 추가 (모바일 sidebar 링크 숨김) | SC 2.4.1 A |
+| P1 | `prefers-reduced-motion` CSS 블록 | SC 2.3.3 AAA |
+| P1 | `aria-expanded` 드롭다운·아코디언 (정적 ID) | SC 4.1.2 A |
+| P2 | `aria-live` polite 1초 throttle | SC 4.1.3 AA |
+| P2 | 비색상 단서(밑줄 형태·굵기) | SC 1.4.1 A |
+| P2 | 포커스 링 `box-shadow` (tt-wrap) | SC 2.4.7 AA |
+| P3 | `.icon-btn` / `.pack-seg-btn` 44px | SC 2.5.5 AAA |
+| P3 | axe-core Playwright (Phase 3 이식 후) | 자동화 |
+| 보류 | `user-scalable=no` 제거 | SC 1.4.4 AA |
+
+**미결 항목**
+- `user-scalable=no` 제거 여부 — Android 타이핑 중 실수 줌 발생 시나리오 실기기 검증 후 결정
+- `.tt-render`/`.tt-input` font-size 실측 픽셀 일치 확인 (13.5px vs 16px override)
+
+---
+
+## 18. 콘텐츠·라이선스 정책
+
+### 18.1 라이선스 분류
+
+본 정책은 **한국 저작권법 제28조(공표된 저작물의 인용)** 및 Apache-2.0·MIT 라이선스 자체 허락 조항에 근거한다. 미국 Fair Use 법리(30%, 50줄 수치)는 법적 근거로 인용하지 않으며, 아래 수치는 사내 운영 정책 기준이다.
+
+| 라이선스 | 등급 | 의무사항 |
+|---------|------|----------|
+| Apache-2.0 | 허용 | NOTICE 포함, 변형 명시 |
+| MIT / ISC | 허용 | 저작권 고지·라이선스 본문 유지 |
+| BSD-2/3-Clause | 허용 | 저작권 고지, BSD-3 프로모션 금지 |
+| CC-BY-4.0 | 허용 | 저자 귀속 표기 |
+| CC-BY-SA-4.0 | **배제** | ShareAlike 전파 — 팩 JSON 내 격리 구현 불가 |
+| CC0 / Unlicense | 허용 | 의무 없음 |
+| LGPL-2.1/3.0 | 조건부 | 추출·전시 목적 허용, 팩에 정적 번들링 금지 |
+| GPL-2.0/3.0 | **배제** | Copyleft 전파 |
+| AGPL-3.0 | **배제** | 정적 자산으로 배포 시 소스 공개 의무 불확실성 — SaaS 여부와 무관하게 배제 |
+| SSPL | **배제** | |
+| Proprietary / 미표기 | **배제** | |
+
+**허용 OSS 화이트리스트** (`packages/packs/config/oss-allowlist.json`):
+
+```json
+{
+  "allowedRepos": [
+    { "repo": "spring-projects/spring-petclinic", "license": "Apache-2.0" },
+    { "repo": "mybatis/mybatis-3",                "license": "Apache-2.0" },
+    { "repo": "langchain-ai/langchain",            "license": "MIT" },
+    { "repo": "tiangolo/fastapi",                  "license": "MIT" },
+    { "repo": "spring-projects/spring-boot",       "license": "Apache-2.0" }
+  ],
+  "blockedLicenses": ["GPL-2.0", "GPL-3.0", "AGPL-3.0", "SSPL-1.0", "unlicensed"]
+}
+```
+
+---
+
+### 18.2 스니펫 source 필드 스키마
+
+```jsonc
+{
+  "id": "snip_001",
+  "source": {
+    "repo": "mybatis/mybatis-3",
+    "sha": "abc1234def5678",
+    "path": "src/test/.../CreateDB.xml",
+    "license": "Apache-2.0",
+    "copyright": "Copyright 2009-2024 the original author or authors.",
+    "modified": false,
+    "extractedAt": "2025-01-15T00:00:00Z"
+  }
+}
+```
+
+자체 창작 스니펫: `"source": { "license": "original" }` — source 필드 생략 방식은 CI에서 MISSING으로 처리되므로 **반드시 명시**한다.
+
+**NOTICE 파일** — Workbox precache에 `/notices` 포함(오프라인 접근 보장). Apache-2.0 NOTICE 법적 의무는 팩 JSON `source.copyright` 필드가 충족하며, `/notices` 페이지는 사용자 편의 UI다.
+
+---
+
+### 18.3 분량·변형 정책 (사내 운영 기준)
+
+- 단일 스니펫 최대 **50줄**
+- 단일 파일 추출 **30% 이하**
+- 변형 시 `source.modified: true`
+- 원본 저작권 고지(`source.copyright`) 제거 금지
+
+자체 창작 비중 목표 수치(30% 이상 등)는 측정 절차 부재로 삭제한다. 자체 창작 스니펫을 늘리는 것은 운영 방향이며 KPI로 관리하지 않는다.
+
+---
+
+### 18.4 CI 라이선스 게이트
+
+```yaml
+# .github/workflows/pack-compliance.yml
+jobs:
+  license-check:
+    steps:
+      - run: node scripts/block-excluded-licenses.mjs   # GPL/AGPL/SSPL/unlicensed/MISSING 차단
+      - run: node scripts/check-allowlist.mjs           # 화이트리스트 미등재 repo → 경고
+      - run: pnpm build:packs --notice-only             # NOTICE.md 초안 생성
+      # SHA 원격 검증 제거 — 추출 스크립트가 SHA+내용을 동시 기록하는 신뢰 모델로 대체
+      # license-checker(npm 의존성 스캔) 제거 — 과설계, 스니펫 컴플라이언스와 무관
+```
+
+```javascript
+// scripts/block-excluded-licenses.mjs
+const BLOCKED = ['GPL-2.0','GPL-2.0-only','GPL-3.0','GPL-3.0-only',
+                 'AGPL-3.0','AGPL-3.0-only','SSPL-1.0'];
+
+for (const snip of pack.snippets ?? []) {
+  const lic = snip.source?.license;
+  if (!snip.source)              violations.push({ ...snip, license: 'MISSING' });
+  else if (!lic)                 violations.push({ ...snip, license: 'MISSING' });
+  else if (BLOCKED.includes(lic)) violations.push({ ...snip, license: lic });
+}
+```
+
+---
+
+### 18.5 사용자 업로드 코드 (§6 PC 전용)
+
+> 이 섹션은 **데스크톱(PC) 전용 기능**에만 적용된다. iOS Safari에서는 프로젝트 분석 기능 자체가 없으므로 해당 없음.
+
+| 원칙 | 구현 |
+|------|------|
+| 원문 미저장 | 추출 패턴(`type·name·lineStart·lineEnd`)만 IndexedDB 저장. `rawCode` 필드 금지 |
+| 미배포 | 서버 전송 없음 |
+| 시크릿 마스킹 | 엔트로피 ≥ 3.5 또는 `password·secret·token·api_key` 키워드 → `[REDACTED]`. `.env·*.key·*.pem` 파일 분석 제외 |
+| 동의 고지 | 분석 시작 전 "이 분석은 로컬에서만 실행되며 코드 원문은 전송·저장되지 않습니다" 확인 |
+
+---
+
+### 18.6 사전 검토 체크리스트
+
+```
+[ ] 1. 저장소 루트 LICENSE 파일 확인, SPDX 식별자 매핑
+[ ] 2. oss-allowlist.json 등재 확인 (없으면 PR 선행)
+[ ] 3. source.copyright 필드에 저작권 고지 원문 복사
+[ ] 4. 분량 확인: 파일 30% 이하, 스니펫 50줄 이하
+[ ] 5. 변형 시 source.modified: true 표기
+[ ] 6. 자체 창작 스니펫: source.license = "original" 명시 (source 생략 금지)
+[ ] 7. CI 라이선스 게이트 green 확인
+[ ] 8. NOTICE.md 빌드 후 갱신 확인
+```
+
+**미결 항목**
+- CodeMaster 상업·비상업 여부 PRD §1에 확정 필요 (한국 저작권법 제28조 적용 범위 영향)
+- LGPL 추출 스니펫의 "정적 번들링 없음" 검증 절차 구체화
+
+---
+
+## 19. 게이미피케이션 · 데이터 내구성 · 테스트 계획
+
+### 19.1 게이미피케이션
+
+**채택 원칙:** 연습량을 정직하게 보여주는 최소 동기부여. 허구적 XP·스트릭 없음.
+
+| 지표 | 채택 | 비고 |
+|------|------|------|
+| 일별 활동 히트맵 | 채택 | "연속 N일" 표시 없음, 어떤 날에 했는가만 표시 |
+| 완료 스니펫 수 | 채택 | `completedAt` 타임스탬프 집계 |
+| 패턴별 숙련도 % | 채택 | §15와 연동 |
+| XP 수치 | **제외** | 조작 가능, 의미 없음 |
+| 스트릭 | **제외** | ITP/기기분실 리셋 → 사용자 실망 원인 |
+| 뱃지 시스템 | **MVP 제외** | 개발자 반감 위험, 별도 UI 컴포넌트 수반 — 첫 버전 사용자 반응 확인 후 도입 결정 |
+
+**일별 활동 저장 구조**
+
+```typescript
+interface DailyActivity {
+  date: string;          // 'YYYY-MM-DD', new Date().toLocaleDateString('en-CA')
+  typingMinutes: number; // 5초 idle 분할 + Page Visibility API 연동
+  snippetCount: number;
+  langs: string[];
+}
+```
+
+```typescript
+// Page Visibility 연동 — "창만 열어두기" 누적 방지
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) flushCurrentSegment(); // 현재 idle 타이머 즉시 flush
+});
+```
+
+자정 경계 처리: idle 분할 시 날짜 변경 감지 → 이전 날짜 레코드 저장 후 새 날짜로 전환.
+
+---
+
+### 19.2 데이터 내구성
+
+**유실 시나리오 및 대응**
+
+| 시나리오 | 대응 |
+|---------|------|
+| iOS 비-PWA 7일 ITP | `storage.persist()` + 홈 화면 추가 유도 (§16.3 온보딩 3·4단계) |
+| 기기분실·교체 | JSON export → import |
+| 브라우저 캐시 수동 삭제 | 백업 리마인드 + export 권장 |
+
+**ITP 만료 감지** — localStorage가 아닌 Service Worker Cache Storage sentinel 활용:
+
+```typescript
+// src/storage/integrity.ts
+export async function checkDataIntegrity(): Promise<void> {
+  const db = await openDB();
+  const sessionCount = await db.count('sessions');
+  // sentinel: IndexedDB settings store의 'firstRunAt' 필드
+  const firstRunAt = await db.get('settings', 'firstRunAt');
+
+  if (firstRunAt && sessionCount === 0) {
+    // IndexedDB 소멸 감지 (ITP 만료 또는 수동 삭제)
+    showDataLossWarning({
+      message: '학습 기록이 초기화되었습니다. 백업 파일이 있다면 설정 > 데이터 가져오기로 복원하세요.',
+      action: '백업 파일 복원하기',
+    });
+  }
+  if (!firstRunAt) {
+    await db.put('settings', new Date().toISOString(), 'firstRunAt');
+  }
+}
+```
+
+> `lastSessionCount`를 localStorage에 저장하는 방식 불채택 — localStorage도 동일 7일 만료 정책 하에 있어 감지 루프가 자기모순이 됨.
+
+**JSON Export / Import**
+
+```typescript
+// export — iOS Safari 대응
+export async function exportBackup(): Promise<void> {
+  const payload = buildPayload();
+  const file = new File(
+    [JSON.stringify(payload)],
+    `codemaster-backup-${new Date().toLocaleDateString('en-CA')}.json`,
+    { type: 'application/json' }
+  );
+  // iOS Safari: navigator.share 우선 시도
+  if (navigator.canShare?.({ files: [file] })) {
+    await navigator.share({ files: [file] });
+  } else {
+    // 데스크톱 fallback: anchor download
+    const url = URL.createObjectURL(file);
+    const a = document.createElement('a');
+    a.href = url; a.download = file.name; a.click();
+    URL.revokeObjectURL(url);
+  }
+}
+```
+
+Import는 단일 IndexedDB 트랜잭션으로 원자성 보장 (500번째 실패 시 0–499 자동 롤백):
+
+```typescript
+// 버전 호환: major 버전만 비교
+if (semver.major(payload.exportVersion) !== semver.major('1.0')) {
+  return { ok: false, error: '지원하지 않는 백업 버전' };
+}
+// 단일 트랜잭션
+const tx = db.transaction(['sessions','patterns','dailyActivity'], 'readwrite');
+for (const session of payload.sessions) {
+  if (!(await tx.objectStore('sessions').get(session.id))) {
+    await tx.objectStore('sessions').put(session); // 중복 skip
+  }
+}
+await tx.done; // 실패 시 전체 롤백
+```
+
+Export에 OPFS 데이터(프로젝트 분석 패턴)를 선택적으로 포함하는 옵션 제공. 소스 원문이 아닌 추출 패턴만이므로 §18.5 원문 미저장 원칙과 충돌하지 않는다.
+
+**백업 리마인드**
+
+| 트리거 | 조건 | 위치 |
+|--------|------|------|
+| 앱 시작 | 마지막 export 14일 초과 AND 세션 10개 이상 | 상단 배너 |
+| iOS 감지 | `storage.persisted() === false` | 온보딩 단계 |
+| 용량 | `storage.estimate() > 80%` (경고 하드 임계값) | 설정 화면 인라인 |
+
+임계값 상수: `STORAGE_WARN_THRESHOLD = 0.6` (소프트), `STORAGE_CRITICAL_THRESHOLD = 0.8` (하드 — export 권장).  
+`lastExportAt`은 IndexedDB `settings` store에 저장. ITP 만료로 삭제되면 리마인드가 즉시 표시되는 것은 의도된 동작(데이터 사라짐 → 백업 촉구).  
+`lastReminderShownAt` 빈도 제한: 동일 트리거 3일 이내 재표시 금지.
+
+---
+
+### 19.3 테스트 계획
+
+**커버리지 목표** — Vitest 파일 패턴별 임계값 (`vitest.config.ts coverage.thresholds`):
+
+```typescript
+thresholds: {
+  'src/engine/**':          { branches: 90, functions: 90 },
+  'src/engine/metrics.ts':  { branches: 100, functions: 100 },
+  'src/store/achievements.ts': { branches: 100 },
+  'src/backup/**':          { branches: 85 },
+  'src/store/db.ts':        { branches: 85 },
+}
+```
+
+전역 단일 임계값만 사용 시 핵심 모듈 60%도 통과되는 구조를 방지한다.
+
+**Vitest 핵심 케이스**
+
+| 영역 | 핵심 케이스 |
+|------|------------|
+| 타이핑 판정 | 정타·오타·대소문자·Enter 들여쓰기·Tab 4칸·IME 억제·끝 초과 입력·300줄 처리 < 16ms |
+| WPM·정확도 | 기본 WPM(60자/60초=12WPM), duration=0→0 반환, 정확도 100%·95%, **중단 세션 mastery 업데이트 skip** |
+| EWMA·박스 | 수렴 검증, 진급·강등, `mastery=50` 부스트(첫 세션 S≥80), 분모 `TARGET.length` 고정 |
+| 취약 패턴 | 오타→패턴 매핑(DELIMITERS 기반), errorRate 내림차순, minSessionsSeen 임계값, 빈 입력 |
+| IndexedDB | 저장·조회, 스키마 마이그레이션 v1→v2, 소스코드 원문 필드 포함 시 에러, 용량 80% 경고 |
+| Backup | export 구조 검증, import 병합·중복 skip, 트랜잭션 원자성, 손상 JSON, 버전 불일치, AJV 스키마 위반 |
+| 히트맵 | 5초 idle 분할, `document.hidden` 가드, **자정 경계(vi.setSystemTime 활용)** |
+| computeBadges | 세션 슬라이싱 실제 요소 수 분모(`last10.length`), 세션 0개 엣지 케이스 |
+
+IME 테스트(E2E-10): Playwright 자동화 제외. (1) Vitest에서 `compositionstart/end` 이벤트를 엔진에 직접 전달하여 `update()` 억제 단위 검증. (2) BrowserStack iOS 실기기 수동 체크리스트.
+
+**Playwright E2E 시나리오**
+
+| ID | 설명 |
+|----|------|
+| E2E-01 | 기본 타이핑 완주 → 결과 화면 |
+| E2E-02 | 오타 발생 → 물결 표시 → 수정 |
+| E2E-03 | 오프라인 타이핑 (`setOffline(true)`) |
+| E2E-04 | 데이터 영속성 (새로고침 후 이전 세션 기록) |
+| E2E-05 | 취약 패턴 3회 오타 → 목록 노출 |
+| E2E-06 | JSON export → **AJV 스키마 전체 검증** (키 존재만 확인 불충분) |
+| E2E-07 | export → import → 세션 수 일치 + 트랜잭션 원자성 |
+| E2E-08 | 팩 온디맨드 다운로드 → Cache Storage 저장 → 오프라인 타이핑 |
+| E2E-09 | SW 업데이트 배너 (세션 완료 후만 표시) |
+
+**BrowserStack 실기기 대상:** iOS 16.7 Safari — E2E-01~E2E-07 (`ios-specific` 태그 포함). E2E-06·07의 `navigator.share` 동작 확인 필수 게이트에 포함. 비용 절감 시 E2E-06·07은 weekly schedule 분리.
+
+**보안 회귀**
+
+| 항목 | 방식 |
+|------|------|
+| CSP `script-src 'self'` | Playwright 응답 헤더 파싱 |
+| `X-Content-Type-Options` / `X-Frame-Options` | 응답 헤더 단언 |
+| innerHTML 미사용 | ESLint `no-restricted-syntax` 빌드타임 차단 (Vitest 런타임 감지 제거) |
+| 소스코드 원문 미저장 | Vitest: `putSession()` 호출 시 IndexedDB에 `sourceCode` 키 없음 확인 |
+| XSS `<script>alert(1)</script>` 스니펫 주입 | Playwright: DOM 실행 안 됨 (`textContent` 렌더링) |
+
+**CI 구성 요약**
+
+```yaml
+jobs:
+  unit:
+    - run: pnpm vitest run --coverage
+    # 파일별 임계값 미달 시 PR 머지 차단
+
+  e2e:
+    - run: pnpm playwright install webkit
+    - run: pnpm playwright test --grep-invert "@ios-specific"
+
+  e2e-ios:
+    # BrowserStack, main 머지 후 1회 + weekly schedule
+    - run: pnpm playwright test --grep "@ios-specific"
+
+  security:
+    - run: eslint --rule 'no-restricted-syntax: error' src/
+    - run: pnpm playwright test src/**/*.security.spec.ts
+```
+
+**미결 항목**
+- 뱃지 시스템(first-snippet 등) — MVP 이후 사용자 반응 확인 후 도입 결정
+- BrowserStack 비용 예산 확정에 따라 E2E-06·07 실기기 게이트 포함 여부 결정
+- `exportVersion` semver 라이브러리 채택 여부 (semver 패키지 vs 단순 major 비교 직접 구현)
+
 ---
 
 ## 부록 A. 현재 구현 현황 (프로토타입)
