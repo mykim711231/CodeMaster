@@ -75,6 +75,41 @@ git push
 
 > 현 `index.html` 프로토타입을 위 풀스택으로 이식한다. 권장 빌드 순서·NFR·리스크는 [`prd.md` §13](prd.md) 참조.
 
+## 버전 (LTS · 안정화)
+
+**런타임 · 툴체인**
+
+| 항목 | 버전 |
+|------|------|
+| Node.js | **24 LTS** (`.nvmrc` · engines `>=22.12`) |
+| Vite | 8.x |
+| TypeScript | 6.x |
+| ESLint / Prettier | 10.x / 3.x |
+| lucide / @fontsource | 1.x / 5.x |
+
+**학습팩 콘텐츠** (LTS 기준 — [`prd.md` §8.1](prd.md))
+
+| 대상 | 버전 |
+|------|------|
+| Java | **21 (LTS)** |
+| Spring Boot | **3.4.x** |
+| Python | **3.12** |
+| Gradle | 8.x |
+
+> 향후 LTS 상향 시 **자동 추적 → 검증 → 일괄 갱신** 유지보수 절차: [`prd.md` §13.7](prd.md).
+> 버전 단일 출처(SSOT): `.nvmrc` · `package.json` · CI `node-version` · 본 표.
+
+## 구현 진행 (Phase 3 빌드 — §13.2)
+
+- [x] 의존성 설치 + 버전 확정 (Node 24 · Vite 8 · TS 6 · ESLint/Prettier)
+- [x] GitHub `workflow` 스코프 재인증 (Actions 배포용)
+- [x] 콘텐츠 버전 정책 (Java 21 · Spring Boot 3.4 · Python 3.12)
+- [x] 설정 파일 (vite.config · tsconfig · eslint · prettier)
+- [ ] index.html → Vite 구조 전면 재편 (CSS/JS 분리 · 외부 CDN 제거)
+- [ ] 폰트 self-host(@fontsource) + lucide npm 연결
+- [ ] GitHub Actions 배포 워크플로우
+- [ ] 빌드 검증 → 배포
+
 ## 라이선스
 
 [Apache License 2.0](LICENSE) — Copyright 2026 mykim711231.
