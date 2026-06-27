@@ -74,7 +74,8 @@ export function initTrainer(): void {
       pcnt.className = 'pack-cnt';
       pcnt.textContent = String(pack.levels.length);
       prow.append(pchev, pname, pcnt);
-      prow.addEventListener('click', () => {
+      prow.addEventListener('click', (e) => {
+        e.stopPropagation();
         toggle(expandedPacks, packKey);
         renderTree();
       });
@@ -111,7 +112,8 @@ export function initTrainer(): void {
         lcnt.className = 'pack-cnt';
         lcnt.textContent = has ? String(lvl.snippets.length) : '준비중';
         lrow.append(lchev, lno, lname, lcnt);
-        lrow.addEventListener('click', () => {
+        lrow.addEventListener('click', (e) => {
+          e.stopPropagation();
           toggle(expandedLevels, key);
           renderTree();
         });
