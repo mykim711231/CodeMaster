@@ -3,6 +3,7 @@ import { PACKS, type Level, type Snippet, type Pack } from './content';
 import { saveSession } from './storage/db';
 import { appStore } from './store';
 import { getScannedFiles, clearScannedFiles, buildPackFromFiles } from './analysis/index';
+import type { ScannedFile } from './analysis/scanner';
 
 interface Pos {
   packKey: string;
@@ -330,102 +331,113 @@ export function initTrainer(): void {
     }
   }
 
-  // --- 체크박스 파일 트리 (스캔 후 선택) ---
   function showFileTree(): void {
     const scanned = getScannedFiles();
     if (!scanned) return;
 
-    const acc = document.getElementById('projectAccordion');
-    const body = document.getElementById('projectAccBody');
-    const titleEl = document.getElementById('projectAccTitle');
-    if (!acc || !body) return;
+    const modal = document.getElementById('projectModal');
+    const treePane = document.getElementById('projectTreePane');
+    const fileHead = document.getElementById('projectFilePaneHead');
+    const fileList = document.getElementById('projectFilePaneList');
+    const titleEl = document.getElementById('projectModalTitle');
+    const countEl = document.getElementById('projectModalCount');
+    const closeBtn = document.getElementById('projectModalClose');
+    const allBtn = document.getElementById('projectModalAll');
+    const noneBtn = document.getElementById('projectModalNone');
+    const startBtn = document.getElementById('projectModalStart');
 
-    acc.style.display = '';
-    acc.classList.add('open');
-    body.innerHTML = '';
-    body.style.maxHeight = '40vh';
-    body.style.overflowY = 'auto';
-    if (titleEl) titleEl.textContent = scanned.name;
+    if (!modal || !treePane || !fileList) return;
+    if (titleEl) titleEl.textContent = scanned!.name;
 
-    // 제목 + 카운트
-    const header = document.createElement('div');
-    header.className = 'sidebar-item';
-    header.style.display = 'flex';
-    header.style.justifyContent = 'space-between';
-    header.style.alignItems = 'center';
-    header.innerHTML = `<span>${scanned.name}</span><span style="font-size:0.7rem;color:var(--muted)">${scanned.files.length}파일</span>`;
-    body.append(header);
-
-    // 전체 선택 / 전체 취소
-    const btnRow = document.createElement('div');
-    btnRow.style.display = 'flex';
-    btnRow.style.gap = '4px';
-    btnRow.style.padding = '4px 0';
-
-    const allBtn = document.createElement('button');
-    allBtn.className = 'sidebar-item';
-    allBtn.style.flex = '1';
-    allBtn.style.padding = '2px 4px';
-    allBtn.style.fontSize = '0.7rem';
-    allBtn.textContent = '전체 선택';
-    allBtn.addEventListener('click', () => {
-      scanned.files.forEach((f: { selected: boolean }) => (f.selected = true));
-      showFileTree();
-    });
-
-    const noneBtn = document.createElement('button');
-    noneBtn.className = 'sidebar-item';
-    noneBtn.style.flex = '1';
-    noneBtn.style.padding = '2px 4px';
-    noneBtn.style.fontSize = '0.7rem';
-    noneBtn.textContent = '전체 취소';
-    noneBtn.addEventListener('click', () => {
-      scanned.files.forEach((f: { selected: boolean }) => (f.selected = false));
-      showFileTree();
-    });
-
-    btnRow.append(allBtn, noneBtn);
-    body.append(btnRow);
-
-    // 파일별 체크박스
-    for (const f of scanned.files) {
-      const row = document.createElement('label');
-      row.className = 'sidebar-item';
-      row.style.display = 'flex';
-      row.style.alignItems = 'center';
-      row.style.gap = '6px';
-      row.style.cursor = 'pointer';
-      row.style.fontSize = '0.72rem';
-
-      const cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.checked = f.selected;
-      cb.style.margin = '0';
-      cb.addEventListener('change', () => { f.selected = cb.checked; });
-
-      row.append(cb, document.createTextNode(f.path));
-      body.append(row);
+    // 폴더 트리 + 파일 그룹화
+    interface FGroup { name: string; files: ScannedFile[]; children: Map<string, FGroup>; }
+    const root: FGroup = { name: '', files: [], children: new Map() };
+    for (const f of scanned!.files) {
+      let g = root;
+      const parts = f.path.split('/');
+      for (let i = 0; i < parts.length - 1; i++) {
+        if (!g.children.has(parts[i])) g.children.set(parts[i], { name: parts[i], files: [], children: new Map() });
+        g = g.children.get(parts[i])!;
+      }
+      g.files.push(f);
     }
 
-    // 연습 시작 버튼
-    const startBtn = document.createElement('button');
-    startBtn.className = 'sidebar-item';
-    startBtn.style.marginTop = '4px';
-    startBtn.style.textAlign = 'center';
-    startBtn.style.fontWeight = '600';
-    startBtn.style.color = 'var(--accent, #3b82f6)';
-    startBtn.textContent = '연습 시작';
-    startBtn.addEventListener('click', () => {
-      const selected = scanned.files.filter((f: { selected: boolean }) => f.selected);
-      if (selected.length === 0) {
-        alert('연습할 파일을 하나 이상 선택해주세요.');
-        return;
+    // 모든 그룹을 평탄화 (루트도 포함, 전체 파일은 root.files)
+    const flatGroups: FGroup[] = [root];
+    function collect(g: FGroup) {
+      for (const [, c] of g.children) { flatGroups.push(c); collect(c); }
+    }
+    collect(root);
+
+    let currentGroup = root;
+
+    function updateCount() {
+      const sel = scanned!.files.filter((f) => f.selected).length;
+      if (countEl) countEl.textContent = `${sel}/${scanned!.files.length}개 선택됨`;
+    }
+
+    function renderTreePane() {
+      treePane!.innerHTML = '';
+      for (const g of flatGroups) {
+        const btn = document.createElement('button');
+        const depth = g.name ? g.name.split('/').length - 1 : 0;
+        const label = g.name ? g.name.split('/').pop()! : '(전체)';
+        btn.textContent = '  '.repeat(depth) + (g.name ? '📁 ' : '') + label;
+        btn.className = g === currentGroup ? 'active' : '';
+        btn.addEventListener('click', () => { currentGroup = g; renderFileList(); renderTreePane(); });
+        treePane!.append(btn);
       }
-      const pack = buildPackFromFiles(scanned.name, scanned.lang as 'java' | 'python', scanned.files);
+    }
+
+    function renderFileList() {
+      fileList!.innerHTML = '';
+      if (fileHead) fileHead.textContent = currentGroup.name ? currentGroup.name : `${scanned!.name} (전체)`;
+
+      const allFiles = currentGroup.files;
+      if (allFiles.length === 0) {
+        fileList!.innerHTML = '<div style="padding:16px;color:var(--muted);font-size:.75rem">파일 없음</div>';
+      }
+
+      for (const f of allFiles) {
+        const row = document.createElement('label');
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = f.selected;
+        cb.addEventListener('change', () => { f.selected = cb.checked; updateCount(); });
+
+        const icon = f.name.endsWith('.java') ? '☕' : f.name.endsWith('.py') ? '🐍' :
+                     f.name.endsWith('.xml') ? '📄' : f.name.endsWith('.yml') ? '⚙' :
+                     f.name.endsWith('.sql') ? '🗄' : '📋';
+        row.append(cb, document.createTextNode(`${icon} ${f.name}`));
+        fileList!.append(row);
+      }
+      updateCount();
+    }
+
+    modal.style.display = 'flex';
+    renderTreePane();
+    renderFileList();
+
+    const close = () => { modal.style.display = 'none'; };
+    closeBtn?.addEventListener('click', close);
+    modal.querySelector('.project-modal-bg')?.addEventListener('click', close);
+
+    allBtn?.addEventListener('click', () => {
+      currentGroup.files.forEach((f: ScannedFile) => (f.selected = true));
+      renderFileList(); renderTreePane();
+    });
+    noneBtn?.addEventListener('click', () => {
+      currentGroup.files.forEach((f: ScannedFile) => (f.selected = false));
+      renderFileList(); renderTreePane();
+    });
+    startBtn?.addEventListener('click', () => {
+      const sel = scanned!.files.filter((f) => f.selected);
+      if (sel.length === 0) { alert('하나 이상 선택해주세요.'); return; }
+      const pack = buildPackFromFiles(scanned!.name, scanned!.lang as 'java' | 'python', scanned!.files);
       clearScannedFiles();
+      modal.style.display = 'none';
       loadProjectPack(pack);
     });
-    body.append(startBtn);
   }
 
   function loadProjectPack(pack: Pack): void {
