@@ -239,10 +239,10 @@ export function initTrainer(): void {
     if (curEl) curEl.textContent = `${pack.name} · ${snip.title}`;
     renderExplain(snip);
     appStore.getState().setLang(pack.lang);
-    // 현재 위치만 펼쳐 보이게
     openPack = p.packKey;
     openLevel = lvlKey(p.packKey, p.levelNo);
     renderTree();
+    if (p.packKey === PROJECT_PACK_KEY) renderProjectSidebar();
   }
 
   function select(packKey: string, levelNo: number, snipIndex: number): void {
@@ -329,22 +329,45 @@ export function initTrainer(): void {
     }
 
     function renderTree(node: TNode, depth: number, container: HTMLElement): void {
+      // 현재 활성 파일 인덱스
+      const activeSnipIdx = FLAT.length > 0 && FLAT[cur]?.packKey === PROJECT_PACK_KEY
+        ? FLAT[cur].snipIndex : -1;
+
       // 파일 목록
       for (const { snip, index } of node.snippets) {
         const name = snip.title.split('/').pop()!;
+        const active = index === activeSnipIdx;
         const icon = name.endsWith('.java') ? '☕' : name.endsWith('.py') ? '🐍' :
                      name.endsWith('.xml') ? '📄' : name.endsWith('.yml') ? '⚙' :
                      name.endsWith('.sql') ? '🗄' : '📋';
         const row = document.createElement('button');
-        row.className = 'sidebar-item snip-sidebar-item';
+        row.className = 'sidebar-item snip-sidebar-item' + (active ? ' active' : '');
         row.style.paddingLeft = `${depth * 10 + 8}px`;
         row.style.fontSize = '0.72rem';
         row.textContent = `${icon} ${name}`;
+        if (active) {
+          row.style.background = 'var(--bg3)';
+          row.style.borderLeft = '2px solid var(--accent, #3b82f6)';
+        }
         row.addEventListener('click', () => {
           const target = FLAT.findIndex((q) => q.packKey === PROJECT_PACK_KEY && q.snipIndex === index);
           if (target >= 0) { cur = target; setMenuOpen(false); show(); }
         });
         container.append(row);
+        if (active) {
+          // 부모 폴더 자동 펼치기 + 스크롤
+          let parent = container.parentElement;
+          while (parent) {
+            const sub = parent.querySelector(':scope > div') as HTMLElement | null;
+            if (sub && sub.style.display === 'none') {
+              sub.style.display = 'block';
+              const tgl = parent.querySelector(':scope > button.tree-folder');
+              if (tgl) tgl.textContent = tgl.textContent!.replace('▸', '▾');
+            }
+            parent = parent.parentElement;
+          }
+          setTimeout(() => row.scrollIntoView({ block: 'nearest' }), 50);
+        }
       }
       // 폴더
       for (const [, child] of node.children) {
