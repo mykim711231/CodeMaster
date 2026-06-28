@@ -1,59 +1,21 @@
 import type { Level, Pack, Snippet } from '../types';
+import { pythonCore } from './_staging/P1-pc';
+import { pythonAsync } from './_staging/P2-pasync';
+import { pythonData } from './_staging/P3-pdata';
+import { pythonML } from './_staging/P4-pml';
+import { pythonDL } from './_staging/P5-pdl';
+import { pythonLLM } from './_staging/P6-pllm';
+import { pythonRAG } from './_staging/P7-prag';
+import { pythonAgent } from './_staging/P8-pagent';
+import { pythonFramework } from './_staging/P9-pframe';
+import { pythonProduction } from './_staging/P10-pprod';
+import { pythonVector } from './_staging/P11-pvec';
+import { pythonServing } from './_staging/P12-pserve';
+import { pythonPrompt } from './_staging/P13-pprompt';
+import { pythonFineTuning } from './_staging/P14-pft';
+import { pythonQuality } from './_staging/P15-pqual';
 
 // Python 3.12 (안정) 기준 — PRD §8 / §8.1
-const dataclass: Snippet = {
-  id: 'dataclass',
-  lang: 'python',
-  title: 'Dataclass',
-  file: 'user.py',
-  code: `from dataclasses import dataclass
-
-
-@dataclass
-class User:
-    id: int
-    username: str
-    active: bool = True`,
-};
-
-const typeHints: Snippet = {
-  id: 'type-hints',
-  lang: 'python',
-  title: 'Type Hints',
-  file: 'scores.py',
-  code: `def average(scores: list[float]) -> float:
-    if not scores:
-        return 0.0
-    return sum(scores) / len(scores)`,
-};
-
-const asyncSnippet: Snippet = {
-  id: 'async',
-  lang: 'python',
-  title: 'Async TaskGroup',
-  file: 'client.py',
-  code: `import asyncio
-
-
-async def fetch_all(urls: list[str]) -> list[str]:
-    async with asyncio.TaskGroup() as tg:
-        tasks = [tg.create_task(fetch(u)) for u in urls]
-    return [t.result() for t in tasks]`,
-};
-
-const pydantic: Snippet = {
-  id: 'pydantic',
-  lang: 'python',
-  title: 'Pydantic Model',
-  file: 'schema.py',
-  code: `from pydantic import BaseModel, Field
-
-
-class UserCreate(BaseModel):
-    username: str = Field(min_length=3, max_length=32)
-    email: str
-    age: int | None = None`,
-};
 
 const L = (no: number, name: string, snippets: Snippet[] = []): Level => ({ no, name, snippets });
 
@@ -62,20 +24,20 @@ export const pythonAiPack: Pack = {
   name: 'Python AI',
   lang: 'python',
   levels: [
-    L(1, 'Python Core', [dataclass, typeHints]),
-    L(2, 'Async', [asyncSnippet]),
-    L(3, 'Data'),
-    L(4, 'Machine Learning'),
-    L(5, 'Deep Learning'),
-    L(6, 'LLM'),
-    L(7, 'RAG'),
-    L(8, 'AI Agent'),
-    L(9, 'Framework'),
-    L(10, 'Production AI', [pydantic]),
-    L(11, 'Vector Store'),
-    L(12, 'LLM 서빙·최적화'),
-    L(13, '프롬프트·구조화 출력'),
-    L(14, 'Fine-tuning & MLOps'),
-    L(15, 'AI 품질·관측·보안'),
+    L(1, 'Python Core', pythonCore),
+    L(2, 'Async', pythonAsync),
+    L(3, 'Data', pythonData),
+    L(4, 'Machine Learning', pythonML),
+    L(5, 'Deep Learning', pythonDL),
+    L(6, 'LLM', pythonLLM),
+    L(7, 'RAG', pythonRAG),
+    L(8, 'AI Agent', pythonAgent),
+    L(9, 'Framework', pythonFramework),
+    L(10, 'Production AI', pythonProduction),
+    L(11, 'Vector Store', pythonVector),
+    L(12, 'LLM 서빙·최적화', pythonServing),
+    L(13, '프롬프트·구조화 출력', pythonPrompt),
+    L(14, 'Fine-tuning & MLOps', pythonFineTuning),
+    L(15, 'AI 품질·관측·보안', pythonQuality),
   ],
 };
