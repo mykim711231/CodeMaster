@@ -59,7 +59,6 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
   let startTime: number | null = null;
   let completed = false;
 
-  const focusBtn = document.getElementById('focusBtn');
   const continueBtn = document.getElementById('continueBtn');
 
   function setActive(li: number): void {
@@ -382,20 +381,12 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
   }
 
   // 액션 버튼은 1회만 연결 (현재 상태를 클로저로 참조)
-  for (const id of ['focusBtn', 'continueBtn']) {
+  for (const id of ['continueBtn']) {
     document.getElementById(id)?.addEventListener('click', () => {
       if (inputs.length) focusLine(0, inputs[0].value.length);
     });
   }
   document.getElementById('restartBtn')?.addEventListener('click', reset);
-
-  // 포커스/블러로 focusBtn 제어
-  wrap!.addEventListener('focusin', () => {
-    if (focusBtn) focusBtn.style.display = 'none';
-  });
-  wrap!.addEventListener('focusout', () => {
-    if (focusBtn) focusBtn.style.display = '';
-  });
 
   return { load };
 }
