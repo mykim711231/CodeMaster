@@ -308,24 +308,74 @@ export function initTrainer(): void {
     if (delBtn) delBtn.addEventListener('click', (e) => { e.stopPropagation(); clearProjectPack(); });
     body.append(nameRow);
 
-    // 파일 목록
+    // --- 폴더 트리 빌드 ---
+    interface TNode {
+      name: string;
+      children: Map<string, TNode>;
+      snippets: { snip: Snippet; index: number }[];
+    }
+    const root: TNode = { name: '', children: new Map(), snippets: [] };
+
     for (let i = 0; i < lvl.snippets.length; i++) {
       const snip = lvl.snippets[i];
-      const row = document.createElement('button');
-      row.className = 'sidebar-item snip-sidebar-item';
-      row.style.display = 'flex';
-      row.style.alignItems = 'center';
-      row.style.gap = '4px';
-      row.style.paddingLeft = '0.5rem';
-      row.innerHTML = `<span style="font-size:0.7rem;color:var(--muted)">${snip.title}</span>`;
-      row.addEventListener('click', () => {
-        const target = FLAT.findIndex(
-          (q) => q.packKey === PROJECT_PACK_KEY && q.snipIndex === i,
-        );
-        if (target >= 0) { cur = target; setMenuOpen(false); show(); }
-      });
-      body.append(row);
+      const parts = snip.title.split('/');
+      let node = root;
+      for (let j = 0; j < parts.length - 1; j++) {
+        const p = parts[j];
+        if (!node.children.has(p)) node.children.set(p, { name: p, children: new Map(), snippets: [] });
+        node = node.children.get(p)!;
+      }
+      node.snippets.push({ snip, index: i });
     }
+
+    function renderTree(node: TNode, depth: number, container: HTMLElement): void {
+      // 파일 목록
+      for (const { snip, index } of node.snippets) {
+        const name = snip.title.split('/').pop()!;
+        const icon = name.endsWith('.java') ? '☕' : name.endsWith('.py') ? '🐍' :
+                     name.endsWith('.xml') ? '📄' : name.endsWith('.yml') ? '⚙' :
+                     name.endsWith('.sql') ? '🗄' : '📋';
+        const row = document.createElement('button');
+        row.className = 'sidebar-item snip-sidebar-item';
+        row.style.paddingLeft = `${depth * 10 + 8}px`;
+        row.style.fontSize = '0.72rem';
+        row.textContent = `${icon} ${name}`;
+        row.addEventListener('click', () => {
+          const target = FLAT.findIndex((q) => q.packKey === PROJECT_PACK_KEY && q.snipIndex === index);
+          if (target >= 0) { cur = target; setMenuOpen(false); show(); }
+        });
+        container.append(row);
+      }
+      // 폴더
+      for (const [, child] of node.children) {
+        const wrap = document.createElement('div');
+        const toggle = document.createElement('button');
+        toggle.className = 'sidebar-item tree-folder';
+        toggle.style.paddingLeft = `${depth * 10 + 4}px`;
+        toggle.style.fontSize = '0.73rem';
+        toggle.style.fontWeight = '600';
+        toggle.style.display = 'block';
+        toggle.style.width = '100%';
+        toggle.style.textAlign = 'left';
+        toggle.style.background = 'none';
+        toggle.style.border = 'none';
+        toggle.style.cursor = 'pointer';
+        toggle.style.color = 'var(--fg)';
+        const sub = document.createElement('div');
+        sub.style.display = 'none';
+        renderTree(child, depth + 1, sub);
+        toggle.textContent = '▸ ' + child.name;
+        toggle.addEventListener('click', () => {
+          const open = sub.style.display !== 'none';
+          sub.style.display = open ? 'none' : 'block';
+          toggle.textContent = (open ? '▸ ' : '▾ ') + child.name;
+        });
+        wrap.append(toggle, sub);
+        container.append(wrap);
+      }
+    }
+
+    renderTree(root, 0, body);
   }
 
   function loadProjectPack(pack: Pack): void {
