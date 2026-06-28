@@ -66,3 +66,23 @@ export async function setSetting(key: string, value: unknown): Promise<void> {
   const db = await getDb();
   await db.put('settings', value, key);
 }
+
+export async function saveDirectoryHandle(
+  name: string,
+  handle: FileSystemDirectoryHandle,
+): Promise<void> {
+  const db = await getDb();
+  await db.put('settings', handle, `dirHandle:${name}`);
+}
+
+export async function getDirectoryHandle(
+  name: string,
+): Promise<FileSystemDirectoryHandle | null> {
+  const db = await getDb();
+  try {
+    const handle = await db.get('settings', `dirHandle:${name}`);
+    return (handle as FileSystemDirectoryHandle) ?? null;
+  } catch {
+    return null;
+  }
+}

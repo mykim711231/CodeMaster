@@ -1,5 +1,5 @@
 import { initTypingEngine } from './engine/typing';
-import { PACKS, type Level, type Snippet } from './content';
+import { PACKS, type Level, type Snippet, type Pack } from './content';
 import { saveSession } from './storage/db';
 import { appStore } from './store';
 
@@ -7,6 +7,20 @@ interface Pos {
   packKey: string;
   levelNo: number;
   snipIndex: number;
+}
+
+interface TrainerAPI {
+  loadProjectPack: (pack: Pack) => void;
+  loadBuiltinPack: (packId: string) => void;
+  clearProjectPack: () => void;
+}
+
+const PROJECT_PACK_KEY = '__project__';
+let _projectPack: Pack | null = null;
+let _trainerAPI: TrainerAPI | null = null;
+
+export function getTrainerAPI(): TrainerAPI | null {
+  return _trainerAPI;
 }
 
 // 학습팩 ↔ 엔진. 사이드바 팝업 서브메뉴: 학습팩 → 레벨 → 문제(3단).
@@ -29,11 +43,27 @@ export function initTrainer(): void {
 
   // 모든 문제를 순서대로 펼친 평면 목록 (이전/다음 네비)
   const FLAT: Pos[] = [];
-  for (const packKey of PACK_KEYS) {
-    for (const lvl of PACKS[packKey].levels) {
-      lvl.snippets.forEach((_, snipIndex) => FLAT.push({ packKey, levelNo: lvl.no, snipIndex }));
+
+  function rebuildFlat(): void {
+    FLAT.length = 0;
+    if (_projectPack) {
+      const lvl = _projectPack.levels[0];
+      if (lvl) {
+        lvl.snippets.forEach((_, i) =>
+          FLAT.push({ packKey: PROJECT_PACK_KEY, levelNo: lvl.no, snipIndex: i }),
+        );
+      }
+    }
+    for (const packKey of PACK_KEYS) {
+      for (const lvl of PACKS[packKey].levels) {
+        lvl.snippets.forEach((_, snipIndex) =>
+          FLAT.push({ packKey, levelNo: lvl.no, snipIndex }),
+        );
+      }
     }
   }
+  rebuildFlat();
+
   let cur = 0;
 
   // 단일 펼침 — 한 번에 팩 하나, 레벨 하나만 펼쳐짐
@@ -41,9 +71,16 @@ export function initTrainer(): void {
   let openLevel: string | null = null; // `${packKey}:${levelNo}`
   const lvlKey = (packKey: string, levelNo: number): string => `${packKey}:${levelNo}`;
 
-  const pos = (): Pos => FLAT[cur];
-  const levelOf = (p: Pos): Level =>
-    PACKS[p.packKey].levels.find((l) => l.no === p.levelNo) ?? PACKS[p.packKey].levels[0];
+  const pos = (): Pos => FLAT.length > 0 ? FLAT[cur] : FLAT[0];
+  const levelOf = (p: Pos): Level => {
+    if (p.packKey === PROJECT_PACK_KEY && _projectPack) {
+      return _projectPack.levels[0] ?? _projectPack.levels[0];
+    }
+    return (
+      PACKS[p.packKey]?.levels.find((l) => l.no === p.levelNo) ??
+      PACKS[p.packKey]?.levels[0]
+    );
+  };
   const snippetOf = (p: Pos): Snippet => levelOf(p).snippets[p.snipIndex];
 
   const engine = initTypingEngine({
@@ -63,6 +100,98 @@ export function initTrainer(): void {
     const p = pos();
     pop.innerHTML = '';
 
+    // --- 프로젝트 팩 (내 프로젝트) ---
+    if (_projectPack) {
+      const ppKey = PROJECT_PACK_KEY;
+      const ppOpen = openPack === ppKey;
+      const ppLevel = _projectPack.levels[0];
+
+      const prow = document.createElement('button');
+      prow.type = 'button';
+      prow.className =
+        'pack-row' +
+        (ppKey === p.packKey ? ' current' : '') +
+        (ppOpen ? ' open' : '');
+      const pchev = document.createElement('span');
+      pchev.className = 'pack-chev';
+      pchev.textContent = '▸';
+      const pname = document.createElement('span');
+      pname.className = 'pack-name';
+      pname.textContent = `내 프로젝트: ${_projectPack.name}`;
+      const pcnt = document.createElement('span');
+      pcnt.className = 'pack-cnt';
+      pcnt.textContent = String(_projectPack.levels.length);
+      prow.append(pchev, pname, pcnt);
+      prow.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openPack = openPack === ppKey ? null : ppKey;
+        openLevel = null;
+        renderTree();
+      });
+      pop.append(prow);
+
+      if (ppOpen && ppLevel) {
+        const levelsWrap = document.createElement('div');
+        levelsWrap.className = 'pack-levels';
+
+        const key = lvlKey(ppKey, ppLevel.no);
+        const lvlOpen = openLevel === key;
+        const isCurLevel = ppKey === p.packKey && ppLevel.no === p.levelNo;
+        const has = ppLevel.snippets.length > 0;
+
+        const lrow = document.createElement('button');
+        lrow.type = 'button';
+        lrow.className =
+          'level-row' +
+          (isCurLevel ? ' current' : '') +
+          (lvlOpen ? ' open' : '') +
+          (has ? '' : ' empty');
+        if (!has) lrow.disabled = true;
+        const lchev = document.createElement('span');
+        lchev.className = 'pack-chev';
+        lchev.textContent = has ? '▸' : '·';
+        const lno = document.createElement('span');
+        lno.className = 'level-no';
+        lno.textContent = `L${ppLevel.no}`;
+        const lname = document.createElement('span');
+        lname.className = 'level-name';
+        lname.textContent = ppLevel.name;
+        const lcnt = document.createElement('span');
+        lcnt.className = 'pack-cnt';
+        lcnt.textContent = has ? String(ppLevel.snippets.length) : '준비중';
+        lrow.append(lchev, lno, lname, lcnt);
+        lrow.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openLevel = openLevel === key ? null : key;
+          renderTree();
+        });
+        levelsWrap.append(lrow);
+
+        if (lvlOpen && has) {
+          const snips = document.createElement('div');
+          snips.className = 'level-snips';
+          ppLevel.snippets.forEach((snip, i) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className =
+              'snip-item' + (isCurLevel && i === p.snipIndex ? ' active' : '');
+            const t = document.createElement('span');
+            t.className = 'snip-title';
+            t.textContent = snip.title;
+            const f = document.createElement('span');
+            f.className = 'snip-file';
+            f.textContent = snip.file;
+            btn.append(t, f);
+            btn.addEventListener('click', () => select(ppKey, ppLevel.no, i));
+            snips.append(btn);
+          });
+          levelsWrap.append(snips);
+        }
+        pop.append(levelsWrap);
+      }
+    }
+
+    // --- 내장 학습팩 ---
     for (const packKey of PACK_KEYS) {
       const pack = PACKS[packKey];
       const packOpen = openPack === packKey;
@@ -189,8 +318,10 @@ export function initTrainer(): void {
   }
 
   function show(): void {
+    if (FLAT.length === 0) return;
     const p = pos();
-    const pack = PACKS[p.packKey];
+    const pack =
+      p.packKey === PROJECT_PACK_KEY && _projectPack ? _projectPack : PACKS[p.packKey];
     const lvl = levelOf(p);
     const snip = snippetOf(p);
     engine.load(snip.code, snip.lang);
@@ -233,6 +364,40 @@ export function initTrainer(): void {
   });
   document.getElementById('prevBtn')?.addEventListener('click', () => step(-1));
   document.getElementById('nextBtn')?.addEventListener('click', () => step(1));
+
+  function loadProjectPack(pack: Pack): void {
+    _projectPack = pack;
+    appStore.getState().setProjectPack(pack);
+    rebuildFlat();
+    cur = 0;
+    show();
+  }
+
+  function loadBuiltinPack(packId: string): void {
+    rebuildFlat();
+    const idx = FLAT.findIndex((q) => q.packKey === packId);
+    if (idx >= 0) cur = idx;
+    show();
+  }
+
+  function clearProjectPack(): void {
+    _projectPack = null;
+    appStore.getState().clearProjectPack();
+    rebuildFlat();
+    if (cur >= FLAT.length) cur = Math.max(0, FLAT.length - 1);
+    show();
+  }
+
+  // 스토어 구독 — 외부에서 projectPack 변경 시 트레이너에 반영
+  appStore.subscribe((state, prev) => {
+    if (state.projectPack === prev.projectPack) return;
+    _projectPack = state.projectPack;
+    rebuildFlat();
+    cur = state.projectPack ? 0 : Math.max(0, Math.min(cur, FLAT.length - 1));
+    if (FLAT.length > 0) show();
+  });
+
+  _trainerAPI = { loadProjectPack, loadBuiltinPack, clearProjectPack };
 
   show();
 }
