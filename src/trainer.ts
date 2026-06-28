@@ -430,13 +430,23 @@ export function initTrainer(): void {
 
   function initResumeCard(): void {
     const saved = loadResumePos();
-    if (!saved) return;
+    const nameEl = document.getElementById('resumeName');
+    const pctEl = document.getElementById('resumePct');
+    const btn = document.querySelector('.resume-btn') as HTMLElement | null;
+
+    if (!saved) {
+      if (nameEl) nameEl.textContent = '연습을 시작하면 이어서 할 수 있어요';
+      if (pctEl) pctEl.textContent = '0%';
+      if (btn) btn.style.opacity = '0.5';
+      return;
+    }
     const pack = saved.packKey === PROJECT_PACK_KEY && _projectPack
       ? _projectPack : PACKS[saved.packKey];
     if (!pack) return;
     const lvl = pack.levels.find((l) => l.no === saved.levelNo);
     if (!lvl || saved.snipIndex >= lvl.snippets.length) return;
     const snip = lvl.snippets[saved.snipIndex];
+    if (btn) btn.style.opacity = '1';
     updateResumeCard(pack, lvl, snip);
   }
 
