@@ -145,8 +145,36 @@
         </div>
       </div>
 
-      <!-- 설명 패널 (접이식, 타이핑 영역 위) -->
-      <div class="explain-panel" id="explainPanel">
+      <div class="typing-section">
+        <div class="typing-toolbar">
+          <div class="editor-dots">
+            <div class="dot dot-r"></div>
+            <div class="dot dot-y"></div>
+            <div class="dot dot-g"></div>
+          </div>
+          <div class="file-tab">
+            <div class="dot"></div><span id="fileTabName">UserEntity.java</span>
+          </div>
+          <div class="typing-meta" id="practiceMeta"></div>
+        </div>
+
+        <!-- 따라치기 영역(라인 단위) — 엔진이 줄별 입력 행을 생성 -->
+        <div class="tt-wrap" id="ttWrap"></div>
+
+        <div class="typing-footer">
+          <div class="wpm-display"><span class="wpm-val" id="wpmVal">0</span> WPM</div>
+          <div class="acc-display"><span class="acc-val" id="accVal">100%</span> 정확도</div>
+          <div class="prog-display">
+            <span class="prog-label">진행</span>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progFill" style="width:0%"></div></div>
+            <span class="prog-pct" id="progPct">0%</span>
+          </div>
+          <button class="skip-btn" id="restartBtn"><i data-lucide="rotate-ccw"></i>처음부터</button>
+        </div>
+      </div>
+
+      <!-- 설명 패널 (접이식) -->
+      <div class="explain-panel closed" id="explainPanel">
         <div class="explain-panel-head">
           <span><i data-lucide="book-open"></i> 문제 설명</span>
           <button class="explain-panel-toggle" id="explainPanelToggle" title="접기/펼치기">
@@ -176,38 +204,13 @@
         </div>
       </div>
 
-      <div class="typing-section">
-        <div class="typing-toolbar">
-          <div class="editor-dots">
-            <div class="dot dot-r"></div>
-            <div class="dot dot-y"></div>
-            <div class="dot dot-g"></div>
-          </div>
-          <div class="file-tab">
-            <div class="dot"></div><span id="fileTabName">UserEntity.java</span>
-          </div>
-          <div class="typing-meta" id="practiceMeta"></div>
-        </div>
-
-        <!-- 따라치기 영역(라인 단위) — 엔진이 줄별 입력 행을 생성 -->
-        <div class="tt-wrap" id="ttWrap"></div>
-
-        <div class="typing-footer">
-          <div class="wpm-display"><span class="wpm-val" id="wpmVal">0</span> WPM</div>
-          <div class="acc-display"><span class="acc-val" id="accVal">100%</span> 정확도</div>
-          <div class="prog-display">
-            <span class="prog-label">진행</span>
-            <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progFill" style="width:0%"></div></div>
-            <span class="prog-pct" id="progPct">0%</span>
-          </div>
-          <button class="skip-btn" id="restartBtn"><i data-lucide="rotate-ccw"></i>처음부터</button>
-        </div>
-      </div>
-
       <div style="margin-top:10px" class="action-row">
         <button class="btn-primary" id="continueBtn"><i data-lucide="play"></i>타이핑 시작</button>
-        <button class="btn-ghost" id="prevBtn"><i data-lucide="skip-back"></i>이전 문제</button>
-        <button class="btn-ghost" id="nextBtn"><i data-lucide="skip-forward"></i>다음 문제</button>
+        <button class="btn-ghost" id="restartBtn2"><i data-lucide="rotate-ccw"></i>다시 시작</button>
+        <span style="display:inline-flex;gap:4px;margin-left:auto">
+          <button class="btn-ghost" id="prevBtn"><i data-lucide="skip-back"></i></button>
+          <button class="btn-ghost" id="nextBtn"><i data-lucide="skip-forward"></i></button>
+        </span>
       </div>
     </div>
 
