@@ -371,6 +371,7 @@ export function initTrainer(): void {
     rebuildFlat();
     cur = 0;
     show();
+    setMenuOpen(true);
   }
 
   function loadBuiltinPack(packId: string): void {
