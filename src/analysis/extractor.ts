@@ -3,7 +3,7 @@ import type { Tree, Language, Node } from 'web-tree-sitter';
 import { getLanguage, isTreeSitterReady } from './parser';
 
 export interface ExtractedPattern {
-  type: 'class' | 'method' | 'interface' | 'annotation' | 'import' | 'package';
+  type: 'class' | 'method' | 'interface' | 'annotation';
   name: string;
   code: string;
   file: string;
@@ -25,15 +25,11 @@ const JAVA_QUERIES: QueryDef[] = [
   { type: 'method', pattern: '(method_declaration name: (identifier) @name) @def' },
   { type: 'interface', pattern: '(interface_declaration name: (identifier) @name) @def' },
   { type: 'annotation', pattern: '(annotation_type_declaration name: (identifier) @name) @def' },
-  { type: 'import', pattern: '(import_declaration) @def' },
-  { type: 'package', pattern: '(package_declaration) @def' },
 ];
 
 const PYTHON_QUERIES: QueryDef[] = [
   { type: 'class', pattern: '(class_definition name: (identifier) @name) @def' },
   { type: 'method', pattern: '(function_definition name: (identifier) @name) @def' },
-  { type: 'import', pattern: '(import_statement) @def' },
-  { type: 'import', pattern: '(import_from_statement) @def' },
 ];
 
 function extractComment(
@@ -176,7 +172,16 @@ function buildPatterns(
         const code = trimCode(source, node.startIndex, node.endIndex);
         const lineCount = node.endPosition.row - node.startPosition.row + 1;
 
-        if (lineCount < 5 && qd.type !== 'import' && qd.type !== 'package' && qd.type !== 'annotation')
+        // getter/setter 메서드 필터링 (3줄 이하의 단순 메서드)
+        if (qd.type === 'method' && lineCount <= 3 && lang === 'java') {
+          const methodBody = source.slice(node.startIndex, node.endIndex);
+          if (/return\s+\w+;?\s*$/.test(methodBody.trim()) ||
+              /this\.\w+\s*=\s*\w+;?\s*$/.test(methodBody.trim())) {
+            continue;
+          }
+        }
+
+        if (lineCount < 5 && qd.type !== 'annotation')
           continue;
 
         patterns.push({
@@ -217,7 +222,7 @@ function extractPatternsRegex(
     }
     const code = lines.slice(startLine, Math.min(endLine, startLine + 15)).join('\n');
     const lineCount = Math.min(endLine - startLine, 15);
-    if (lineCount < 3 && type !== 'import' && type !== 'package') return;
+    if (lineCount < 3) return;
 
     patterns.push({
       type,

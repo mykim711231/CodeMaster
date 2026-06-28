@@ -140,8 +140,6 @@ function buildConcept(p: ExtractedPattern): string {
     method: '메서드(method)',
     interface: '인터페이스(interface)',
     annotation: '어노테이션(annotation)',
-    import: 'import 선언',
-    package: 'package 선언',
   };
 
   let concept = '';
@@ -276,9 +274,7 @@ export function generateSnippets(patterns: ExtractedPattern[]): Snippet[] {
       class: 'class',
       method: 'method',
       interface: 'interface',
-      annotation: '@interface',
-      import: 'import',
-      package: 'package',
+      annotation: 'annotation',
     };
 
     snippets.push({

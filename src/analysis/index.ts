@@ -3,6 +3,7 @@ import { selectAndScanFolder } from './scanner';
 import { generateFileSnippets, generateSnippets, generatePack } from './generator';
 import { initTreeSitter, parseSource, isTreeSitterReady } from './parser';
 import { extractPatterns } from './extractor';
+import type { ExtractedPattern } from './extractor';
 
 export async function importProject(
   onProgress?: (msg: string) => void,
@@ -43,16 +44,7 @@ export async function importPatterns(
     console.warn('Tree-sitter를 초기화할 수 없어 regex 폴백으로 진행합니다.');
   }
 
-  const allPatterns: Array<{
-    type: 'class' | 'method' | 'interface' | 'annotation' | 'import' | 'package';
-    name: string;
-    code: string;
-    file: string;
-    lang: 'java' | 'python';
-    lineCount: number;
-    category: string;
-    comment: string;
-  }> = [];
+  const allPatterns: ExtractedPattern[] = [];
 
   let done = 0;
   for (const f of scan.files) {
