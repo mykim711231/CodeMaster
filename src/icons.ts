@@ -35,6 +35,10 @@ import {
   SkipBack,
   PieChart,
   AlertTriangle,
+  X,
+  Package as PackageIcon,
+  File,
+  FileCode,
 } from 'lucide';
 
 export function initIcons(): void {
@@ -74,6 +78,10 @@ export function initIcons(): void {
       SkipBack,
       PieChart,
       AlertTriangle,
+      X,
+      Package: PackageIcon,
+      File,
+      FileCode,
     },
   });
 }

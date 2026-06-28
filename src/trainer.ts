@@ -302,8 +302,7 @@ export function initTrainer(): void {
     nameRow.style.alignItems = 'center';
     nameRow.innerHTML =
       `<span><i data-lucide="package" style="color:var(--gold)"></i> ${_projectPack.name} (${lvl.snippets.length}파일)</span>` +
-      `<button class="proj-del-btn" title="프로젝트 제거" style="background:none;border:none;cursor:pointer;color:var(--muted);padding:2px">` +
-      `<i data-lucide="x" style="width:14px;height:14px"></i></button>`;
+      `<button class="proj-del-btn" title="프로젝트 제거" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;padding:0 4px">&times;</button>`;
 
     const delBtn = nameRow.querySelector('.proj-del-btn') as HTMLButtonElement;
     if (delBtn) {
