@@ -117,13 +117,10 @@ function extractComment(
   return text;
 }
 
-function trimCode(source: string, startIndex: number, endIndex: number): string {
-  let code = source.slice(startIndex, endIndex);
-  const lines = code.split('\n');
-  if (lines.length > 15) {
-    code = lines.slice(0, 15).join('\n') + '\n// ...';
-  }
-  return code.trim();
+function trimCode(source: string, startIndex: number, endIndex: number): string | null {
+  const lines = source.slice(startIndex, endIndex).split('\n');
+  if (lines.length > 15) return null; // 너무 길면 제외
+  return source.slice(startIndex, endIndex).trim();
 }
 
 function inferCategory(
@@ -170,6 +167,7 @@ function buildPatterns(
           `${qd.type}_${patterns.length}`;
 
         const code = trimCode(source, node.startIndex, node.endIndex);
+        if (!code) continue;
         const lineCount = node.endPosition.row - node.startPosition.row + 1;
 
         // getter/setter 메서드 필터링 (3줄 이하의 단순 메서드)
@@ -222,7 +220,7 @@ function extractPatternsRegex(
     }
     const code = lines.slice(startLine, Math.min(endLine, startLine + 15)).join('\n');
     const lineCount = Math.min(endLine - startLine, 15);
-    if (lineCount < 3) return;
+    if (lineCount < 3 || endLine - startLine > 15) return; // 너무 길면 제외
 
     patterns.push({
       type,
