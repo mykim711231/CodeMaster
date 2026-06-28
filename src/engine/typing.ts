@@ -146,10 +146,7 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
     if (e.key === 'Enter') {
       e.preventDefault();
       const next = li + 1;
-      if (next < inputs.length && inputs[next].value === '') {
-        inputs[next].value = (LINES[next].match(/^[ \t]*/) || [''])[0];
-      }
-      focusLine(next, next < inputs.length ? inputs[next].value.length : 0);
+      focusLine(next, 0);
       return;
     }
     if (e.key === 'Tab') {
