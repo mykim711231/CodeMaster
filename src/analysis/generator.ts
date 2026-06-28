@@ -290,28 +290,12 @@ export function generateFileSnippets(files: ScannedFile[]): Snippet[] {
     const id = `proj-file-${f.path.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
     const title = f.path;
 
-    const terms: Array<{ t: string; d: string }> = [];
-    if (f.lang === 'java') {
-      if (f.content.includes('class ')) terms.push({ t: 'class', d: '클래스 정의예요.' });
-      if (f.content.includes('interface ')) terms.push({ t: 'interface', d: '인터페이스 정의예요.' });
-      if (f.content.includes('public ')) terms.push({ t: 'public', d: '공개 접근 제어자예요.' });
-    } else {
-      if (f.content.includes('def ')) terms.push({ t: 'def', d: '함수 정의예요.' });
-      if (f.content.includes('class ')) terms.push({ t: 'class', d: '클래스 정의예요.' });
-      if (f.content.includes('import ')) terms.push({ t: 'import', d: '모듈 가져오기예요.' });
-    }
-
     snippets.push({
       id,
       lang: f.lang as 'java' | 'python',
       title,
       file: f.name,
       code: f.content,
-      explain: {
-        concept: `${f.path} 파일의 전체 코드예요. 프로젝트 소스 원본 그대로 따라치며 익힐 수 있어요.`,
-        terms: terms.slice(0, 3),
-        why: '실제 프로젝트 파일을 그대로 연습해 구조를 익히려고요.',
-      },
     });
   }
 
