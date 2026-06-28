@@ -117,9 +117,7 @@ function extractComment(
   return text;
 }
 
-function trimCode(source: string, startIndex: number, endIndex: number): string | null {
-  const lines = source.slice(startIndex, endIndex).split('\n');
-  if (lines.length > 15) return null; // 너무 길면 제외
+function trimCode(source: string, startIndex: number, endIndex: number): string {
   return source.slice(startIndex, endIndex).trim();
 }
 
@@ -167,20 +165,15 @@ function buildPatterns(
           `${qd.type}_${patterns.length}`;
 
         const code = trimCode(source, node.startIndex, node.endIndex);
-        if (!code) continue;
         const lineCount = node.endPosition.row - node.startPosition.row + 1;
 
         // getter/setter 메서드 필터링 (3줄 이하의 단순 메서드)
         if (qd.type === 'method' && lineCount <= 3 && lang === 'java') {
-          const methodBody = source.slice(node.startIndex, node.endIndex);
-          if (/return\s+\w+;?\s*$/.test(methodBody.trim()) ||
-              /this\.\w+\s*=\s*\w+;?\s*$/.test(methodBody.trim())) {
+          const body = source.slice(node.startIndex, node.endIndex).trim();
+          if (/return\s+\w+;?\s*$/.test(body) || /this\.\w+\s*=\s*\w+;?\s*$/.test(body)) {
             continue;
           }
         }
-
-        if (lineCount < 5 && qd.type !== 'annotation')
-          continue;
 
         patterns.push({
           type: qd.type,
@@ -218,9 +211,9 @@ function extractPatternsRegex(
       braceCount -= (lines[i].match(/\}/g) ?? []).length;
       if (braceCount > 0 && i + 1 < lines.length) endLine = Math.min(i + 2, lines.length);
     }
-    const code = lines.slice(startLine, Math.min(endLine, startLine + 15)).join('\n');
-    const lineCount = Math.min(endLine - startLine, 15);
-    if (lineCount < 3 || endLine - startLine > 15) return; // 너무 길면 제외
+    const code = lines.slice(startLine, endLine).join('\n');
+    const lineCount = endLine - startLine;
+    if (code.trim().length < 5) return; // 빈 블록 제외
 
     patterns.push({
       type,
