@@ -4,6 +4,7 @@ export interface ScannedFile {
   content: string;
   lang: 'java' | 'python' | 'unknown';
   size: number;
+  selected: boolean;
 }
 
 function extLang(ext: string): 'java' | 'python' | 'unknown' {
@@ -14,47 +15,86 @@ function extLang(ext: string): 'java' | 'python' | 'unknown' {
   return 'unknown';
 }
 
-export async function selectFiles(
+const EXCLUDE_DIRS = new Set([
+  'test', 'tests', 'node_modules', 'build', 'target', '.git',
+  '__pycache__', 'dist', '.idea', 'venv', '.venv', 'env', 'out', '.svn', '.gradle',
+]);
+
+const MAX_FILES = 500;
+
+interface FileEntry {
+  path: string;
+  name: string;
+  handle: FileSystemFileHandle;
+}
+
+async function scanDirectory(
+  dirHandle: FileSystemDirectoryHandle,
+  basePath: string,
+  files: FileEntry[],
+): Promise<void> {
+  for await (const [name, handle] of dirHandle.entries()) {
+    if (handle.kind === 'directory') {
+      if (EXCLUDE_DIRS.has(name)) continue;
+      await scanDirectory(
+        handle as FileSystemDirectoryHandle,
+        basePath ? `${basePath}/${name}` : name,
+        files,
+      );
+    } else if (handle.kind === 'file') {
+      const ext = name.lastIndexOf('.') >= 0 ? name.slice(name.lastIndexOf('.')) : '';
+      const valid =
+        ext === '.java' || ext === '.py' || ext === '.xml' || ext === '.yml' ||
+        ext === '.yaml' || ext === '.sql' || ext === '.gradle' || ext === '.properties' ||
+        ext === '.json' || ext === '.kt' || ext === '.groovy' || ext === '.toml' || ext === '.cfg';
+      if (valid) {
+        files.push({
+          path: basePath ? `${basePath}/${name}` : name,
+          name,
+          handle: handle as FileSystemFileHandle,
+        });
+      }
+    }
+    if (files.length >= MAX_FILES) break;
+  }
+}
+
+export async function selectAndScanFolder(
   onProgress?: (current: number, total: number, name: string) => void,
-): Promise<{ name: string; lang: 'java' | 'python' | 'unknown'; files: ScannedFile[] }> {
-  // Common folder name 추출을 위한 핸들
-  const handles = await window.showOpenFilePicker({
-    multiple: true,
-    types: [
-      {
-        description: 'Code files',
-        accept: {
-          'text/*': ['.java', '.py', '.xml', '.yml', '.yaml', '.sql',
-                     '.gradle', '.properties', '.json', '.kt', '.groovy', '.toml', '.cfg'],
-        },
-      },
-    ],
-  });
+): Promise<{
+  name: string;
+  lang: 'java' | 'python' | 'unknown';
+  files: ScannedFile[];
+}> {
+  const dirHandle = await window.showDirectoryPicker();
+  if (!dirHandle) throw new Error('폴더 선택이 취소되었습니다.');
 
-  if (handles.length === 0) throw new Error('파일이 선택되지 않았습니다.');
+  const entries: FileEntry[] = [];
+  await scanDirectory(dirHandle, '', entries);
 
-  const files: ScannedFile[] = [];
   let javaCount = 0;
   let pythonCount = 0;
+  const files: ScannedFile[] = [];
 
-  for (let i = 0; i < handles.length; i++) {
-    const h = handles[i];
-    const file = await h.getFile();
-    const name = file.name;
-    const ext = name.lastIndexOf('.') >= 0 ? name.slice(name.lastIndexOf('.')) : '';
+  for (let i = 0; i < entries.length; i++) {
+    const e = entries[i];
+    onProgress?.(i + 1, entries.length, e.path);
+
+    const file = await e.handle.getFile();
+    const content = await file.text();
+    const ext = e.name.lastIndexOf('.') >= 0 ? e.name.slice(e.name.lastIndexOf('.')) : '';
     const lang = extLang(ext);
 
     if (lang === 'java') javaCount++;
     else if (lang === 'python') pythonCount++;
 
-    onProgress?.(i + 1, handles.length, name);
-
     files.push({
-      path: name,
-      name,
-      content: await file.text(),
+      path: e.path,
+      name: e.name,
+      content,
       lang,
       size: file.size,
+      selected: true, // 기본값: 전체 선택
     });
   }
 
@@ -64,8 +104,5 @@ export async function selectFiles(
     : javaCount > 0 || pythonCount > 0 ? (javaCount >= pythonCount ? 'java' : 'python')
     : 'unknown';
 
-  // 프로젝트명은 첫 파일명에서 확장자 뺀 것
-  const projName = handles[0].name.replace(/\.[^.]+$/, '');
-
-  return { name: projName, lang, files };
+  return { name: dirHandle.name, lang, files };
 }

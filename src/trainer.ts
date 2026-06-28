@@ -2,6 +2,7 @@ import { initTypingEngine } from './engine/typing';
 import { PACKS, type Level, type Snippet, type Pack } from './content';
 import { saveSession } from './storage/db';
 import { appStore } from './store';
+import { getScannedFiles, clearScannedFiles, buildPackFromFiles } from './analysis/index';
 
 interface Pos {
   packKey: string;
@@ -13,6 +14,7 @@ interface TrainerAPI {
   loadProjectPack: (pack: Pack) => void;
   loadBuiltinPack: (packId: string) => void;
   clearProjectPack: () => void;
+  showFileTree: () => void;
 }
 
 const PROJECT_PACK_KEY = '__project__';
@@ -284,16 +286,17 @@ export function initTrainer(): void {
       return;
     }
 
+    const lvl = _projectPack.levels[0];
+    if (!lvl) return;
+
     acc.style.display = '';
     acc.classList.add('open');
     body.innerHTML = '';
+    body.style.maxHeight = '40vh';
+    body.style.overflowY = 'auto';
 
-    // 제목 업데이트
     const titleEl = document.getElementById('projectAccTitle');
     if (titleEl) titleEl.textContent = _projectPack.name;
-
-    const lvl = _projectPack.levels[0];
-    if (!lvl) return;
 
     const nameRow = document.createElement('div');
     nameRow.className = 'sidebar-item';
@@ -303,81 +306,126 @@ export function initTrainer(): void {
     nameRow.innerHTML =
       `<span><i data-lucide="package" style="color:var(--gold)"></i> ${_projectPack.name} (${lvl.snippets.length}파일)</span>` +
       `<button class="proj-del-btn" title="프로젝트 제거" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;padding:0 4px">&times;</button>`;
-
     const delBtn = nameRow.querySelector('.proj-del-btn') as HTMLButtonElement;
-    if (delBtn) {
-      delBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        clearProjectPack();
-      });
-    }
+    if (delBtn) delBtn.addEventListener('click', (e) => { e.stopPropagation(); clearProjectPack(); });
     body.append(nameRow);
 
-    // 파일별로 그룹화해서 트리처럼 표시
-    const fileMap = new Map<string, Snippet[]>();
-    for (const snip of lvl.snippets) {
-      const f = snip.file;
-      if (!fileMap.has(f)) fileMap.set(f, []);
-      fileMap.get(f)!.push(snip);
+    // 파일 목록
+    for (let i = 0; i < lvl.snippets.length; i++) {
+      const snip = lvl.snippets[i];
+      const row = document.createElement('button');
+      row.className = 'sidebar-item snip-sidebar-item';
+      row.style.display = 'flex';
+      row.style.alignItems = 'center';
+      row.style.gap = '4px';
+      row.style.paddingLeft = '0.5rem';
+      row.innerHTML = `<span style="font-size:0.7rem;color:var(--muted)">${snip.title}</span>`;
+      row.addEventListener('click', () => {
+        const target = FLAT.findIndex(
+          (q) => q.packKey === PROJECT_PACK_KEY && q.snipIndex === i,
+        );
+        if (target >= 0) { cur = target; setMenuOpen(false); show(); }
+      });
+      body.append(row);
+    }
+  }
+
+  // --- 체크박스 파일 트리 (스캔 후 선택) ---
+  function showFileTree(): void {
+    const scanned = getScannedFiles();
+    if (!scanned) return;
+
+    const acc = document.getElementById('projectAccordion');
+    const body = document.getElementById('projectAccBody');
+    const titleEl = document.getElementById('projectAccTitle');
+    if (!acc || !body) return;
+
+    acc.style.display = '';
+    acc.classList.add('open');
+    body.innerHTML = '';
+    body.style.maxHeight = '40vh';
+    body.style.overflowY = 'auto';
+    if (titleEl) titleEl.textContent = scanned.name;
+
+    // 제목 + 카운트
+    const header = document.createElement('div');
+    header.className = 'sidebar-item';
+    header.style.display = 'flex';
+    header.style.justifyContent = 'space-between';
+    header.style.alignItems = 'center';
+    header.innerHTML = `<span>${scanned.name}</span><span style="font-size:0.7rem;color:var(--muted)">${scanned.files.length}파일</span>`;
+    body.append(header);
+
+    // 전체 선택 / 전체 취소
+    const btnRow = document.createElement('div');
+    btnRow.style.display = 'flex';
+    btnRow.style.gap = '4px';
+    btnRow.style.padding = '4px 0';
+
+    const allBtn = document.createElement('button');
+    allBtn.className = 'sidebar-item';
+    allBtn.style.flex = '1';
+    allBtn.style.padding = '2px 4px';
+    allBtn.style.fontSize = '0.7rem';
+    allBtn.textContent = '전체 선택';
+    allBtn.addEventListener('click', () => {
+      scanned.files.forEach((f: { selected: boolean }) => (f.selected = true));
+      showFileTree();
+    });
+
+    const noneBtn = document.createElement('button');
+    noneBtn.className = 'sidebar-item';
+    noneBtn.style.flex = '1';
+    noneBtn.style.padding = '2px 4px';
+    noneBtn.style.fontSize = '0.7rem';
+    noneBtn.textContent = '전체 취소';
+    noneBtn.addEventListener('click', () => {
+      scanned.files.forEach((f: { selected: boolean }) => (f.selected = false));
+      showFileTree();
+    });
+
+    btnRow.append(allBtn, noneBtn);
+    body.append(btnRow);
+
+    // 파일별 체크박스
+    for (const f of scanned.files) {
+      const row = document.createElement('label');
+      row.className = 'sidebar-item';
+      row.style.display = 'flex';
+      row.style.alignItems = 'center';
+      row.style.gap = '6px';
+      row.style.cursor = 'pointer';
+      row.style.fontSize = '0.72rem';
+
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = f.selected;
+      cb.style.margin = '0';
+      cb.addEventListener('change', () => { f.selected = cb.checked; });
+
+      row.append(cb, document.createTextNode(f.path));
+      body.append(row);
     }
 
-    for (const [file, snips] of fileMap) {
-      const folder = file.includes('/') ? file.split('/').slice(0, -1).join('/') + '/' : '';
-      const fileName = file.includes('/') ? file.split('/').pop()! : file;
-
-      if (folder) {
-        const folderRow = document.createElement('div');
-        folderRow.className = 'sidebar-item';
-        folderRow.style.paddingLeft = '0.5rem';
-        folderRow.style.fontSize = '0.7rem';
-        folderRow.style.color = 'var(--muted)';
-        folderRow.style.opacity = '0.7';
-        folderRow.innerHTML = `<i data-lucide="folder" style="width:12px;height:12px"></i> ${folder}`;
-        body.append(folderRow);
+    // 연습 시작 버튼
+    const startBtn = document.createElement('button');
+    startBtn.className = 'sidebar-item';
+    startBtn.style.marginTop = '4px';
+    startBtn.style.textAlign = 'center';
+    startBtn.style.fontWeight = '600';
+    startBtn.style.color = 'var(--accent, #3b82f6)';
+    startBtn.textContent = '연습 시작';
+    startBtn.addEventListener('click', () => {
+      const selected = scanned.files.filter((f: { selected: boolean }) => f.selected);
+      if (selected.length === 0) {
+        alert('연습할 파일을 하나 이상 선택해주세요.');
+        return;
       }
-
-      // 파일 버튼 (원본 전체 연습)
-      if (snips.length === 1) {
-        const btn = document.createElement('button');
-        btn.className = 'sidebar-item snip-sidebar-item';
-        btn.style.paddingLeft = '1.5rem';
-        btn.innerHTML =
-          `<i data-lucide="file" style="width:12px;height:12px;color:var(--muted)"></i>` +
-          `<span style="font-size:0.75rem;margin-left:4px">${fileName}</span>`;
-        btn.addEventListener('click', () => {
-          const target = FLAT.findIndex(
-            (q) => q.packKey === PROJECT_PACK_KEY && q.snipIndex === lvl.snippets.indexOf(snips[0]),
-          );
-          if (target >= 0) {
-            cur = target;
-            setMenuOpen(false);
-            show();
-          }
-        });
-        body.append(btn);
-      } else {
-        // 여러 조각으로 나뉜 파일은 폴더처럼
-        for (const snip of snips) {
-          const btn = document.createElement('button');
-          btn.className = 'sidebar-item snip-sidebar-item';
-          btn.style.paddingLeft = '1.5rem';
-          btn.innerHTML =
-            `<i data-lucide="file-code" style="width:12px;height:12px;color:var(--muted)"></i>` +
-            `<span style="font-size:0.7rem;margin-left:4px">${snip.title}</span>`;
-          btn.addEventListener('click', () => {
-            const target = FLAT.findIndex(
-              (q) => q.packKey === PROJECT_PACK_KEY && q.snipIndex === lvl.snippets.indexOf(snip),
-            );
-            if (target >= 0) {
-              cur = target;
-              setMenuOpen(false);
-              show();
-            }
-          });
-          body.append(btn);
-        }
-      }
-    }
+      const pack = buildPackFromFiles(scanned.name, scanned.lang as 'java' | 'python', scanned.files);
+      clearScannedFiles();
+      loadProjectPack(pack);
+    });
+    body.append(startBtn);
   }
 
   function loadProjectPack(pack: Pack): void {
@@ -414,7 +462,7 @@ export function initTrainer(): void {
     if (FLAT.length > 0) show();
   });
 
-  _trainerAPI = { loadProjectPack, loadBuiltinPack, clearProjectPack };
+  _trainerAPI = { loadProjectPack, loadBuiltinPack, clearProjectPack, showFileTree };
 
   show();
 }

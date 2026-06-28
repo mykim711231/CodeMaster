@@ -1,12 +1,12 @@
-import { importProject } from '../analysis/index';
+import { scanFolder } from '../analysis/index';
 import { appStore } from '../store';
 import { getTrainerAPI } from '../trainer';
 
-const isFileSystemAccessSupported = 'showOpenFilePicker' in window;
+const isSupported = 'showDirectoryPicker' in window;
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 async function doImport(btn: HTMLButtonElement): Promise<void> {
-  if (!isFileSystemAccessSupported || isMobile) {
+  if (!isSupported || isMobile) {
     alert('이 기능은 데스크톱 Chromium 브라우저에서만 지원됩니다.');
     return;
   }
@@ -14,24 +14,18 @@ async function doImport(btn: HTMLButtonElement): Promise<void> {
 
   btn.disabled = true;
   const orig = btn.innerHTML;
-  btn.innerHTML = '<i data-lucide="loader"></i> 불러오는 중...';
+  btn.innerHTML = '<i data-lucide="loader"></i> 스캔 중...';
   appStore.getState().setIsAnalyzing(true);
 
   try {
-    const pack = await importProject((msg) => {
-      appStore.getState().setAnalysisProgress(msg);
-    });
-
-    if (!pack) throw new Error('파일을 불러올 수 없습니다.');
+    await scanFolder((msg) => appStore.getState().setAnalysisProgress(msg));
 
     const trainer = getTrainerAPI();
-    if (trainer) {
-      trainer.loadProjectPack(pack);
-    }
+    if (trainer) trainer.showFileTree();
   } catch (err) {
     if ((err as Error).name !== 'AbortError') {
-      console.error('import failed:', err);
-      alert(err instanceof Error ? err.message : '파일 불러오기에 실패했습니다.');
+      console.error('scan failed:', err);
+      alert(err instanceof Error ? err.message : '폴더 스캔에 실패했습니다.');
     }
   } finally {
     appStore.getState().setIsAnalyzing(false);
