@@ -8,10 +8,12 @@ export interface Term {
 
 // 문제 설명 — 우패널에 표시(입문자 언어 습득용)
 export interface Explain {
-  concept: string; // 쉬운 말·비유로 개념 설명
-  terms?: Term[]; // 코드 뜯어보기 (요소별)
-  why?: string; // 왜/언제 쓰나
-  pitfall?: string; // 입문자가 자주 틀리는 부분
+  concept: string;              // 쉬운 말·비유로 개념 설명 (개발 서적 스타일, 3~6문장)
+  terms?: Term[];               // 코드 뜯어보기 (요소별)
+  why?: string;                 // 왜/언제 쓰나 (실무 맥락)
+  expectedOutput?: string;      // [v2] 콘솔 출력 예상 결과
+  realWorldUsage?: string;      // [v2] 실무 연계 상황
+  pitfall?: string;             // 입문자가 자주 틀리는 부분
 }
 
 export interface Snippet {

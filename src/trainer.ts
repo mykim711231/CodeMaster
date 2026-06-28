@@ -217,6 +217,13 @@ export function initTrainer(): void {
   function renderExplain(snip: Snippet): void {
     const ex = snip.explain;
     if (exConceptEl) exConceptEl.textContent = ex?.concept ?? '이 문제의 설명은 준비 중입니다.';
+    // expectedOutput
+    const exOutEl = document.getElementById('explainExpectedOutput');
+    const exOutWrap = document.getElementById('explainExpectedOutputWrap');
+    if (exOutEl && exOutWrap) {
+      exOutEl.textContent = ex?.expectedOutput ?? '';
+      exOutWrap.style.display = ex?.expectedOutput ? '' : 'none';
+    }
     if (exTermsEl && exTermsWrap) {
       exTermsEl.innerHTML = '';
       const terms = ex?.terms ?? [];
@@ -236,6 +243,13 @@ export function initTrainer(): void {
     if (exWhyEl && exWhyWrap) {
       exWhyEl.textContent = ex?.why ?? '';
       exWhyWrap.style.display = ex?.why ? '' : 'none';
+    }
+    // realWorldUsage
+    const exRwEl = document.getElementById('explainRealWorld');
+    const exRwWrap = document.getElementById('explainRealWorldWrap');
+    if (exRwEl && exRwWrap) {
+      exRwEl.textContent = ex?.realWorldUsage ?? '';
+      exRwWrap.style.display = ex?.realWorldUsage ? '' : 'none';
     }
     if (exPitfallEl) {
       if (ex?.pitfall) {
