@@ -245,6 +245,18 @@ function buildPitfall(p: ExtractedPattern): string | undefined {
   if (p.type === 'method' && p.lineCount > 15) {
     return '메서드가 너무 길어요. 15줄 이내로 분리하는 게 좋아요.';
   }
+  if (p.type === 'class' && p.code.includes('@Autowired') && !p.code.includes('private final') && !p.code.includes('public ' + p.name)) {
+    return '생성자 주입 대신 @Autowired 필드 주입을 쓰고 있어요. 생성자 주입이 더 안전해요.';
+  }
+  if (p.code.includes('Optional<') && p.type === 'class') {
+    return 'Optional은 필드 타입으로 권장되지 않아요. 메서드 반환 타입으로만 쓰세요.';
+  }
+  if (p.code.match(/public\s+(?!class|interface|enum|record|static|final)[\w<>[\]]+\s+\w+;/)) {
+    return 'public 필드는 캡슐화를 위반해요. private + getter로 보호하세요.';
+  }
+  if (annotations.includes('@Entity') && p.code.includes('@Data')) {
+    return '@Entity에 @Data(Lombok)를 쓰면 equals/hashCode 문제가 생길 수 있어요.';
+  }
   return undefined;
 }
 

@@ -7,8 +7,6 @@ let _ready = false;
 let _initPromise: Promise<void> | null = null;
 let _javaLang: Language | null = null;
 let _pythonLang: Language | null = null;
-const _pool: Parser[] = [];
-const MAX_POOL = 4;
 
 const WASM_BASE = import.meta.env.BASE_URL.endsWith('/')
   ? `${import.meta.env.BASE_URL}wasm/`
@@ -44,6 +42,9 @@ export async function initTreeSitter(): Promise<void> {
       else console.warn('Python WASM 로드 실패, regex 폴백 사용');
 
       _ready = _javaLang !== null || _pythonLang !== null;
+      if (_ready) {
+        console.log('[Tree-sitter] loaded, Java ABI:', _javaLang?.abiVersion, 'Python ABI:', _pythonLang?.abiVersion);
+      }
     } catch (err) {
       console.warn('Tree-sitter 초기화 실패, regex 폴백 사용:', err);
       _ready = false;
@@ -55,15 +56,11 @@ export async function initTreeSitter(): Promise<void> {
 }
 
 function getParser(): Parser {
-  return _pool.pop() ?? new Parser();
+  return new Parser();
 }
 
 function returnParser(p: Parser): void {
-  if (_pool.length < MAX_POOL) {
-    _pool.push(p);
-  } else {
-    p.delete();
-  }
+  p.delete();
 }
 
 export async function parseSource(

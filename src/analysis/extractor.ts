@@ -20,6 +20,8 @@ interface QueryDef {
 
 const JAVA_QUERIES: QueryDef[] = [
   { type: 'class', pattern: '(class_declaration name: (identifier) @name) @def' },
+  { type: 'class', pattern: '(record_declaration name: (identifier) @name) @def' },
+  { type: 'class', pattern: '(enum_declaration name: (identifier) @name) @def' },
   { type: 'method', pattern: '(method_declaration name: (identifier) @name) @def' },
   { type: 'interface', pattern: '(interface_declaration name: (identifier) @name) @def' },
   { type: 'annotation', pattern: '(annotation_type_declaration name: (identifier) @name) @def' },
@@ -31,6 +33,7 @@ const PYTHON_QUERIES: QueryDef[] = [
   { type: 'class', pattern: '(class_definition name: (identifier) @name) @def' },
   { type: 'method', pattern: '(function_definition name: (identifier) @name) @def' },
   { type: 'import', pattern: '(import_statement) @def' },
+  { type: 'import', pattern: '(import_from_statement) @def' },
 ];
 
 function extractComment(
@@ -167,7 +170,7 @@ function buildPatterns(
         const node = defCap.node;
         const name =
           nameCap?.node.text ??
-          node.text?.split(/\s+/m)[1]?.replace(/[^a-zA-Z0-9_]/g, '') ??
+          node.text?.match(/(?:class|interface|record|enum|@interface|def)\s+(\w+)/)?.[1] ??
           `${qd.type}_${patterns.length}`;
 
         const code = trimCode(source, node.startIndex, node.endIndex);
@@ -187,6 +190,7 @@ function buildPatterns(
           comment: extractComment(source, node.startPosition.row, lang),
         });
       }
+      query.delete();
     } catch {
       // skip failed query
     }
@@ -231,7 +235,7 @@ function extractPatternsRegex(
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
       const classM = line.match(
-        /(?:(?:public|private|protected|abstract|final|static)\s+)*class\s+(\w+)/,
+        /(?:(?:public|private|protected|abstract|final|static)\s+)*(?:class|record|enum)\s+(\w+)/,
       );
       const ifaceM = line.match(
         /(?:(?:public|private|protected)\s+)*interface\s+(\w+)/,

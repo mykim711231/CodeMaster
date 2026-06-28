@@ -63,6 +63,7 @@ export async function importPatterns(
     try {
       const parsed = await parseSource(f.lang, f.content);
       const patterns = extractPatterns(f.lang, parsed.tree, parsed.text, f.path);
+      parsed.tree.delete();
       allPatterns.push(...patterns);
     } catch {
       // skip unparseable files

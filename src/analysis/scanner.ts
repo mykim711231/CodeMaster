@@ -12,11 +12,7 @@ function extLang(name: string): 'java' | 'python' | 'unknown' {
   if (ext === '.java' || ext === '.kt' || ext === '.groovy') return 'java';
   if (ext === '.xml' || ext === '.yml' || ext === '.yaml' ||
       ext === '.gradle' || ext === '.properties' || ext === '.sql' || ext === '.json') return 'java';
-  if (ext === '.js' || ext === '.ts' || ext === '.go' || ext === '.sh') return 'java';
-  if (ext === '.md' || ext === '.css' || ext === '.html' || ext === '.htm') return 'java';
-  if (ext === '.rs' || ext === '.c' || ext === '.cpp' || ext === '.h') return 'java';
   if (ext === '.py' || ext === '.cfg' || ext === '.toml') return 'python';
-  if (ext === '.rb') return 'python';
   return 'unknown';
 }
 
