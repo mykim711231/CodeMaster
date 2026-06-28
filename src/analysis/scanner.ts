@@ -4,7 +4,6 @@ export interface ScannedFile {
   content: string;
   lang: 'java' | 'python' | 'unknown';
   size: number;
-  selected: boolean;
 }
 
 function extLang(ext: string): 'java' | 'python' | 'unknown' {
@@ -94,7 +93,6 @@ export async function selectAndScanFolder(
       content,
       lang,
       size: file.size,
-      selected: true, // 기본값: 전체 선택
     });
   }
 

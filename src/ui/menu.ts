@@ -1,4 +1,4 @@
-import { scanFolder } from '../analysis/index';
+import { importProject } from '../analysis/index';
 import { appStore } from '../store';
 import { getTrainerAPI } from '../trainer';
 
@@ -14,18 +14,17 @@ async function doImport(btn: HTMLButtonElement): Promise<void> {
 
   btn.disabled = true;
   const orig = btn.innerHTML;
-  btn.innerHTML = '<i data-lucide="loader"></i> 스캔 중...';
+  btn.innerHTML = '<i data-lucide="loader"></i> 불러오는 중...';
   appStore.getState().setIsAnalyzing(true);
 
   try {
-    await scanFolder((msg) => appStore.getState().setAnalysisProgress(msg));
-
+    const pack = await importProject((msg) => appStore.getState().setAnalysisProgress(msg));
     const trainer = getTrainerAPI();
-    if (trainer) trainer.showFileTree();
+    if (trainer) trainer.loadProjectPack(pack);
   } catch (err) {
     if ((err as Error).name !== 'AbortError') {
-      console.error('scan failed:', err);
-      alert(err instanceof Error ? err.message : '폴더 스캔에 실패했습니다.');
+      console.error('import failed:', err);
+      alert(err instanceof Error ? err.message : '불러오기에 실패했습니다.');
     }
   } finally {
     appStore.getState().setIsAnalyzing(false);
@@ -44,10 +43,7 @@ export function initMenu(): void {
     menuToggle.classList.toggle('active', open);
   };
 
-  menuToggle.addEventListener('click', (e: Event) => {
-    e.stopPropagation();
-    setOpen(!menuWrap.classList.contains('open'));
-  });
+  menuToggle.addEventListener('click', (e) => { e.stopPropagation(); setOpen(!menuWrap.classList.contains('open')); });
 
   const importLink = Array.from(menuWrap.querySelectorAll('.menu-link')).find(
     (el) => el.textContent?.includes('프로젝트 가져오기'),
@@ -55,22 +51,12 @@ export function initMenu(): void {
 
   menuWrap.querySelectorAll('.menu-link').forEach((link) => {
     if (link === importLink) {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setOpen(false);
-        void doImport(link as HTMLButtonElement);
-      });
+      link.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); setOpen(false); void doImport(link as HTMLButtonElement); });
     } else {
       link.addEventListener('click', () => setOpen(false));
     }
   });
 
-  document.addEventListener('click', (e: Event) => {
-    const target = e.target as Node | null;
-    if (target && !menuWrap.contains(target)) setOpen(false);
-  });
-  document.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (e.key === 'Escape') setOpen(false);
-  });
+  document.addEventListener('click', (e) => { if (e.target && !menuWrap.contains(e.target as Node)) setOpen(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
 }
