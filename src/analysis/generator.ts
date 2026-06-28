@@ -83,6 +83,15 @@ function extractTerms(code: string, lang: 'java' | 'python'): Array<{ t: string;
     '@classmethod': '클래스 자체를 첫 인자로 받는 메서드예요.',
     '@property': '메서드를 필드처럼 접근하게 해줘요.',
     '@abstractmethod': '자식 클래스가 반드시 구현해야 하는 메서드예요.',
+    // Types
+    'String': '문자열을 담는 타입이에요.',
+    'int': '정수 숫자 타입이에요.',
+    'long': '더 큰 범위의 정수 타입이에요.',
+    'boolean': '참(true)/거짓(false) 논리 타입이에요.',
+    'List': '순서가 있는 데이터 목록이에요.',
+    'Map': '키-값 쌍으로 저장하는 사전 같은 타입이에요.',
+    'Optional': '값이 있을 수도/없을 수도 있는 상자 타입이에요.',
+    'interface': 'class와 달리 구현 없이 규칙(계약)만 정의해요.',
   };
 
   const found: Array<{ t: string; d: string }> = [];
@@ -104,7 +113,8 @@ function extractTerms(code: string, lang: 'java' | 'python'): Array<{ t: string;
   // 2. 키워드 찾기
   const keywords = lang === 'java'
     ? ['class', 'public', 'private', 'protected', 'static', 'void', 'return', 'new',
-       'extends', 'implements', 'final', 'throws', 'import', 'package', 'interface']
+       'extends', 'implements', 'final', 'throws', 'import', 'package', 'interface',
+       'String', 'int', 'long', 'boolean', 'List', 'Map', 'Optional', 'Stream']
     : ['class', 'def', 'self', 'return', 'import', 'async', 'await', 'yield', 'with', 'lambda'];
 
   for (const kw of keywords) {
@@ -232,8 +242,8 @@ function buildPitfall(p: ExtractedPattern): string | undefined {
   if (annotations.includes('@Transactional') && p.code.includes('try')) {
     return '트랜잭션 안에서 예외를 삼키면 롤백이 안 돼요.';
   }
-  if (p.type === 'class' && annotations.length === 0 && p.lang === 'java') {
-    return '이 클래스에 @Component가 없으면 스프링이 관리하지 않아요.';
+  if (p.type === 'method' && p.lineCount > 15) {
+    return '메서드가 너무 길어요. 15줄 이내로 분리하는 게 좋아요.';
   }
   return undefined;
 }
