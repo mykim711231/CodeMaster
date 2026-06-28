@@ -2198,3 +2198,4 @@ body {
 .settings-modal-body { padding:16px; display:flex; flex-direction:column; gap:14px; }
 .settings-modal-body label { display:flex; justify-content:space-between; align-items:center; font-size:.8rem; }
 .settings-modal-body select { padding:4px 8px; font-size:.8rem; border:1px solid var(--border); border-radius:4px; background:var(--bg2); color:var(--fg); }
+.settings-modal-body select option { background:var(--bg); color:var(--fg); }
