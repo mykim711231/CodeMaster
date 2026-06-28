@@ -21,11 +21,23 @@ import { initStats } from './ui/stats';
 import { registerLanguage } from './syntax/registry';
 import { javaAdapter } from './syntax/lang/java';
 import { pythonAdapter } from './syntax/lang/python';
+import { xmlAdapter } from './syntax/lang/xml';
+import { sqlAdapter } from './syntax/lang/sql';
+import { yamlAdapter } from './syntax/lang/yaml';
+import { propertiesAdapter } from './syntax/lang/properties';
+import { jsonAdapter } from './syntax/lang/json';
 import { initTrainer } from './trainer';
 
 // 구문 강조 언어 어댑터 등록
 registerLanguage('java', javaAdapter);
 registerLanguage('python', pythonAdapter);
+registerLanguage('xml', xmlAdapter);
+registerLanguage('sql', sqlAdapter);
+registerLanguage('yaml', yamlAdapter);
+registerLanguage('yml', yamlAdapter);
+registerLanguage('properties', propertiesAdapter);
+registerLanguage('gradle', propertiesAdapter);
+registerLanguage('json', jsonAdapter);
 
 // UI
 initIcons();
