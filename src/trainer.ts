@@ -52,16 +52,14 @@ export function initTrainer(): void {
 
   const PACK_KEYS = Object.keys(PACKS);
 
-  const PACK_GUIDES: Record<string, { desc: string; tips: string; details: string }> = {
+  const PACK_GUIDES: Record<string, { desc: string; tips: string }> = {
     'spring-boot': {
-      desc: 'Spring Boot로 백엔드 개발을 처음 배우는 분을 위한 20단계 실무 로드맵이에요.',
-      tips: '🔥 초보자 추천: L1~L4를 먼저 마스터하세요. L1 Java Core → L2 Spring 기초 → L3 MVC → L4 DB 순서로요. 이 4개만 알아도 기본적인 REST API 서버를 만들 수 있어요.',
-      details: 'L1 Java Core(class/record/stream/optional) → L2 Spring Core(DI/@Bean/AOP) → L3 MVC(@RestController/@Valid/ExceptionHandler) → L4 DB(JPA/@Entity/@Transactional/MyBatis) → L5 동시성(CompletableFuture/ThreadPool) → L6 네트워크(Socket/NIO/Netty) → L7 Gateway(RouteLocator/CircuitBreaker) → L8 메시징(Kafka/RabbitMQ/Spring Events) → L9 Batch(Job/Step/Chunk) → L10 Security(JWT/OAuth2/@PreAuthorize) → L11 Cache(Redis/Caffeine/@Cacheable) → L12 Monitoring(Actuator/Micrometer/Prometheus) → L13 Testing(JUnit5/Mockito/TestContainers) → L14 Architecture(Hexagonal/DDD/CQRS) → L15 Design Pattern(Singleton/Factory/Strategy) → L16 DevOps(Gradle/Docker/k8s/GitHub Actions) → L17 Observability(Logback/MDC/Sentry) → L18 Data(QueryDSL/Flyway/N+1) → L19 Resilience(@Retry/@CircuitBreaker/Eureka) → L20 Reactive(WebFlux/Mono/Flux/R2DBC)',
+      desc: 'Spring Boot로 백엔드 개발을 처음 배우는 분을 위한 20단계 실무 로드맵이에요. L1~L4 기초만 마스터해도 REST API 서버를 만들 수 있어요.',
+      tips: '🔥 초보자 추천: L1(Java Core) → L2(Spring DI) → L3(MVC) → L4(DB) 순서로 시작하세요.',
     },
     'python-ai': {
-      desc: 'Python으로 AI/ML 개발을 처음 배우는 분을 위한 15단계 실무 로드맵이에요.',
-      tips: '🔥 초보자 추천: L1~L5를 먼저 마스터하세요. L1 Python Core → L2 비동기 → L3 데이터 → L4 ML → L5 DL 순서로요. 기본기 없이 LLM으로 바로 가면 이해가 어려워요.',
-      details: 'L1 Python Core(def/class/dataclass/typing) → L2 Async(asyncio/await/TaskGroup) → L3 Data(NumPy/Pandas/Matplotlib/Polars) → L4 ML(Scikit-learn/XGBoost/LightGBM) → L5 DL(PyTorch/TensorFlow/Dataset) → L6 LLM(Transformers/pipeline/Embedding) → L7 RAG(Chunking/VectorStore/Retriever/Reranker) → L8 Agent(Tool Calling/Memory/ReAct/Multi-Agent) → L9 Framework(LangChain/LCEL/LlamaIndex/CrewAI) → L10 Production(FastAPI/Pydantic/SQLAlchemy/Celery) → L11 VectorDB(pgvector/Qdrant/FAISS/HNSW) → L12 Serving(vLLM/Ollama/GGUF/SSE) → L13 Prompt(Few-shot/CoT/JSON Schema) → L14 Fine-tuning(LoRA/QLoRA/PEFT/MLflow) → L15 Quality(RAGAS/Langfuse/Guardrails/PII)',
+      desc: 'Python으로 AI/ML 개발을 처음 배우는 분을 위한 15단계 실무 로드맵이에요. L1~L5 기본기 없이 LLM으로 바로 가면 이해가 어려워요.',
+      tips: '🔥 초보자 추천: L1(Python) → L2(Async) → L3(Data) → L4(ML) → L5(DL) 순서로 시작하세요.',
     },
   };
 
@@ -79,7 +77,6 @@ export function initTrainer(): void {
     body.innerHTML = `
       <div style="font-size:.75rem;line-height:1.5;margin-bottom:4px">${guide.desc}</div>
       <div style="font-size:.7rem;line-height:1.4;color:var(--accent,#f59e0b);margin-bottom:6px">${guide.tips}</div>
-      <div style="font-size:.7rem;line-height:1.4;color:var(--muted);margin-bottom:6px">${guide.details}</div>
       <div style="display:flex;flex-wrap:wrap;gap:2px">
         ${pack.levels.map((l) => {
           const has = l.snippets.length > 0;
