@@ -387,7 +387,7 @@ export function initTrainer(): void {
     nameRow.style.justifyContent = 'space-between';
     nameRow.style.alignItems = 'center';
     nameRow.innerHTML =
-      `<span><i data-lucide="package" style="color:var(--gold)"></i> ${_projectPack.name}</span>` +
+      `<span><i data-lucide="package" style="color:var(--gold)"></i> ${_projectPack.name} (${lvl.snippets.length}파일)</span>` +
       `<button class="proj-del-btn" title="프로젝트 제거" style="background:none;border:none;cursor:pointer;color:var(--muted);padding:2px">` +
       `<i data-lucide="x" style="width:14px;height:14px"></i></button>`;
 
@@ -400,22 +400,71 @@ export function initTrainer(): void {
     }
     body.append(nameRow);
 
-    lvl.snippets.forEach((snip, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'sidebar-item snip-sidebar-item';
-      btn.innerHTML = `<span style="font-size:0.75rem;color:var(--muted)">${snip.title}</span>`;
-      btn.addEventListener('click', () => {
-        const target = FLAT.findIndex(
-          (q) => q.packKey === PROJECT_PACK_KEY && q.snipIndex === i,
-        );
-        if (target >= 0) {
-          cur = target;
-          setMenuOpen(false);
-          show();
+    // 파일별로 그룹화해서 트리처럼 표시
+    const fileMap = new Map<string, Snippet[]>();
+    for (const snip of lvl.snippets) {
+      const f = snip.file;
+      if (!fileMap.has(f)) fileMap.set(f, []);
+      fileMap.get(f)!.push(snip);
+    }
+
+    for (const [file, snips] of fileMap) {
+      const folder = file.includes('/') ? file.split('/').slice(0, -1).join('/') + '/' : '';
+      const fileName = file.includes('/') ? file.split('/').pop()! : file;
+
+      if (folder) {
+        const folderRow = document.createElement('div');
+        folderRow.className = 'sidebar-item';
+        folderRow.style.paddingLeft = '0.5rem';
+        folderRow.style.fontSize = '0.7rem';
+        folderRow.style.color = 'var(--muted)';
+        folderRow.style.opacity = '0.7';
+        folderRow.innerHTML = `<i data-lucide="folder" style="width:12px;height:12px"></i> ${folder}`;
+        body.append(folderRow);
+      }
+
+      // 파일 버튼 (원본 전체 연습)
+      if (snips.length === 1) {
+        const btn = document.createElement('button');
+        btn.className = 'sidebar-item snip-sidebar-item';
+        btn.style.paddingLeft = '1.5rem';
+        btn.innerHTML =
+          `<i data-lucide="file" style="width:12px;height:12px;color:var(--muted)"></i>` +
+          `<span style="font-size:0.75rem;margin-left:4px">${fileName}</span>`;
+        btn.addEventListener('click', () => {
+          const target = FLAT.findIndex(
+            (q) => q.packKey === PROJECT_PACK_KEY && q.snipIndex === lvl.snippets.indexOf(snips[0]),
+          );
+          if (target >= 0) {
+            cur = target;
+            setMenuOpen(false);
+            show();
+          }
+        });
+        body.append(btn);
+      } else {
+        // 여러 조각으로 나뉜 파일은 폴더처럼
+        for (const snip of snips) {
+          const btn = document.createElement('button');
+          btn.className = 'sidebar-item snip-sidebar-item';
+          btn.style.paddingLeft = '1.5rem';
+          btn.innerHTML =
+            `<i data-lucide="file-code" style="width:12px;height:12px;color:var(--muted)"></i>` +
+            `<span style="font-size:0.7rem;margin-left:4px">${snip.title}</span>`;
+          btn.addEventListener('click', () => {
+            const target = FLAT.findIndex(
+              (q) => q.packKey === PROJECT_PACK_KEY && q.snipIndex === lvl.snippets.indexOf(snip),
+            );
+            if (target >= 0) {
+              cur = target;
+              setMenuOpen(false);
+              show();
+            }
+          });
+          body.append(btn);
         }
-      });
-      body.append(btn);
-    });
+      }
+    }
   }
 
   function loadProjectPack(pack: Pack): void {
