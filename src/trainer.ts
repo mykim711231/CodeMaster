@@ -42,6 +42,43 @@ export function initTrainer(): void {
 
   const PACK_KEYS = Object.keys(PACKS);
 
+  const PACK_GUIDES: Record<string, { desc: string; details: string }> = {
+    'spring-boot': {
+      desc: 'Spring Boot로 백엔드를 처음 배우는 분을 위한 실무 패턴 모음이에요.',
+      details: 'L1 Java Core → L2 Spring 기초·DI → L3 MVC → L4 DB(JPA/MyBatis) → L5 동시성 → L6 네트워크 → L7 Gateway → L8 메시징(Kafka) → L9 배치 → L10 보안(JWT/OAuth2) → L11 캐시(Redis) → L12 모니터링 → L13 테스트 → L14 아키텍처(DDD) → L15 디자인패턴 → L16 DevOps → L17 관측 → L18 데이터심화 → L19 Resilience4j → L20 WebFlux 순서로 익혀요.',
+    },
+    'python-ai': {
+      desc: 'Python으로 AI 개발을 처음 배우는 분을 위한 실무 패턴 모음이에요.',
+      details: 'L1 Python Core → L2 비동기(asyncio) → L3 데이터(NumPy/Pandas) → L4 ML(Scikit-learn) → L5 DL(PyTorch) → L6 LLM(Transformers) → L7 RAG(Chunking) → L8 AI Agent → L9 프레임워크(LangChain) → L10 프로덕션(FastAPI) → L11 VectorDB(pgvector) → L12 서빙(vLLM) → L13 프롬프트 → L14 Fine-tuning(LoRA) → L15 품질·보안 순서로 익혀요.',
+    },
+  };
+
+  function renderGuide(pack: Pack): void {
+    const body = document.getElementById('guideBody');
+    const title = document.getElementById('guideTitle');
+    const guide = PACK_GUIDES[pack.id];
+    if (!body || !guide) return;
+
+    const curPos = FLAT.length > 0 ? FLAT[cur] : null;
+    const curLevelNo = curPos?.packKey === PROJECT_PACK_KEY ? -1 : (curPos?.levelNo ?? 0);
+
+    if (title) title.textContent = pack.name;
+
+    body.innerHTML = `
+      <div style="font-size:.75rem;line-height:1.5;margin-bottom:4px">${guide.desc}</div>
+      <div style="font-size:.7rem;line-height:1.4;color:var(--muted);margin-bottom:6px">${guide.details}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:2px">
+        ${pack.levels.map((l) => {
+          const has = l.snippets.length > 0;
+          const cur = l.no === curLevelNo;
+          return `<span style="font-size:.65rem;padding:1px 4px;border-radius:2px;
+            ${cur ? 'background:var(--accent,#3b82f6);color:#fff;font-weight:600' : has ? 'background:var(--bg2);color:var(--fg)' : 'opacity:.35;color:var(--muted)'}"
+            >L${l.no}</span>`;
+        }).join('')}
+      </div>
+    `;
+  }
+
   // 모든 문제를 순서대로 펼친 평면 목록 (이전/다음 네비)
   const FLAT: Pos[] = [];
 
@@ -355,6 +392,7 @@ export function initTrainer(): void {
     if (p.packKey === PROJECT_PACK_KEY) renderProjectSidebar();
     saveResumePos(p);
     updateResumeCard(pack, lvl, snip);
+    renderGuide(pack);
   }
 
   function select(packKey: string, levelNo: number, snipIndex: number): void {
