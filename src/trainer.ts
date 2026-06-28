@@ -383,7 +383,21 @@ export function initTrainer(): void {
 
     const nameRow = document.createElement('div');
     nameRow.className = 'sidebar-item';
-    nameRow.innerHTML = `<i data-lucide="package" style="color:var(--gold)"></i> ${_projectPack.name}`;
+    nameRow.style.display = 'flex';
+    nameRow.style.justifyContent = 'space-between';
+    nameRow.style.alignItems = 'center';
+    nameRow.innerHTML =
+      `<span><i data-lucide="package" style="color:var(--gold)"></i> ${_projectPack.name}</span>` +
+      `<button class="proj-del-btn" title="프로젝트 제거" style="background:none;border:none;cursor:pointer;color:var(--muted);padding:2px">` +
+      `<i data-lucide="x" style="width:14px;height:14px"></i></button>`;
+
+    const delBtn = nameRow.querySelector('.proj-del-btn') as HTMLButtonElement;
+    if (delBtn) {
+      delBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        clearProjectPack();
+      });
+    }
     body.append(nameRow);
 
     lvl.snippets.forEach((snip, i) => {
