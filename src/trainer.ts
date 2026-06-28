@@ -89,6 +89,7 @@ export function initTrainer(): void {
       void saveSession({ ts: Date.now(), ...result });
       appStore.getState().recordCompletion(result.wpm);
       updateTopbar();
+      syncBadges();
       if (result.accuracy < 80 && result.snippetId) {
         void addWrongAnswer(result.snippetId, result.accuracy);
         detectTypoPatterns(result);
@@ -295,6 +296,23 @@ export function initTrainer(): void {
       const fill = document.querySelector('.resume-fill') as HTMLElement;
       if (fill) fill.style.width = `${pct}%`;
     }
+  }
+
+  function syncBadges(): void {
+    void getWrongAnswers(50).then((list) => {
+      const el = document.getElementById('wrongAnswerBadge');
+      if (el) {
+        el.textContent = String(list.length);
+        el.style.display = list.length > 0 ? '' : 'none';
+      }
+    });
+    void getWeakPatterns(50).then((list) => {
+      const el = document.getElementById('weakPatternBadge');
+      if (el) {
+        el.textContent = String(list.length);
+        el.style.display = list.length > 0 ? '' : 'none';
+      }
+    });
   }
 
   function show(): void {
@@ -576,4 +594,5 @@ export function initTrainer(): void {
   _trainerAPI = { loadProjectPack, loadBuiltinPack, clearProjectPack };
 
   show();
+  syncBadges();
 }

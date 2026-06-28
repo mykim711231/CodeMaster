@@ -103,10 +103,11 @@
       <div class="acc-body">
         <button class="sidebar-item" id="wrongAnswerBtn">
           <i data-lucide="repeat-2"></i> 오답 반복
-          <span class="badge" style="background:rgba(239,68,68,.15);color:#EF4444;border:1px solid rgba(239,68,68,.2)">12</span>
+          <span id="wrongAnswerBadge" class="badge" style="display:none">0</span>
         </button>
         <button class="sidebar-item" id="weakPatternBtn">
           <i data-lucide="target"></i> 취약 패턴
+          <span id="weakPatternBadge" class="badge" style="display:none">0</span>
         </button>
         <button class="sidebar-item" id="randomQuizBtn">
           <i data-lucide="shuffle"></i> 랜덤 출제
