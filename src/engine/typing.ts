@@ -59,6 +59,9 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
   let startTime: number | null = null;
   let completed = false;
 
+  const focusBtn = document.getElementById('focusBtn');
+  const continueBtn = document.getElementById('continueBtn');
+
   function setActive(li: number): void {
     const rows = wrap!.children;
     for (let i = 0; i < rows.length; i++) rows[i].classList.toggle('active', i === li);
@@ -74,7 +77,10 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
   }
 
   function onInput(li: number): void {
-    if (startTime === null) startTime = Date.now();
+    if (startTime === null) {
+      startTime = Date.now();
+      if (continueBtn) continueBtn.style.display = 'none';
+    }
     renderLine(li);
     updateStats();
   }
@@ -293,6 +299,7 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
     }
     startTime = null;
     completed = false;
+    if (continueBtn) continueBtn.style.display = '';
     updateStats();
     focusLine(0, 0);
   }
@@ -312,6 +319,7 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
     synByLine = [];
     startTime = null;
     completed = false;
+    if (continueBtn) continueBtn.style.display = '';
 
     wrap!.innerHTML = '';
     let offset = 0;
@@ -379,9 +387,15 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
       if (inputs.length) focusLine(0, inputs[0].value.length);
     });
   }
-  for (const id of ['restartBtn', 'restartBtn2']) {
-    document.getElementById(id)?.addEventListener('click', reset);
-  }
+  document.getElementById('restartBtn')?.addEventListener('click', reset);
+
+  // 포커스/블러로 focusBtn 제어
+  wrap!.addEventListener('focusin', () => {
+    if (focusBtn) focusBtn.style.display = 'none';
+  });
+  wrap!.addEventListener('focusout', () => {
+    if (focusBtn) focusBtn.style.display = '';
+  });
 
   return { load };
 }

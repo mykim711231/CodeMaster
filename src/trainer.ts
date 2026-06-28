@@ -1,6 +1,7 @@
 import { initTypingEngine } from './engine/typing';
 import { PACKS, type Level, type Snippet, type Pack } from './content';
-import { saveSession, addWrongAnswer, getWrongAnswers, addTypoPattern, getWeakPatterns } from './storage/db';
+import { saveSession, addWrongAnswer, getWrongAnswers, addTypoPattern, getWeakPatterns, updateTopbar } from './storage/db';
+import { initIcons } from './icons';
 import { appStore } from './store';
 
 interface Pos {
@@ -87,6 +88,7 @@ export function initTrainer(): void {
     onComplete: (result) => {
       void saveSession({ ts: Date.now(), ...result });
       appStore.getState().recordCompletion(result.wpm);
+      updateTopbar();
       if (result.accuracy < 80 && result.snippetId) {
         void addWrongAnswer(result.snippetId, result.accuracy);
         detectTypoPatterns(result);
@@ -244,6 +246,57 @@ export function initTrainer(): void {
     }
   }
 
+  function updateMetaChips(pack: Pack, isProject: boolean): void {
+    const metaWrap = document.getElementById('practiceMeta');
+    if (!metaWrap) return;
+    if (isProject) {
+      metaWrap.innerHTML = '<div class="meta-chip blue"><i data-lucide="folder"></i>내 프로젝트</div>';
+    } else if (pack.lang === 'java') {
+      metaWrap.innerHTML = `
+        <div class="meta-chip blue"><i data-lucide="code-2"></i>Java 21</div>
+        <div class="meta-chip green"><i data-lucide="database"></i>JPA</div>
+        <div class="meta-chip gold">Spring Boot 3.4</div>
+      `;
+    } else {
+      metaWrap.innerHTML = `
+        <div class="meta-chip blue"><i data-lucide="code-2"></i>Python 3.12</div>
+        <div class="meta-chip green"><i data-lucide="brain"></i>AI/ML</div>
+      `;
+    }
+    initIcons();
+  }
+
+  function saveResumePos(pos: Pos): void {
+    try {
+      localStorage.setItem('cm-resume', JSON.stringify(pos));
+    } catch { /* ignore */ }
+  }
+
+  function loadResumePos(): Pos | null {
+    try {
+      const raw = localStorage.getItem('cm-resume');
+      if (!raw) return null;
+      const p: Pos = JSON.parse(raw);
+      if (p.packKey && typeof p.levelNo === 'number' && typeof p.snipIndex === 'number') return p;
+    } catch { /* ignore */ }
+    return null;
+  }
+
+  function updateResumeCard(_pack: Pack, lvl: Level, snip: Snippet): void {
+    const nameEl = document.getElementById('resumeName');
+    const pctEl = document.getElementById('resumePct');
+    if (nameEl) nameEl.textContent = `${lvl.name} · ${snip.title}`;
+    if (pctEl) {
+      // 레벨 내 진행률: 현재 스니펫 인덱스 기준
+      const total = lvl.snippets.length;
+      const idx = pos().snipIndex;
+      const pct = total > 0 ? Math.round(((idx + 1) / total) * 100) : 0;
+      pctEl.textContent = `${pct}%`;
+      const fill = document.querySelector('.resume-fill') as HTMLElement;
+      if (fill) fill.style.width = `${pct}%`;
+    }
+  }
+
   function show(): void {
     if (FLAT.length === 0) return;
     const p = pos();
@@ -256,11 +309,14 @@ export function initTrainer(): void {
     if (fileEl) fileEl.textContent = snip.file;
     if (curEl) curEl.textContent = `${pack.name} · ${snip.title}`;
     renderExplain(snip);
+    updateMetaChips(pack, p.packKey === PROJECT_PACK_KEY);
     appStore.getState().setLang(pack.lang);
     openPack = p.packKey;
     openLevel = lvlKey(p.packKey, p.levelNo);
     renderTree();
     if (p.packKey === PROJECT_PACK_KEY) renderProjectSidebar();
+    saveResumePos(p);
+    updateResumeCard(pack, lvl, snip);
   }
 
   function select(packKey: string, levelNo: number, snipIndex: number): void {
@@ -324,6 +380,29 @@ export function initTrainer(): void {
     cur = Math.floor(Math.random() * FLAT.length);
     show();
   });
+
+  document.querySelector('.resume-btn')?.addEventListener('click', () => {
+    const saved = loadResumePos();
+    if (!saved) return;
+    const i = FLAT.findIndex(
+      (q) => q.packKey === saved.packKey && q.levelNo === saved.levelNo && q.snipIndex === saved.snipIndex,
+    );
+    if (i >= 0) { cur = i; show(); }
+  });
+
+  function initResumeCard(): void {
+    const saved = loadResumePos();
+    if (!saved) return;
+    const pack = saved.packKey === PROJECT_PACK_KEY && _projectPack
+      ? _projectPack : PACKS[saved.packKey];
+    if (!pack) return;
+    const lvl = pack.levels.find((l) => l.no === saved.levelNo);
+    if (!lvl || saved.snipIndex >= lvl.snippets.length) return;
+    const snip = lvl.snippets[saved.snipIndex];
+    updateResumeCard(pack, lvl, snip);
+  }
+
+  initResumeCard();
 
   function renderProjectSidebar(): void {
     const acc = document.getElementById('projectAccordion');

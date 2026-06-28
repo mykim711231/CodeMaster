@@ -157,11 +157,7 @@
           <div class="file-tab">
             <div class="dot"></div><span id="fileTabName">UserEntity.java</span>
           </div>
-          <div class="typing-meta">
-            <div class="meta-chip blue"><i data-lucide="code-2"></i>Java 21</div>
-            <div class="meta-chip green"><i data-lucide="database"></i>JPA</div>
-            <span>Spring Boot 3.2</span>
-          </div>
+          <div class="typing-meta" id="practiceMeta"></div>
         </div>
 
         <!-- 따라치기 영역(라인 단위) — 엔진이 줄별 입력 행을 생성 -->
@@ -181,7 +177,6 @@
 
       <div style="margin-top:10px" class="action-row">
         <button class="btn-primary" id="continueBtn"><i data-lucide="play"></i>타이핑 시작</button>
-        <button class="btn-ghost" id="restartBtn2"><i data-lucide="rotate-ccw"></i>다시 시작</button>
         <button class="btn-ghost" id="prevBtn"><i data-lucide="skip-back"></i>이전 문제</button>
         <button class="btn-ghost" id="nextBtn"><i data-lucide="skip-forward"></i>다음 문제</button>
       </div>
@@ -223,71 +218,9 @@
       <button class="modal-close" id="statsClose" aria-label="닫기">✕</button>
     </div>
     <div class="modal-body">
-
-      <!-- 패턴 숙련도 -->
-      <div class="rp-block">
-        <div class="rp-title"><i data-lucide="pie-chart"></i>패턴 숙련도</div>
-        <div class="skill-row">
-          <span class="skill-label">JPA Entity</span>
-          <div class="skill-bar"><div class="skill-fill" style="width:72%;background:var(--blue)"></div></div>
-          <span class="skill-pct">72%</span>
-        </div>
-        <div class="skill-row">
-          <span class="skill-label">Spring MVC</span>
-          <div class="skill-bar"><div class="skill-fill" style="width:91%;background:var(--green)"></div></div>
-          <span class="skill-pct" style="color:var(--green)">91%</span>
-        </div>
-        <div class="skill-row">
-          <span class="skill-label">@Service DI</span>
-          <div class="skill-bar"><div class="skill-fill" style="width:95%;background:var(--green)"></div></div>
-          <span class="skill-pct" style="color:var(--green)">95%</span>
-        </div>
-        <div class="skill-row">
-          <span class="skill-label">AOP / Aspect</span>
-          <div class="skill-bar"><div class="skill-fill" style="width:58%;background:var(--gold)"></div></div>
-          <span class="skill-pct" style="color:var(--gold)">58%</span>
-        </div>
-        <div class="skill-row">
-          <span class="skill-label">Lambda</span>
-          <div class="skill-bar"><div class="skill-fill" style="width:84%;background:var(--blue)"></div></div>
-          <span class="skill-pct">84%</span>
-        </div>
-        <div class="skill-row">
-          <span class="skill-label">CompletableFuture</span>
-          <div class="skill-bar"><div class="skill-fill" style="width:31%;background:var(--red)"></div></div>
-          <span class="skill-pct" style="color:var(--red)">31%</span>
-        </div>
-      </div>
-
-      <!-- 최근 오타 패턴 -->
-      <div class="rp-block">
-        <div class="rp-title"><i data-lucide="alert-triangle"></i>최근 오타 패턴</div>
-        <div class="error-item">
-          <div class="error-dot"></div>
-          <div>
-            <div class="error-code">@GeneratedValue</div>
-            <div class="error-desc">strategy 속성 순서 혼동 · 7회</div>
-          </div>
-        </div>
-        <div class="error-item">
-          <div class="error-dot"></div>
-          <div>
-            <div class="error-code">implements Serializable</div>
-            <div class="error-desc">Serializable 오타 · 4회</div>
-          </div>
-        </div>
-        <div class="error-item">
-          <div class="error-dot" style="background:var(--gold)"></div>
-          <div>
-            <div class="error-code" style="color:var(--gold)">@Column(nullable)</div>
-            <div class="error-desc">소문자 l·1 혼동 · 2회</div>
-          </div>
-        </div>
-        <button class="btn-ghost" style="width:100%;margin-top:8px;font-size:12px;">
-          <i data-lucide="repeat-2"></i>오답 집중 연습
-        </button>
-      </div>
-
+      <div class="rp-block" id="statsSummary"></div>
+      <div class="rp-block" id="statsRecent"></div>
+      <div class="rp-block" id="statsWrong"></div>
     </div>
   </div>
 </div>

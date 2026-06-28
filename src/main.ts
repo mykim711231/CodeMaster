@@ -39,6 +39,7 @@ import { rustAdapter } from './syntax/lang/rust';
 import { cAdapter } from './syntax/lang/c';
 import { rubyAdapter } from './syntax/lang/ruby';
 import { initTrainer } from './trainer';
+import { updateTopbar } from './storage/db';
 
 // 구문 강조 언어 어댑터 등록
 registerLanguage('java', javaAdapter);
@@ -80,6 +81,8 @@ initSettings();
 
 // 타이핑 트레이너 (학습팩 → 엔진, "다음 문제"·팩 전환, 완료 시 세션 기록)
 initTrainer();
+
+updateTopbar();
 
 // 참고: Service Worker 는 현재 비활성(킬 스위치, public/sw.js).
 // SW 캐시 staleness 로 인한 멈춤 해소. 오프라인 PWA 는 추후 vite-plugin-pwa 로 정식 재도입.

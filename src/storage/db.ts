@@ -1,4 +1,5 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
+import { createIcons, Flame, Zap } from 'lucide';
 
 // 학습 기록(타이핑 세션). 소스코드 원문은 저장하지 않는다(PRD §13.5).
 export interface SessionRecord {
@@ -146,4 +147,45 @@ export async function getWeakPatterns(limit = 10): Promise<TypoPatternRecord[]> 
   const db = await getDb();
   const all = await db.getAll('typoPatterns');
   return all.sort((a, b) => b.count - a.count).slice(0, limit);
+}
+
+export async function getStreak(): Promise<number> {
+  const sessions = await getRecentSessions(365);
+  if (sessions.length === 0) return 0;
+
+  const days = new Set<string>();
+  for (const s of sessions) {
+    days.add(new Date(s.ts).toISOString().slice(0, 10));
+  }
+
+  let streak = 0;
+  const today = new Date();
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    if (days.has(key)) streak++;
+    else break;
+  }
+  return streak;
+}
+
+export async function getTotalXP(): Promise<number> {
+  const sessions = await getRecentSessions(1000);
+  let xp = 0;
+  for (const s of sessions) {
+    xp += Math.round(s.wpm * (s.accuracy / 100) * (s.chars / 100));
+  }
+  return xp;
+}
+
+export async function updateTopbar(): Promise<void> {
+  const [streak, xp] = await Promise.all([getStreak(), getTotalXP()]);
+
+  const streakEl = document.querySelector('.streak-badge');
+  const xpEl = document.querySelector('.xp-badge');
+  if (streakEl) streakEl.innerHTML = `<i data-lucide="flame"></i> ${streak}일 연속`;
+  if (xpEl) xpEl.innerHTML = `<i data-lucide="zap"></i> ${xp.toLocaleString()} XP`;
+
+  createIcons({ icons: { Flame, Zap } });
 }

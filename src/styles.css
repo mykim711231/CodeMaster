@@ -992,6 +992,10 @@ body {
   color: var(--green);
   background: rgba(16, 185, 129, 0.1);
 }
+.meta-chip.gold {
+  color: var(--gold, #f59e0b);
+  background: rgba(245, 158, 11, 0.1);
+}
 
 .typing-editor {
   display: flex;
