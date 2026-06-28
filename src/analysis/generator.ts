@@ -135,14 +135,23 @@ function buildConcept(p: ExtractedPattern): string {
 
   let concept = '';
 
-  // 주석이 있으면 가장 먼저 사용 (가장 신뢰도 높은 설명)
-  if (p.comment && p.comment.length > 5) {
-    concept += p.comment + ' ';
+  const hasGoodComment = p.comment && p.comment.length > 10;
+
+  // 주석이 있으면 주석을 주 설명으로 사용
+  if (hasGoodComment) {
+    concept += p.comment;
+    // 주석이 충분하면 패턴 타입 설명 생략
+    if (!p.comment.endsWith('.') && !p.comment.endsWith('요')) {
+      concept += '. ';
+    } else if (!p.comment.endsWith(' ')) {
+      concept += ' ';
+    }
   } else {
     concept += `${typeLabel[p.type]}예요. `;
   }
 
-  // 어노테이션 기반 설명 보강
+  // 어노테이션 기반 설명 보강 (주석이 없을 때만)
+  if (!hasGoodComment) {
   if (annotations.includes('@RestController')) {
     concept += '웹 요청을 받아 JSON 응답을 돌려주는 컨트롤러 역할을 해요. ';
   } else if (annotations.includes('@Controller')) {
@@ -173,6 +182,8 @@ function buildConcept(p: ExtractedPattern): string {
   } else if (lowerName.includes('test')) {
     concept += '코드가 올바르게 동작하는지 검증하는 테스트예요. ';
   }
+
+  } // end hasGoodComment
 
   concept += '프로젝트 소스에서 추출된 실제 코드예요.';
   return concept;

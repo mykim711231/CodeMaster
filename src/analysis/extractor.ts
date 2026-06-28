@@ -100,7 +100,22 @@ function extractComment(
     i--;
   }
 
-  return comments.join(' ').replace(/\s+/g, ' ').trim();
+  // 주석 정리: Javadoc 태그 제거, 앞쪽 설명만 남김
+  let text = comments.join(' ').replace(/\s+/g, ' ').trim();
+
+  // Javadoc @태그 기준으로 자르기 (첫 번째 @태그부터는 무시)
+  const tagIdx = text.search(/(?:\s|^)@(?:param|return|throws|see|since|deprecated|author|version|exception|serial|serialField|serialData)\s/);
+  if (tagIdx > 0) {
+    text = text.slice(0, tagIdx).trim();
+  }
+
+  // Python docstring :param, :type, :return, :rtype, :raises 태그 제거
+  const pyTagIdx = text.search(/(?:\s|^):(?:param|type|return|rtype|raises|ivar|cvar|var)\s/);
+  if (pyTagIdx > 0) {
+    text = text.slice(0, pyTagIdx).trim();
+  }
+
+  return text;
 }
 
 function trimCode(source: string, startIndex: number, endIndex: number): string {
