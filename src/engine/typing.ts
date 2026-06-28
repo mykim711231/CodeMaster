@@ -20,6 +20,9 @@ export interface CompletionResult {
   chars: number;
   correct: number;
   durationMs: number;
+  snippetId: string;
+  inputLines: string[];
+  targetLines: string[];
 }
 
 export interface TypingOptions {
@@ -28,8 +31,7 @@ export interface TypingOptions {
 }
 
 export interface TypingController {
-  /** 새 스니펫 로드 (코드 + 구문강조 언어) */
-  load(code: string, lang: string): void;
+  load(code: string, lang: string, snippetId?: string): void;
 }
 
 /**
@@ -50,6 +52,7 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
   let LINES: string[] = [];
   let totalChars = 0;
   let curLang = 'java';
+  let curSnippetId = '';
   let inputs: HTMLTextAreaElement[] = [];
   let spansByLine: HTMLSpanElement[][] = [];
   let synByLine: (TokenType | null)[][] = [];
@@ -134,6 +137,9 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
         chars: totalChars,
         correct,
         durationMs,
+        snippetId: curSnippetId,
+        inputLines: inputs.map((inp) => inp.value),
+        targetLines: LINES,
       });
     }
   }
@@ -291,8 +297,9 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
     focusLine(0, 0);
   }
 
-  function load(code: string, lang: string): void {
+  function load(code: string, lang: string, snippetId = ''): void {
     curLang = lang;
+    curSnippetId = snippetId;
     LINES = code.split('\n');
     totalChars = LINES.reduce((a, l) => a + l.length, 0);
     const adapter = getAdapter(lang);

@@ -21,25 +21,48 @@ export interface PatternRecord {
   sessionCount: number;
 }
 
+export interface WrongAnswerRecord {
+  id: string;
+  accuracy: number;
+  ts: number;
+}
+
+export interface TypoPatternRecord {
+  pattern: string;
+  count: number;
+}
+
 interface CodeMasterDB extends DBSchema {
   settings: { key: string; value: unknown };
   sessions: { key: number; value: SessionRecord; indexes: { 'by-ts': number } };
   patterns: { key: string; value: PatternRecord };
+  wrongAnswers: { key: string; value: WrongAnswerRecord };
+  typoPatterns: { key: string; value: TypoPatternRecord };
 }
 
 let dbPromise: Promise<IDBPDatabase<CodeMasterDB>> | null = null;
 
 function getDb(): Promise<IDBPDatabase<CodeMasterDB>> {
   if (!dbPromise) {
-    dbPromise = openDB<CodeMasterDB>('codemaster', 1, {
-      upgrade(db) {
-        db.createObjectStore('settings');
-        const sessions = db.createObjectStore('sessions', {
-          keyPath: 'id',
-          autoIncrement: true,
-        });
-        sessions.createIndex('by-ts', 'ts');
-        db.createObjectStore('patterns', { keyPath: 'patternId' });
+    dbPromise = openDB<CodeMasterDB>('codemaster', 2, {
+      upgrade(db, oldVersion) {
+        if (oldVersion < 1) {
+          db.createObjectStore('settings');
+          const sessions = db.createObjectStore('sessions', {
+            keyPath: 'id',
+            autoIncrement: true,
+          });
+          sessions.createIndex('by-ts', 'ts');
+          db.createObjectStore('patterns', { keyPath: 'patternId' });
+        }
+        if (oldVersion < 2) {
+          if (!db.objectStoreNames.contains('wrongAnswers')) {
+            db.createObjectStore('wrongAnswers', { keyPath: 'id' });
+          }
+          if (!db.objectStoreNames.contains('typoPatterns')) {
+            db.createObjectStore('typoPatterns', { keyPath: 'pattern' });
+          }
+        }
       },
     });
   }
@@ -85,4 +108,42 @@ export async function getDirectoryHandle(
   } catch {
     return null;
   }
+}
+
+export async function addWrongAnswer(snippetId: string, accuracy: number): Promise<void> {
+  const db = await getDb();
+  await db.put('wrongAnswers', { id: snippetId, accuracy, ts: Date.now() });
+  const all = await db.getAll('wrongAnswers');
+  if (all.length > 50) {
+    const oldest = all.sort((a, b) => a.ts - b.ts).slice(0, all.length - 50);
+    for (const o of oldest) await db.delete('wrongAnswers', o.id);
+  }
+}
+
+export async function getWrongAnswers(limit = 20): Promise<WrongAnswerRecord[]> {
+  const db = await getDb();
+  const all = await db.getAll('wrongAnswers');
+  return all.sort((a, b) => b.ts - a.ts).slice(0, limit);
+}
+
+export async function clearWrongAnswers(): Promise<void> {
+  const db = await getDb();
+  await db.clear('wrongAnswers');
+}
+
+export async function addTypoPattern(pattern: string, count: number): Promise<void> {
+  const db = await getDb();
+  const existing = await db.get('typoPatterns', pattern);
+  if (existing) {
+    existing.count += count;
+    await db.put('typoPatterns', existing);
+  } else {
+    await db.put('typoPatterns', { pattern, count });
+  }
+}
+
+export async function getWeakPatterns(limit = 10): Promise<TypoPatternRecord[]> {
+  const db = await getDb();
+  const all = await db.getAll('typoPatterns');
+  return all.sort((a, b) => b.count - a.count).slice(0, limit);
 }

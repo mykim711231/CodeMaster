@@ -1,6 +1,6 @@
 import { initTypingEngine } from './engine/typing';
 import { PACKS, type Level, type Snippet, type Pack } from './content';
-import { saveSession } from './storage/db';
+import { saveSession, addWrongAnswer, getWrongAnswers, addTypoPattern, getWeakPatterns } from './storage/db';
 import { appStore } from './store';
 
 interface Pos {
@@ -87,8 +87,26 @@ export function initTrainer(): void {
     onComplete: (result) => {
       void saveSession({ ts: Date.now(), ...result });
       appStore.getState().recordCompletion(result.wpm);
+      if (result.accuracy < 80 && result.snippetId) {
+        void addWrongAnswer(result.snippetId, result.accuracy);
+        detectTypoPatterns(result);
+      }
     },
   });
+
+  function detectTypoPatterns(result: { inputLines: string[]; targetLines: string[] }): void {
+    for (let i = 0; i < result.targetLines.length; i++) {
+      const target = result.targetLines[i];
+      const input = result.inputLines[i] ?? '';
+      const len = Math.min(target.length, input.length);
+      for (let j = 0; j < len; j++) {
+        if (target[j] !== input[j]) {
+          const ctx = target.slice(Math.max(0, j - 3), j + 4);
+          void addTypoPattern(ctx, 1);
+        }
+      }
+    }
+  }
 
   function setMenuOpen(open: boolean): void {
     menuWrap?.classList.toggle('open', open);
@@ -233,7 +251,7 @@ export function initTrainer(): void {
       p.packKey === PROJECT_PACK_KEY && _projectPack ? _projectPack : PACKS[p.packKey];
     const lvl = levelOf(p);
     const snip = snippetOf(p);
-    engine.load(snip.code, snip.lang);
+    engine.load(snip.code, snip.lang, snip.id);
     if (titleEl) titleEl.textContent = `${lvl.name} · ${snip.title}`;
     if (fileEl) fileEl.textContent = snip.file;
     if (curEl) curEl.textContent = `${pack.name} · ${snip.title}`;
@@ -273,6 +291,39 @@ export function initTrainer(): void {
   });
   document.getElementById('prevBtn')?.addEventListener('click', () => step(-1));
   document.getElementById('nextBtn')?.addEventListener('click', () => step(1));
+
+  document.getElementById('wrongAnswerBtn')?.addEventListener('click', async () => {
+    const wrong = await getWrongAnswers(20);
+    if (wrong.length === 0) {
+      void alert('오답 큐가 비었습니다.');
+      return;
+    }
+    const ids = new Set(wrong.map((w) => w.id));
+    const indices: number[] = [];
+    FLAT.forEach((p, i) => { if (ids.has(snippetOf(p).id)) indices.push(i); });
+    if (indices.length === 0) {
+      void alert('오답 스니펫을 찾을 수 없습니다.');
+      return;
+    }
+    cur = indices[0];
+    show();
+  });
+
+  document.getElementById('weakPatternBtn')?.addEventListener('click', async () => {
+    const patterns = await getWeakPatterns(5);
+    if (patterns.length === 0) {
+      void alert('아직 취약 패턴이 수집되지 않았습니다. 타이핑 연습을 더 진행하세요.');
+      return;
+    }
+    const lines = patterns.map((p) => `"${p.pattern}" · ${p.count}회`);
+    void alert(`취약 패턴 목록:\n${lines.join('\n')}`);
+  });
+
+  document.getElementById('randomQuizBtn')?.addEventListener('click', () => {
+    if (FLAT.length === 0) return;
+    cur = Math.floor(Math.random() * FLAT.length);
+    show();
+  });
 
   function renderProjectSidebar(): void {
     const acc = document.getElementById('projectAccordion');
