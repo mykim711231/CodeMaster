@@ -10,6 +10,7 @@ export interface ExtractedPattern {
   lang: 'java' | 'python';
   lineCount: number;
   category: string;
+  comment: string;
 }
 
 interface QueryDef {
@@ -31,6 +32,76 @@ const PYTHON_QUERIES: QueryDef[] = [
   { type: 'method', pattern: '(function_definition name: (identifier) @name) @def' },
   { type: 'import', pattern: '(import_statement) @def' },
 ];
+
+function extractComment(
+  source: string,
+  startLine: number,
+  lang: 'java' | 'python',
+): string {
+  const lines = source.split('\n');
+  const comments: string[] = [];
+
+  let i = startLine - 1;
+  while (i >= 0) {
+    const line = lines[i].trim();
+    if (lang === 'java') {
+      if (line.startsWith('*/') || line === '*/') {
+        while (i >= 0) {
+          const l = lines[i].trim();
+          if (l.startsWith('* ')) comments.unshift(l.replace(/^\*\s?/, ''));
+          else if (l.startsWith('*')) comments.unshift(l.replace(/^\*/, ''));
+          else if (l.startsWith('/**') || l.startsWith('/*')) break;
+          else if (l) break;
+          i--;
+        }
+        break;
+      } else if (line.startsWith('//')) {
+        comments.unshift(line.replace(/^\/\/\s?/, ''));
+        i--;
+        while (i >= 0) {
+          const l = lines[i].trim();
+          if (l.startsWith('//')) comments.unshift(l.replace(/^\/\/\s?/, ''));
+          else break;
+          i--;
+        }
+        break;
+      } else if (line) {
+        break;
+      }
+    } else {
+      if (line.startsWith('"""') || line.startsWith("'''")) {
+        const quote = line.slice(0, 3);
+        i--;
+        while (i >= 0) {
+          const l = lines[i];
+          if (l.trim().endsWith(quote)) break;
+          if (l.trim().startsWith(quote)) {
+            comments.unshift(l.trim().replace(new RegExp(`^${quote}\\s?`), '').replace(new RegExp(`\\s?${quote}$`), '').replace(/^"?""?/, '').replace(/"?"?"?$/, ''));
+          } else {
+            comments.unshift(l.trim());
+          }
+          i--;
+        }
+        break;
+      } else if (line.startsWith('# ')) {
+        comments.unshift(line.replace(/^#\s?/, ''));
+        i--;
+        while (i >= 0) {
+          const l = lines[i].trim();
+          if (l.startsWith('# ')) comments.unshift(l.replace(/^#\s?/, ''));
+          else break;
+          i--;
+        }
+        break;
+      } else if (line) {
+        break;
+      }
+    }
+    i--;
+  }
+
+  return comments.join(' ').replace(/\s+/g, ' ').trim();
+}
 
 function trimCode(source: string, startIndex: number, endIndex: number): string {
   let code = source.slice(startIndex, endIndex);
@@ -98,6 +169,7 @@ function buildPatterns(
           lang,
           lineCount,
           category: inferCategory(fileName, qd.type, name),
+          comment: extractComment(source, node.startPosition.row, lang),
         });
       }
     } catch {
@@ -136,6 +208,7 @@ function extractPatternsRegex(
       lang,
       lineCount,
       category: inferCategory(fileName, type, name),
+      comment: extractComment(source, startLine, lang),
     });
   };
 
