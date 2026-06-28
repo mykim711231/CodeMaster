@@ -216,7 +216,10 @@ export function initTrainer(): void {
 
   function renderExplain(snip: Snippet): void {
     const ex = snip.explain;
-    if (exConceptEl) exConceptEl.textContent = ex?.concept ?? '이 문제의 설명은 준비 중입니다.';
+    if (exConceptEl) {
+      const concept = ex?.concept ?? '이 문제의 설명은 준비 중입니다.';
+      exConceptEl.textContent = concept.replace(/\.\s+(?=[가-힣A-Z@])/g, '.\n');
+    }
     // expectedOutput
     const exOutEl = document.getElementById('explainExpectedOutput');
     const exOutWrap = document.getElementById('explainExpectedOutputWrap');

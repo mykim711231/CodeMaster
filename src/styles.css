@@ -2209,7 +2209,7 @@ body {
 .explain-panel-head { display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:var(--bg2); cursor:pointer; font-size:.8rem; font-weight:600; user-select:none; }
 .explain-panel-head button { background:none; border:none; cursor:pointer; color:var(--muted); padding:2px; }
 .explain-panel-body { padding:8px 12px; max-height:40vh; overflow-y:auto; }
-.explain-panel-body .explain-concept { font-size:.82rem; line-height:1.6; margin-bottom:8px; }
+.explain-panel-body .explain-concept { font-size:.82rem; line-height:1.8; margin-bottom:8px; white-space:pre-line; word-break:keep-all; }
 .explain-panel-body .explain-terms { list-style:none; padding:0; margin:0; font-size:.78rem; }
 .explain-panel-body .explain-terms li { padding:2px 0; }
 .explain-panel-body .explain-expected,
