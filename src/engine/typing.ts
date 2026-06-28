@@ -1,4 +1,5 @@
 import { getAdapter, type TokenType } from '../syntax/registry';
+import { appStore } from '../store';
 
 const SYN_VAR: Record<TokenType, string> = {
   kw: 'var(--syn-kw)',
@@ -161,7 +162,8 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
 
       let indent = lead;
       if (opensBlock) {
-        indent += '    ';
+        const ts = appStore.getState().tabSize;
+        indent += ' '.repeat(ts);
       }
 
       inputs[next].value = indent;
@@ -172,11 +174,12 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
     }
     if (e.key === 'Tab') {
       e.preventDefault();
+      const ts = appStore.getState().tabSize;
       if (e.shiftKey) {
         focusLine(li - 1, inputs[li - 1]?.value.length ?? 0);
       } else {
-        input.value = input.value.slice(0, s) + '    ' + input.value.slice(en);
-        input.selectionStart = input.selectionEnd = s + 4;
+        input.value = input.value.slice(0, s) + ' '.repeat(ts) + input.value.slice(en);
+        input.selectionStart = input.selectionEnd = s + ts;
         onInput(li);
       }
       return;

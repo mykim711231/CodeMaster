@@ -18,6 +18,12 @@ export interface AppState {
   setIsAnalyzing: (v: boolean) => void;
   setAnalysisProgress: (msg: string) => void;
   clearProjectPack: () => void;
+
+  // 에디터 설정
+  tabSize: number;
+  fontSize: number;
+  setTabSize: (n: number) => void;
+  setFontSize: (n: number) => void;
 }
 
 export const appStore = createStore<AppState>((set) => ({
@@ -42,4 +48,9 @@ export const appStore = createStore<AppState>((set) => ({
   setIsAnalyzing: (v) => set({ isAnalyzing: v }),
   setAnalysisProgress: (msg) => set({ analysisProgress: msg }),
   clearProjectPack: () => set({ projectPack: null, projectPackSnippets: [] }),
+
+  tabSize: 4,
+  fontSize: 14,
+  setTabSize: (n) => set({ tabSize: n }),
+  setFontSize: (n) => set({ fontSize: n }),
 }));

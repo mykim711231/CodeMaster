@@ -292,6 +292,34 @@
 </div>
 
 
+<!-- 설정 모달 -->
+<div id="settingsModal" class="settings-modal" style="display:none">
+  <div class="settings-modal-bg"></div>
+  <div class="settings-modal-box">
+    <div class="settings-modal-head">
+      <b>에디터 설정</b>
+      <button id="settingsModalClose">&times;</button>
+    </div>
+    <div class="settings-modal-body">
+      <label>탭 크기 (들여쓰기 간격)
+        <select id="settingsTabSize">
+          <option value="2">2칸</option>
+          <option value="4" selected>4칸</option>
+          <option value="8">8칸</option>
+        </select>
+      </label>
+      <label>코드 글자 크기
+        <select id="settingsFontSize">
+          <option value="12">12px</option>
+          <option value="14" selected>14px</option>
+          <option value="16">16px</option>
+          <option value="18">18px</option>
+        </select>
+      </label>
+    </div>
+  </div>
+</div>
+
 <script type="module" src="/src/main.ts"></script>
 </body>
 </html>
