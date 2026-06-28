@@ -146,7 +146,28 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
     if (e.key === 'Enter') {
       e.preventDefault();
       const next = li + 1;
-      focusLine(next, 0);
+      if (next >= inputs.length) return;
+
+      // 다음 줄의 선행 공백 자동 채우기 (에디터 자동 들여쓰기)
+      const nextTarget = LINES[next];
+      const lead = (nextTarget.match(/^[ \t]+/) || [''])[0];
+
+      // 현재 줄이 블록 열기면 한 단계 추가 들여쓰기
+      const curLine = LINES[li].trimEnd();
+      const opensBlock =
+        curLine.endsWith('{') ||
+        /:\s*$/.test(curLine) ||
+        /\($/.test(curLine);
+
+      let indent = lead;
+      if (opensBlock) {
+        indent += '    ';
+      }
+
+      inputs[next].value = indent;
+      const cursorPos = indent.length;
+      focusLine(next, cursorPos);
+      renderLine(next);
       return;
     }
     if (e.key === 'Tab') {
