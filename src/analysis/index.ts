@@ -47,18 +47,22 @@ export async function analyzeProject(
 
     onProgress?.(`분석 중... (${analyzedFiles + 1}/${scanResult.analyzedFiles}) ${file.path}`);
 
-    try {
-      const parseResult = await parseSource(file.lang, file.content);
-      const patterns = extractPatterns(
-        file.lang,
-        parseResult.tree,
-        parseResult.text,
-        file.path,
-      );
-      allPatterns.push(...patterns);
-    } catch {
-      // skip files that can't be parsed
+    let parseResult: { tree: any; text: string } | null = null;
+    if (isTreeSitterReady()) {
+      try {
+        parseResult = await parseSource(file.lang, file.content);
+      } catch {
+        // Tree-sitter parse failed, will fall back to regex
+      }
     }
+
+    const patterns = extractPatterns(
+      file.lang,
+      parseResult?.tree ?? null,
+      parseResult?.text ?? file.content,
+      file.path,
+    );
+    allPatterns.push(...patterns);
 
     analyzedFiles++;
   }

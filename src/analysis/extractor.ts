@@ -182,7 +182,7 @@ function extractPatternsRegex(
 
 export function extractPatterns(
   lang: 'java' | 'python',
-  tree: Tree,
+  tree: Tree | null,
   source: string,
   fileName: string,
 ): ExtractedPattern[] {
@@ -191,7 +191,7 @@ export function extractPatterns(
   }
 
   const language = getLanguage(lang);
-  if (!language) {
+  if (!language || !tree) {
     return extractPatternsRegex(lang, source, fileName);
   }
 
