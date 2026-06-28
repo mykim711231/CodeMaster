@@ -2203,3 +2203,20 @@ body {
 .settings-modal-body label { display:flex; justify-content:space-between; align-items:center; font-size:.8rem; }
 .settings-modal-body select { padding:4px 8px; font-size:.8rem; border:1px solid var(--border); border-radius:4px; background:var(--bg2); color:var(--fg); }
 .settings-modal-body select option { background:var(--bg); color:var(--fg); }
+
+/* 설명 패널 (타이핑 위, 접이식) */
+.explain-panel { border:1px solid var(--border); border-radius:8px; margin-bottom:8px; overflow:hidden; background:var(--bg); }
+.explain-panel-head { display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:var(--bg2); cursor:pointer; font-size:.8rem; font-weight:600; user-select:none; }
+.explain-panel-head button { background:none; border:none; cursor:pointer; color:var(--muted); padding:2px; }
+.explain-panel-body { padding:8px 12px; max-height:40vh; overflow-y:auto; }
+.explain-panel-body .explain-concept { font-size:.82rem; line-height:1.6; margin-bottom:8px; }
+.explain-panel-body .explain-terms { list-style:none; padding:0; margin:0; font-size:.78rem; }
+.explain-panel-body .explain-terms li { padding:2px 0; }
+.explain-panel-body .explain-expected,
+.explain-panel-body .explain-realworld,
+.explain-panel-body .explain-why { font-size:.78rem; color:var(--muted); white-space:pre-line; }
+.explain-panel-body .explain-sub { font-size:.7rem; color:var(--accent,#3b82f6); font-weight:600; margin:6px 0 2px; }
+.explain-panel-body .explain-pitfall { font-size:.76rem; color:var(--gold); margin-top:6px; }
+.explain-panel.closed .explain-panel-body { display:none; }
+.explain-panel.closed .explain-panel-head i[data-lucide="chevron-up"] { display:none; }
+.explain-panel:not(.closed) .explain-panel-head i[data-lucide="chevron-down"] { display:none; }

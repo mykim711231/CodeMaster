@@ -32,15 +32,25 @@ export function initPanels(): void {
   };
 
   const toggleRight = (): void => {
-    if (isMobile()) {
-      const open = !app.classList.contains('right-open');
-      app.classList.remove('left-open', 'right-open');
-      if (open) app.classList.add('right-open');
-    } else {
-      app.classList.toggle('right-collapsed');
+    // 우측 패널 → 이제 설명 패널 토글
+    const explainPanel = document.getElementById('explainPanel');
+    if (explainPanel) {
+      explainPanel.classList.toggle('closed');
+      syncButtons();
     }
-    syncButtons();
   };
+
+  // 설명 패널 헤더 클릭으로도 토글
+  const explainHead = document.querySelector('.explain-panel-head');
+  explainHead?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('.explain-panel-toggle')) return;
+    document.getElementById('explainPanel')?.classList.toggle('closed');
+    syncButtons();
+  });
+  document.getElementById('explainPanelToggle')?.addEventListener('click', () => {
+    document.getElementById('explainPanel')?.classList.toggle('closed');
+    syncButtons();
+  });
 
   const closeDrawers = (): void => {
     app.classList.remove('left-open', 'right-open');
