@@ -35,6 +35,13 @@ export interface AppState {
   setAutoClose: (v: boolean) => void;
   autoNext: boolean;
   setAutoNext: (v: boolean) => void;
+
+  lineNum: boolean;
+  setLineNum: (v: boolean) => void;
+  indentGuide: boolean;
+  setIndentGuide: (v: boolean) => void;
+  tabChar: boolean;
+  setTabChar: (v: boolean) => void;
 }
 
 export const appStore = createStore<AppState>((set) => ({
@@ -74,4 +81,11 @@ export const appStore = createStore<AppState>((set) => ({
   setAutoClose: (v) => set({ autoClose: v }),
   autoNext: false,
   setAutoNext: (v) => set({ autoNext: v }),
+
+  lineNum: true,
+  setLineNum: (v) => set({ lineNum: v }),
+  indentGuide: false,
+  setIndentGuide: (v) => set({ indentGuide: v }),
+  tabChar: false,
+  setTabChar: (v) => set({ tabChar: v }),
 }));

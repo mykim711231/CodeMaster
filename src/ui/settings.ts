@@ -21,6 +21,9 @@ export function initSettings(): void {
     syncCheckbox('settingsAutoClose', state.autoClose);
     syncCheckbox('settingsOverwrite', state.overwriteMode);
     syncCheckbox('settingsAutoNext', state.autoNext);
+    syncCheckbox('settingsLineNum', state.lineNum);
+    syncCheckbox('settingsIndentGuide', state.indentGuide);
+    syncCheckbox('settingsTabChar', state.tabChar);
     modal.style.display = 'flex';
   };
 
@@ -32,6 +35,9 @@ export function initSettings(): void {
   bindCheckbox('settingsAutoClose', appStore.getState().setAutoClose);
   bindCheckbox('settingsOverwrite', appStore.getState().setOverwriteMode);
   bindCheckbox('settingsAutoNext', appStore.getState().setAutoNext);
+  bindCheckbox('settingsLineNum', appStore.getState().setLineNum);
+  bindCheckbox('settingsIndentGuide', appStore.getState().setIndentGuide);
+  bindCheckbox('settingsTabChar', appStore.getState().setTabChar);
   const close = () => { modal.style.display = 'none'; };
 
   closeBtn?.addEventListener('click', close);

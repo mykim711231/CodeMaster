@@ -220,8 +220,9 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
           onInput(li);
         }
       } else {
-        input.value = input.value.slice(0, s) + ' '.repeat(ts) + input.value.slice(en);
-        input.selectionStart = input.selectionEnd = s + ts;
+        const tabChar = appStore.getState().tabChar ? '\t' : ' '.repeat(ts);
+        input.value = input.value.slice(0, s) + tabChar + input.value.slice(en);
+        input.selectionStart = input.selectionEnd = s + tabChar.length;
         onInput(li);
       }
       return;
@@ -331,6 +332,7 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
       const num = document.createElement('div');
       num.className = 'tt-gutter-num';
       num.textContent = String(li + 1);
+      num.style.display = appStore.getState().lineNum ? '' : 'none';
 
       const body = document.createElement('div');
       body.className = 'tt-line-body';
