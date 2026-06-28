@@ -209,6 +209,34 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
       focusLine(li - 1, inputs[li - 1].value.length);
       return;
     }
+    // 괄호 자동 닫기
+    const brackets: Record<string, string> = { '{': '}', '(': ')', '[': ']' };
+    if (e.key in brackets && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      const tgt = LINES[li];
+      const closeChar = brackets[e.key];
+      if (s === en && s < tgt.length && tgt[s] === e.key && tgt[s + 1] === closeChar) {
+        e.preventDefault();
+        input.value = input.value.slice(0, s) + e.key + closeChar + input.value.slice(s + 2);
+        input.selectionStart = input.selectionEnd = s + 2;
+        onInput(li);
+        return;
+      }
+    }
+    // 따옴표 자동 닫기
+    const quotes: Record<string, string> = { '"': '"', "'": "'", '`': '`' };
+    if (e.key in quotes && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      const tgt = LINES[li];
+      const q = e.key;
+      if (s + 2 < tgt.length && tgt[s] === q && tgt[s + 1] === q && tgt[s + 2] === q) {
+        // triple quote — 직접 처리
+      } else if (s === en && s < tgt.length && tgt[s] === q && tgt[s + 1] === q) {
+        e.preventDefault();
+        input.value = input.value.slice(0, s) + q + q + input.value.slice(s + 2);
+        input.selectionStart = input.selectionEnd = s + 2;
+        onInput(li);
+        return;
+      }
+    }
     // 줄 안 중간 입력은 '삽입'이 아닌 '덮어쓰기' → 뒤 글자 밀림 방지
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
       if (s === en && s < len) {
@@ -262,6 +290,12 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
       const render = document.createElement('div');
       render.className = 'tt-render';
       render.setAttribute('aria-hidden', 'true');
+
+      const leadingSpaces = (lineText.match(/^ +/)?.[0]?.length ?? 0);
+      if (leadingSpaces > 0) {
+        render.style.setProperty('--indent', String(leadingSpaces));
+        render.classList.add('has-indent-guide');
+      }
 
       const spans: HTMLSpanElement[] = [];
       for (let i = 0; i < lineText.length; i++) {
