@@ -2220,3 +2220,6 @@ body {
 .explain-panel.closed .explain-panel-body { display:none; }
 .explain-panel.closed .explain-panel-head i[data-lucide="chevron-up"] { display:none; }
 .explain-panel:not(.closed) .explain-panel-head i[data-lucide="chevron-down"] { display:none; }
+.btn-sm { font-size:.7rem; padding:3px 8px; min-width:unset; }
+.footer-nav { display:inline-flex; gap:2px; margin-left:auto; }
+.footer-nav .btn-sm { padding:3px 4px; }
