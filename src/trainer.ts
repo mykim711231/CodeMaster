@@ -100,97 +100,6 @@ export function initTrainer(): void {
     const p = pos();
     pop.innerHTML = '';
 
-    // --- 프로젝트 팩 (내 프로젝트) ---
-    if (_projectPack) {
-      const ppKey = PROJECT_PACK_KEY;
-      const ppOpen = openPack === ppKey;
-      const ppLevel = _projectPack.levels[0];
-
-      const prow = document.createElement('button');
-      prow.type = 'button';
-      prow.className =
-        'pack-row' +
-        (ppKey === p.packKey ? ' current' : '') +
-        (ppOpen ? ' open' : '');
-      const pchev = document.createElement('span');
-      pchev.className = 'pack-chev';
-      pchev.textContent = '▸';
-      const pname = document.createElement('span');
-      pname.className = 'pack-name';
-      pname.textContent = `내 프로젝트: ${_projectPack.name}`;
-      const pcnt = document.createElement('span');
-      pcnt.className = 'pack-cnt';
-      pcnt.textContent = String(_projectPack.levels.length);
-      prow.append(pchev, pname, pcnt);
-      prow.addEventListener('click', (e) => {
-        e.stopPropagation();
-        openPack = openPack === ppKey ? null : ppKey;
-        openLevel = null;
-        renderTree();
-      });
-      pop.append(prow);
-
-      if (ppOpen && ppLevel) {
-        const levelsWrap = document.createElement('div');
-        levelsWrap.className = 'pack-levels';
-
-        const key = lvlKey(ppKey, ppLevel.no);
-        const lvlOpen = openLevel === key;
-        const isCurLevel = ppKey === p.packKey && ppLevel.no === p.levelNo;
-        const has = ppLevel.snippets.length > 0;
-
-        const lrow = document.createElement('button');
-        lrow.type = 'button';
-        lrow.className =
-          'level-row' +
-          (isCurLevel ? ' current' : '') +
-          (lvlOpen ? ' open' : '') +
-          (has ? '' : ' empty');
-        if (!has) lrow.disabled = true;
-        const lchev = document.createElement('span');
-        lchev.className = 'pack-chev';
-        lchev.textContent = has ? '▸' : '·';
-        const lno = document.createElement('span');
-        lno.className = 'level-no';
-        lno.textContent = `L${ppLevel.no}`;
-        const lname = document.createElement('span');
-        lname.className = 'level-name';
-        lname.textContent = ppLevel.name;
-        const lcnt = document.createElement('span');
-        lcnt.className = 'pack-cnt';
-        lcnt.textContent = has ? String(ppLevel.snippets.length) : '준비중';
-        lrow.append(lchev, lno, lname, lcnt);
-        lrow.addEventListener('click', (e) => {
-          e.stopPropagation();
-          openLevel = openLevel === key ? null : key;
-          renderTree();
-        });
-        levelsWrap.append(lrow);
-
-        if (lvlOpen && has) {
-          const snips = document.createElement('div');
-          snips.className = 'level-snips';
-          ppLevel.snippets.forEach((snip, i) => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className =
-              'snip-item' + (isCurLevel && i === p.snipIndex ? ' active' : '');
-            const t = document.createElement('span');
-            t.className = 'snip-title';
-            t.textContent = snip.title;
-            const f = document.createElement('span');
-            f.className = 'snip-file';
-            f.textContent = snip.file;
-            btn.append(t, f);
-            btn.addEventListener('click', () => select(ppKey, ppLevel.no, i));
-            snips.append(btn);
-          });
-          levelsWrap.append(snips);
-        }
-        pop.append(levelsWrap);
-      }
-    }
-
     // --- 내장 학습팩 ---
     for (const packKey of PACK_KEYS) {
       const pack = PACKS[packKey];
@@ -376,7 +285,12 @@ export function initTrainer(): void {
     }
 
     acc.style.display = '';
+    acc.classList.add('open');
     body.innerHTML = '';
+
+    // 제목 업데이트
+    const titleEl = document.getElementById('projectAccTitle');
+    if (titleEl) titleEl.textContent = _projectPack.name;
 
     const lvl = _projectPack.levels[0];
     if (!lvl) return;
@@ -473,7 +387,6 @@ export function initTrainer(): void {
     rebuildFlat();
     cur = 0;
     show();
-    setMenuOpen(true);
     renderProjectSidebar();
   }
 
