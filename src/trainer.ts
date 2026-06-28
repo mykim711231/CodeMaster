@@ -365,6 +365,45 @@ export function initTrainer(): void {
   document.getElementById('prevBtn')?.addEventListener('click', () => step(-1));
   document.getElementById('nextBtn')?.addEventListener('click', () => step(1));
 
+  function renderProjectSidebar(): void {
+    const acc = document.getElementById('projectAccordion');
+    const body = document.getElementById('projectAccBody');
+    if (!acc || !body) return;
+
+    if (!_projectPack) {
+      acc.style.display = 'none';
+      return;
+    }
+
+    acc.style.display = '';
+    body.innerHTML = '';
+
+    const lvl = _projectPack.levels[0];
+    if (!lvl) return;
+
+    const nameRow = document.createElement('div');
+    nameRow.className = 'sidebar-item';
+    nameRow.innerHTML = `<i data-lucide="package" style="color:var(--gold)"></i> ${_projectPack.name}`;
+    body.append(nameRow);
+
+    lvl.snippets.forEach((snip, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'sidebar-item snip-sidebar-item';
+      btn.innerHTML = `<span style="font-size:0.75rem;color:var(--muted)">${snip.title}</span>`;
+      btn.addEventListener('click', () => {
+        const target = FLAT.findIndex(
+          (q) => q.packKey === PROJECT_PACK_KEY && q.snipIndex === i,
+        );
+        if (target >= 0) {
+          cur = target;
+          setMenuOpen(false);
+          show();
+        }
+      });
+      body.append(btn);
+    });
+  }
+
   function loadProjectPack(pack: Pack): void {
     _projectPack = pack;
     appStore.getState().setProjectPack(pack);
@@ -372,6 +411,7 @@ export function initTrainer(): void {
     cur = 0;
     show();
     setMenuOpen(true);
+    renderProjectSidebar();
   }
 
   function loadBuiltinPack(packId: string): void {
@@ -387,6 +427,7 @@ export function initTrainer(): void {
     rebuildFlat();
     if (cur >= FLAT.length) cur = Math.max(0, FLAT.length - 1);
     show();
+    renderProjectSidebar();
   }
 
   // 스토어 구독 — 외부에서 projectPack 변경 시 트레이너에 반영
