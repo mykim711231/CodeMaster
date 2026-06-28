@@ -52,51 +52,6 @@ export function initTrainer(): void {
 
   const PACK_KEYS = Object.keys(PACKS);
 
-  const PACK_GUIDES: Record<string, { desc: string; tips: string }> = {
-    'spring-boot': {
-      desc: 'Spring Boot로 백엔드 개발을 처음 배우는 분을 위한 20단계 실무 로드맵이에요. L1~L4 기초만 마스터해도 REST API 서버를 만들 수 있어요.',
-      tips: '🔥 초보자 추천: L1(Java Core) → L2(Spring DI) → L3(MVC) → L4(DB) 순서로 시작하세요.',
-    },
-    'python-ai': {
-      desc: 'Python으로 AI/ML 개발을 처음 배우는 분을 위한 15단계 실무 로드맵이에요. L1~L5 기본기 없이 LLM으로 바로 가면 이해가 어려워요.',
-      tips: '🔥 초보자 추천: L1(Python) → L2(Async) → L3(Data) → L4(ML) → L5(DL) 순서로 시작하세요.',
-    },
-  };
-
-  function renderGuide(pack: Pack): void {
-    const body = document.getElementById('guideBody');
-    const title = document.getElementById('guideTitle');
-    const guide = PACK_GUIDES[pack.id];
-    if (!body || !guide) return;
-
-    const curPos = FLAT.length > 0 ? FLAT[cur] : null;
-    const curLevelNo = curPos?.packKey === PROJECT_PACK_KEY ? -1 : (curPos?.levelNo ?? 0);
-
-    if (title) title.textContent = pack.name;
-
-    body.innerHTML = `
-      <div style="font-size:.75rem;line-height:1.5;margin-bottom:4px">${guide.desc}</div>
-      <div style="font-size:.7rem;line-height:1.4;color:var(--accent,#f59e0b);margin-bottom:6px">${guide.tips}</div>
-      <div style="display:flex;flex-wrap:wrap;gap:2px">
-        ${pack.levels.map((l) => {
-          const has = l.snippets.length > 0;
-          const cur = l.no === curLevelNo;
-          const avg = has
-            ? l.snippets.reduce((s, sn) => s + (_patternMasteries[sn.id] ?? 0), 0) / l.snippets.length
-            : 0;
-          const chipBg = avg >= 80 ? '#22c55e' : avg >= 60 ? '#3b82f6' : avg >= 30 ? '#f59e0b' : '#ef4444';
-          const chipStyle = !has
-            ? 'opacity:.35;color:var(--muted)'
-            : cur
-              ? 'background:' + chipBg + ';color:#fff;font-weight:700;outline:2px solid var(--accent,#3b82f6);outline-offset:1px'
-              : 'background:' + chipBg + ';color:#fff';
-          return '<span style="font-size:.65rem;padding:1px 4px;border-radius:2px;' + chipStyle + '"'
-            + ' title="L' + l.no + ' 평균 숙련도 ' + Math.round(avg) + '%">L' + l.no + '</span>';
-        }).join('')}
-      </div>
-    `;
-  }
-
   // 모든 문제를 순서대로 펼친 평면 목록 (이전/다음 네비)
   const FLAT: Pos[] = [];
 
@@ -146,14 +101,7 @@ export function initTrainer(): void {
       updateTopbar();
       syncBadges();
       if (result.snippetId) {
-        void updatePatternMastery(result.snippetId, result.accuracy).then(() => {
-          void loadPatternMasteries().then(() => {
-            const p = pos();
-            const pack = p.packKey === PROJECT_PACK_KEY && _projectPack
-              ? _projectPack : PACKS[p.packKey];
-            if (pack) renderGuide(pack);
-          });
-        });
+        void updatePatternMastery(result.snippetId, result.accuracy);
       }
       if (appStore.getState().autoNext && !document.getElementById('nextBtn')?.matches(':disabled')) {
         setTimeout(() => step(1), 500);
@@ -421,7 +369,6 @@ export function initTrainer(): void {
     if (p.packKey === PROJECT_PACK_KEY) renderProjectSidebar();
     saveResumePos(p);
     updateResumeCard(pack, lvl, snip);
-    renderGuide(pack);
   }
 
   function select(packKey: string, levelNo: number, snipIndex: number): void {
@@ -740,11 +687,6 @@ export function initTrainer(): void {
     if (cur >= FLAT.length) cur = Math.max(0, FLAT.length - 1);
     show();
     renderProjectSidebar();
-    if (FLAT.length > 0) {
-      const pack = FLAT[cur]?.packKey === PROJECT_PACK_KEY && _projectPack
-        ? _projectPack : PACKS[FLAT[cur]?.packKey];
-      if (pack) renderGuide(pack);
-    }
   }
 
   // 스토어 구독 — 외부에서 projectPack 변경 시 트레이너에 반영
