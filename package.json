@@ -29,6 +29,8 @@
     "@eslint/js": "^10.0.1",
     "eslint": "^10.6.0",
     "prettier": "^3.9.0",
+    "tree-sitter-java": "^0.23.5",
+    "tree-sitter-python": "^0.23.6",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.62.0",
     "vite": "^8.1.0"

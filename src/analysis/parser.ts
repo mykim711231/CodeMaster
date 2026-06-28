@@ -10,12 +10,12 @@ let _pythonLang: Language | null = null;
 const _pool: Parser[] = [];
 const MAX_POOL = 4;
 
-const TREE_SITTER_CORE_CDN =
-  'https://cdn.jsdelivr.net/npm/web-tree-sitter@0.24.7/tree-sitter.wasm';
-const JAVA_WASM_CDN =
-  'https://cdn.jsdelivr.net/npm/tree-sitter-java@0.23.5/tree-sitter-java.wasm';
-const PYTHON_WASM_CDN =
-  'https://cdn.jsdelivr.net/npm/tree-sitter-python@0.22.3/tree-sitter-python.wasm';
+const WASM_BASE = import.meta.env.BASE_URL.endsWith('/')
+  ? `${import.meta.env.BASE_URL}wasm/`
+  : `${import.meta.env.BASE_URL}/wasm/`;
+const TREE_SITTER_CORE = `${WASM_BASE}tree-sitter.wasm`;
+const JAVA_WASM = `${WASM_BASE}tree-sitter-java.wasm`;
+const PYTHON_WASM = `${WASM_BASE}tree-sitter-python.wasm`;
 
 export interface ParserResult {
   tree: Tree;
@@ -30,19 +30,24 @@ export async function initTreeSitter(): Promise<void> {
     try {
       await Parser.init({
         locateFile() {
-          return TREE_SITTER_CORE_CDN;
+          return TREE_SITTER_CORE;
         },
       });
 
-      [_javaLang, _pythonLang] = await Promise.all([
-        Language.load(JAVA_WASM_CDN),
-        Language.load(PYTHON_WASM_CDN),
+      const results = await Promise.allSettled([
+        Language.load(JAVA_WASM),
+        Language.load(PYTHON_WASM),
       ]);
+      if (results[0].status === 'fulfilled') _javaLang = results[0].value;
+      else console.warn('Java WASM 로드 실패, regex 폴백 사용');
+      if (results[1].status === 'fulfilled') _pythonLang = results[1].value;
+      else console.warn('Python WASM 로드 실패, regex 폴백 사용');
 
-      _ready = true;
+      _ready = _javaLang !== null || _pythonLang !== null;
     } catch (err) {
       console.warn('Tree-sitter 초기화 실패, regex 폴백 사용:', err);
       _ready = false;
+      _initPromise = null;
     }
   })();
 

@@ -1,11 +1,14 @@
-import { importProject } from '../analysis/index';
+import { importProject, importPatterns } from '../analysis/index';
 import { appStore } from '../store';
 import { getTrainerAPI } from '../trainer';
 
 const isSupported = 'showDirectoryPicker' in window;
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-async function doImport(btn: HTMLButtonElement): Promise<void> {
+async function runImport(
+  btn: HTMLButtonElement,
+  mode: 'files' | 'patterns',
+): Promise<void> {
   if (!isSupported || isMobile) {
     alert('이 기능은 데스크톱 Chromium 브라우저에서만 지원됩니다.');
     return;
@@ -14,11 +17,14 @@ async function doImport(btn: HTMLButtonElement): Promise<void> {
 
   btn.disabled = true;
   const orig = btn.innerHTML;
-  btn.innerHTML = '<i data-lucide="loader"></i> 불러오는 중...';
+  btn.innerHTML = '<i data-lucide="loader"></i> ' + (mode === 'files' ? '불러오는 중...' : '분석 중...');
   appStore.getState().setIsAnalyzing(true);
 
   try {
-    const pack = await importProject((msg) => appStore.getState().setAnalysisProgress(msg));
+    const pack = mode === 'files'
+      ? await importProject((msg) => appStore.getState().setAnalysisProgress(msg))
+      : await importPatterns((msg) => appStore.getState().setAnalysisProgress(msg));
+
     const trainer = getTrainerAPI();
     if (trainer) trainer.loadProjectPack(pack);
   } catch (err) {
@@ -45,13 +51,16 @@ export function initMenu(): void {
 
   menuToggle.addEventListener('click', (e) => { e.stopPropagation(); setOpen(!menuWrap.classList.contains('open')); });
 
-  const importLink = Array.from(menuWrap.querySelectorAll('.menu-link')).find(
-    (el) => el.textContent?.includes('프로젝트 가져오기'),
-  ) as HTMLButtonElement | undefined;
+  const links = menuWrap.querySelectorAll('.menu-link');
 
-  menuWrap.querySelectorAll('.menu-link').forEach((link) => {
-    if (link === importLink) {
-      link.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); setOpen(false); void doImport(link as HTMLButtonElement); });
+  const fileLink = Array.from(links).find((el) => el.textContent?.includes('폴더 열기')) as HTMLButtonElement | undefined;
+  const patternLink = Array.from(links).find((el) => el.textContent?.includes('패턴 추출')) as HTMLButtonElement | undefined;
+
+  links.forEach((link) => {
+    if (link === fileLink) {
+      link.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); setOpen(false); void runImport(link as HTMLButtonElement, 'files'); });
+    } else if (link === patternLink) {
+      link.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); setOpen(false); void runImport(link as HTMLButtonElement, 'patterns'); });
     } else {
       link.addEventListener('click', () => setOpen(false));
     }

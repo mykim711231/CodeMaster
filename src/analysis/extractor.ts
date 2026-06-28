@@ -237,7 +237,7 @@ function extractPatternsRegex(
         /(?:(?:public|private|protected)\s+)*interface\s+(\w+)/,
       );
       const methodM = line.match(
-        /(?:(?:public|private|protected|static|final|abstract|synchronized|native|\s)+)(?:[\w<>[\]\s]+\s+)?(\w+)\s*\([^)]*\)/,
+        /(?:(?:public|private|protected|static|final|abstract|synchronized|native)\s+)*(?:[\w<>[\]\s]+\s+)?(\w+)\s*\([^)]*\)/,
       );
       const annotM = line.match(/@interface\s+(\w+)/);
 
