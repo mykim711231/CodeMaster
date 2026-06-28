@@ -301,9 +301,29 @@ export function initTrainer(): void {
     nameRow.style.alignItems = 'center';
     nameRow.innerHTML =
       `<span><i data-lucide="package" style="color:var(--gold)"></i> ${_projectPack.name} (${lvl.snippets.length}파일)</span>` +
-      `<button class="proj-del-btn" title="프로젝트 제거" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;padding:0 4px">&times;</button>`;
+      `<span style="display:flex;gap:2px">` +
+      `<button class="tree-expand-btn" title="모두 펼침" style="background:none;border:none;cursor:pointer;font-size:.7rem;padding:0 2px">&plus;</button>` +
+      `<button class="tree-collapse-btn" title="모두 접기" style="background:none;border:none;cursor:pointer;font-size:.7rem;padding:0 2px">&minus;</button>` +
+      `<button class="proj-del-btn" title="프로젝트 제거" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;padding:0 4px">&times;</button>` +
+      `</span>`;
+
     const delBtn = nameRow.querySelector('.proj-del-btn') as HTMLButtonElement;
     if (delBtn) delBtn.addEventListener('click', (e) => { e.stopPropagation(); clearProjectPack(); });
+
+    nameRow.querySelector('.tree-expand-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      body.querySelectorAll('.tree-sub').forEach((d) => { (d as HTMLElement).style.display = 'block'; });
+      body.querySelectorAll('.tree-folder').forEach((b) => {
+        if (b.textContent?.startsWith('▸')) b.textContent = b.textContent.replace('▸', '▾');
+      });
+    });
+    nameRow.querySelector('.tree-collapse-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      body.querySelectorAll('.tree-sub').forEach((d) => { (d as HTMLElement).style.display = 'none'; });
+      body.querySelectorAll('.tree-folder').forEach((b) => {
+        if (b.textContent?.startsWith('▾')) b.textContent = b.textContent.replace('▾', '▸');
+      });
+    });
     body.append(nameRow);
 
     // --- 폴더 트리 빌드 ---
@@ -372,7 +392,8 @@ export function initTrainer(): void {
         toggle.style.cursor = 'pointer';
         toggle.style.color = 'var(--fg)';
         const sub = document.createElement('div');
-        sub.style.display = 'block'; // 항상 열림
+        sub.className = 'tree-sub';
+        sub.style.display = 'block';
         renderTree(child, depth + 1, sub);
         toggle.textContent = '▾ ' + child.name;
         toggle.addEventListener('click', () => {
