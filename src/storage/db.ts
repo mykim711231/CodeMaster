@@ -11,6 +11,7 @@ export interface SessionRecord {
   chars: number;
   correct: number;
   durationMs: number;
+  snippetId?: string;
 }
 
 // 패턴 숙련도 (학습 엔진 §15 연계) — 후속 단계에서 사용

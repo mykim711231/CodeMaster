@@ -136,12 +136,19 @@ function renderWrongAnswers(wrongAnswers: WrongAnswerRecord[]): void {
 }
 
 async function loadStats(): Promise<void> {
-  const sessions = await getRecentSessions(200);
-  const wrongAnswers = await getWrongAnswers(50);
+  try {
+    const sessions = await getRecentSessions(200);
+    const wrongAnswers = await getWrongAnswers(50);
 
-  renderSummary(sessions);
-  renderRecentSessions(sessions);
-  renderWrongAnswers(wrongAnswers);
+    renderSummary(sessions);
+    renderRecentSessions(sessions);
+    renderWrongAnswers(wrongAnswers);
+  } catch (err) {
+    console.error('stats load failed:', err);
+    const el = document.getElementById('statsSummary');
+    if (el) el.innerHTML =
+      '<div class="rp-title">요약</div><p class="explain-concept">통계를 불러올 수 없습니다</p>';
+  }
 }
 
 export function initStats(): void {
