@@ -77,12 +77,6 @@ export function initMenu(): void {
     }
   });
 
-  // 사이드바 "프로젝트 가져오기" 버튼
-  const sidebarImport = document.querySelector('.project-import-btn') as HTMLButtonElement | null;
-  if (sidebarImport) {
-    sidebarImport.addEventListener('click', () => void doImport(sidebarImport));
-  }
-
   // 문서 클릭·ESC로 메뉴 닫기
   document.addEventListener('click', (e: Event) => {
     const target = e.target as Node | null;
