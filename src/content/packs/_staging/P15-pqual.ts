@@ -305,7 +305,7 @@ generation = trace.generation(
     model="gpt-4o",
     input={"text": "긴 문서"}
 )
-print(f"[실행] trace 생성 — id={trace.id}")
+print(f"[실행] trace 생성 - id={trace.id}")
 print(f"[결과] generation id={generation.id}")
 print(f"[정보] user_id={trace.user_id}")`,
     explain: {
@@ -323,7 +323,7 @@ print(f"[정보] user_id={trace.user_id}")`,
       why:
         'LLM 서비스의 장애 원인을 파악하려면 "어떤 사용자가 어떤 질문을 했고, 어떤 검색 결과가 나왔고, LLM이 뭐라고 답했는지" 전체 흐름을 봐야 해요. Langfuse는 이걸 한눈에 보여줘요.',
       expectedOutput:
-        '[실행] trace 생성 — id=trace_abc123\n[결과] generation id=gen_xyz789\n[정보] user_id=user123',
+        '[실행] trace 생성 - id=trace_abc123\n[결과] generation id=gen_xyz789\n[정보] user_id=user123',
       realWorldUsage:
         'RAG 서비스에서 사용자 불만이 접수되면, Langfuse 대시보드에서 해당 user_id와 시간대의 trace를 찾아서 "어떤 문서가 검색되었고, 어떤 프롬프트로 LLM이 호출되었는지"를 재현해 원인을 분석해요.',
       pitfall:
@@ -340,12 +340,12 @@ print(f"[정보] user_id={trace.user_id}")`,
 
 langfuse = Langfuse()
 trace = langfuse.trace(name="검색파이프라인")
-print(f"[실행] trace 시작 — {trace.name}")
+print(f"[실행] trace 시작 - {trace.name}")
 
 span = trace.span(name="검색단계")
 docs = ["문서1", "문서2"]
 span.end(output=docs)
-print(f"[실행] span 종료 — output_count={len(docs)}")
+print(f"[실행] span 종료 - output_count={len(docs)}")
 print("[완료]")`,
     explain: {
       concept:
@@ -362,7 +362,7 @@ print("[완료]")`,
       why:
         '전체 응답이 느릴 때, span별 소요 시간을 보면 "검색이 2초 걸리네 → 청크 사이즈를 줄이자"처럼 정확한 병목 지점을 찾아 최적화할 수 있어요.',
       expectedOutput:
-        '[실행] trace 시작 — 검색파이프라인\n[실행] span 종료 — output_count=2\n[완료]',
+        '[실행] trace 시작 - 검색파이프라인\n[실행] span 종료 - output_count=2\n[완료]',
       realWorldUsage:
         'RAG 서비스에서 P99 레이턴시가 5초를 초과하면, Langfuse에서 해당 요청의 trace를 열어서 span별 시간을 분석해요. 검색이 4초면 벡터DB 인덱스를 튜닝하고, LLM 호출이 4초면 max_tokens를 줄이는 식으로 최적화해요.',
       pitfall:
@@ -466,8 +466,8 @@ results = evaluate(
     data="날씨QA",
     experiment_prefix="날씨평가"
 )
-print(f"[실행] LangSmith 평가 실행 — 데이터셋='날씨QA'")
-print(f"[완료] 평가 종료 — experiment_prefix='날씨평가'")`,
+print(f"[실행] LangSmith 평가 실행 - 데이터셋='날씨QA'")
+print(f"[완료] 평가 종료 - experiment_prefix='날씨평가'")`,
     explain: {
       concept:
         'evaluate()는 미리 구축된 데이터셋을 사용해서 target 함수(우리의 LLM 애플리케이션)를 실행하고, 그 출력을 데이터셋의 outputs와 비교해 평가하는 함수예요. ' +
@@ -483,7 +483,7 @@ print(f"[완료] 평가 종료 — experiment_prefix='날씨평가'")`,
       why:
         '실제로 모델을 실행해봐야 진짜 품질을 알 수 있어요. 데이터셋만 보고 추측하지 말고, evaluate()로 측정하는 문화가 품질 좋은 LLM 서비스의 기본이에요.',
       expectedOutput:
-        '[실행] LangSmith 평가 실행 — 데이터셋=\'날씨QA\'\n[완료] 평가 종료 — experiment_prefix=\'날씨평가\'',
+        '[실행] LangSmith 평가 실행 - 데이터셋=\'날씨QA\'\n[완료] 평가 종료 - experiment_prefix=\'날씨평가\'',
       realWorldUsage:
         '매주 금요일 자동으로 evaluate()를 실행해서, 전체 데이터셋에 대한 정확도·응답 시간·비용을 LangSmith 대시보드에 기록해요. 지난주 대비 품질이 떨어졌으면 주말 전에 롤백을 결정할 수 있어요.',
       pitfall:
@@ -505,7 +505,7 @@ class Summary(BaseModel):
 
 
 guard = Guard.for_pydantic(output_class=Summary)
-print("[실행] Guard 생성 완료 — output_class=Summary")
+print("[실행] Guard 생성 완료 - output_class=Summary")
 
 raw_llm_output = '{"title": "요약", "points": "첫째 둘째 셋째"}'
 result = guard.parse(raw_llm_output)
@@ -528,7 +528,7 @@ print(f"[정보] 검증 통과: {result.validation_passed}")`,
       why:
         'LLM 출력을 JSON 파싱할 때 형식 오류가 나면 예외가 발생하고 서비스가 중단돼요. Guardrails는 오류를 미리 잡고 자동 교정까지 해줘서 서비스 안정성이 크게 올라가요.',
       expectedOutput:
-        '[실행] Guard 생성 완료 — output_class=Summary\n[결과] title=요약\n[결과] points=첫째 둘째 셋째\n[정보] 검증 통과: True',
+        '[실행] Guard 생성 완료 - output_class=Summary\n[결과] title=요약\n[결과] points=첫째 둘째 셋째\n[정보] 검증 통과: True',
       realWorldUsage:
         'JSON 출력이 필요한 LLM API 서버에서 모든 응답을 Guard.for_pydantic()으로 감싸서, 형식 불량 응답이 클라이언트에 전달되는 것을 원천 차단해요. 3회 재시도 후에도 실패하면 None을 반환해 graceful degradation을 구현해요.',
       pitfall:
@@ -549,7 +549,7 @@ class Score(BaseModel):
 
 
 guard = Guard.for_pydantic(output_class=Score)
-print("[실행] Guard 생성 — int 타입 score 필드")
+print("[실행] Guard 생성 - int 타입 score 필드")
 
 raw_llm_output = '{"score": 85}'
 result = guard.parse(raw_llm_output)
@@ -570,7 +570,7 @@ print(f"[정보] 검증 통과: {result.validation_passed}")`,
       why:
         'LLM 출력 형식의 불안정성을 수동으로 처리하려면 try-except와 재시도 로직을 직접 짜야 해요. Guardrails는 이걸 내장해서 코드 3줄로 해결해줘서 개발 생산성이 크게 올라가요.',
       expectedOutput:
-        '[실행] Guard 생성 — int 타입 score 필드\n[결과] 점수: 85\n[정보] 검증 통과: True',
+        '[실행] Guard 생성 - int 타입 score 필드\n[결과] 점수: 85\n[정보] 검증 통과: True',
       realWorldUsage:
         '실제 서비스에서 LLM 응답의 5% 정도가 JSON 형식 오류를 일으키는데, Guardrails를 적용하니 99.9%가 자동 교정되고, 그래도 실패한 0.1%만 수동 처리하는 파이프라인이 구축됐어요.',
       pitfall:
@@ -590,7 +590,7 @@ guard = Guard().use_many(
     ValidChoices(choices=["긍정", "부정"], on_fail="fix"),
     ValidLength(min=1, max=10, on_fail="noop")
 )
-print("[실행] Guard 생성 — ValidChoices + ValidLength 검사기 부착")
+print("[실행] Guard 생성 - ValidChoices + ValidLength 검사기 부착")
 
 result = guard.parse("긍정")
 print(f"[결과] validated_output={result.validated_output}")
@@ -610,7 +610,7 @@ print(f"[정보] 검증 통과: {result.validation_passed}")`,
       why:
         'LLM 출력의 품질을 높이려면 "정해진 보기 안에서만 답해" 같은 규칙을 강제해야 해요. Validator를 조합하면 복잡한 품질 규칙도 선언적으로 구성할 수 있어요.',
       expectedOutput:
-        '[실행] Guard 생성 — ValidChoices + ValidLength 검사기 부착\n[결과] validated_output=긍정\n[정보] 검증 통과: True',
+        '[실행] Guard 생성 - ValidChoices + ValidLength 검사기 부착\n[결과] validated_output=긍정\n[정보] 검증 통과: True',
       realWorldUsage:
         '감정 분류기에서 ValidChoices로 "긍정/부정/중립"만 허용하고, ValidLength로 답변이 10자 이내인지 확인해서, LLM이 "이 문장은 매우 긍정적입니다"처럼 장황한 답을 하는 걸 방지해요.',
       pitfall:
@@ -783,7 +783,7 @@ logger = logging.getLogger("pii_audit")
 
 text = "연락처 010-1234-5678"
 masked = re.sub(r"\\d{3}-\\d{4}-\\d{4}", "***-****-****", text)
-logger.info("PII 마스킹 수행 — count=1")
+logger.info("PII 마스킹 수행 - count=1")
 logger.info(f"마스킹 결과: {masked}")
 print("[완료]")`,
     explain: {
@@ -801,7 +801,7 @@ print("[완료]")`,
       why:
         '개인정보보호법은 PII 처리 내역의 기록과 보관을 의무화하고 있어요. 감사 로그가 없으면 보안 감사에서 심각한 지적사항으로 이어질 수 있어요.',
       expectedOutput:
-        '[pii_audit] PII 마스킹 수행 — count=1\n[pii_audit] 마스킹 결과: 연락처 ***-****-****\n[완료]',
+        '[pii_audit] PII 마스킹 수행 - count=1\n[pii_audit] 마스킹 결과: 연락처 ***-****-****\n[완료]',
       realWorldUsage:
         '금융권 LLM 서비스에서 PII 마스킹 이벤트를 모두 로그로 기록하고, ELK 스택(Elasticsearch, Logstash, Kibana)으로 수집해서 실시간 대시보드로 모니터링해요. 하루 1만 건 이상 마스킹이 발생하면 경고를 보내요.',
       pitfall:

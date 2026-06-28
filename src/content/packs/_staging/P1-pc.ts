@@ -7,7 +7,7 @@ export const pythonCore: Snippet[] = [
     title: '함수 정의',
     file: 'greet.py',
     code: `def greet(name: str) -> str:
-  print(f"[실행] greet() 호출 — name: {name}")
+  print(f"[실행] greet() 호출 - name: {name}")
   result = 'hello, ' + name
   print(f"[결과] 인사말 생성: {result}")
   return result
@@ -34,7 +34,7 @@ print(f"[완료] 최종 메시지: {msg}")`,
         '예를 들어 사용자 인증, 금액 계산 같은 비즈니스 규칙을 함수로 만들어 재사용해요.',
       expectedOutput:
         "greet('jimin') 호출 시:\n" +
-        '[실행] greet() 호출 — name: jimin\n' +
+        '[실행] greet() 호출 - name: jimin\n' +
         '[결과] 인사말 생성: hello, jimin\n' +
         '[완료] 최종 메시지: hello, jimin',
       realWorldUsage:
@@ -49,7 +49,7 @@ print(f"[완료] 최종 메시지: {msg}")`,
     title: '기본값 매개변수',
     file: 'order.py',
     code: `def order(item: str, qty: int = 1) -> str:
-  print(f"[실행] order() 호출 — item: {item}, qty: {qty}")
+  print(f"[실행] order() 호출 - item: {item}, qty: {qty}")
   result = item + ' x' + str(qty)
   print(f"[결과] 주문 생성: {result}")
   return result
@@ -75,10 +75,10 @@ print(order('tea', 3))`,
         '대부분의 호출 코드가 짧아지고, 특별한 경우에만 값을 덮어쓰면 돼요.',
       expectedOutput:
         "order('coffee'), order('tea', 3) 호출 시:\n" +
-        '[실행] order() 호출 — item: coffee, qty: 1\n' +
+        '[실행] order() 호출 - item: coffee, qty: 1\n' +
         '[결과] 주문 생성: coffee x1\n' +
         'coffee x1\n' +
-        '[실행] order() 호출 — item: tea, qty: 3\n' +
+        '[실행] order() 호출 - item: tea, qty: 3\n' +
         '[결과] 주문 생성: tea x3\n' +
         'tea x3',
       realWorldUsage:
@@ -93,7 +93,7 @@ print(order('tea', 3))`,
     title: '*args 가변 인수',
     file: 'total.py',
     code: `def total(*nums: int) -> int:
-  print(f"[실행] total() 호출 — {len(nums)}개 인수 전달받음")
+  print(f"[실행] total() 호출 - {len(nums)}개 인수 전달받음")
   result = sum(nums)
   print(f"[결과] 합계: {result}")
   return result
@@ -118,10 +118,10 @@ print(total(10, 20))`,
         '인수 개수가 상황에 따라 달라지는 유연한 함수를 만들 수 있어요.',
       expectedOutput:
         'total(1, 2, 3), total(10, 20) 호출 시:\n' +
-        '[실행] total() 호출 — 3개 인수 전달받음\n' +
+        '[실행] total() 호출 - 3개 인수 전달받음\n' +
         '[결과] 합계: 6\n' +
         '6\n' +
-        '[실행] total() 호출 — 2개 인수 전달받음\n' +
+        '[실행] total() 호출 - 2개 인수 전달받음\n' +
         '[결과] 합계: 30\n' +
         '30',
       realWorldUsage:
@@ -136,7 +136,7 @@ print(total(10, 20))`,
     title: '**kwargs 키워드 가변 인수',
     file: 'profile.py',
     code: `def profile(name: str, **info: str) -> None:
-  print(f"[실행] profile() 호출 — name: {name}, 추가 정보 {len(info)}개")
+  print(f"[실행] profile() 호출 - name: {name}, 추가 정보 {len(info)}개")
   print(f"[프로필] {name}")
   for k, v in info.items():
     print(f"  {k}: {v}")
@@ -161,7 +161,7 @@ profile('jimin', role='dev', city='seoul')`,
         '또는 데이터베이스 업데이트 시 변경된 컬럼만 골라 처리할 때 **kwargs로 받아 동적으로 처리해요.',
       expectedOutput:
         "profile('jimin', role='dev', city='seoul') 호출 시:\n" +
-        '[실행] profile() 호출 — name: jimin, 추가 정보 2개\n' +
+        '[실행] profile() 호출 - name: jimin, 추가 정보 2개\n' +
         '[프로필] jimin\n' +
         '  role: dev\n' +
         '  city: seoul',
@@ -178,11 +178,11 @@ profile('jimin', role='dev', city='seoul')`,
     file: 'dog.py',
     code: `class Dog:
   def __init__(self, name: str) -> None:
-    print(f"[실행] Dog.__init__ — name: {name}")
+    print(f"[실행] Dog.__init__ - name: {name}")
     self.name = name
 
   def bark(self) -> str:
-    print(f"[실행] bark() — {self.name}가 짖음")
+    print(f"[실행] bark() - {self.name}가 짖음")
     result = self.name + '! woof'
     print(f"[결과] 소리: {result}")
     return result
@@ -208,8 +208,8 @@ print(d.bark())`,
         '데이터와 그 데이터를 처리하는 메서드를 한 곳에 묶으면 유지보수가 훨씬 쉬워져요.',
       expectedOutput:
         "Dog('bori').bark() 호출 시:\n" +
-        '[실행] Dog.__init__ — name: bori\n' +
-        '[실행] bark() — bori가 짖음\n' +
+        '[실행] Dog.__init__ - name: bori\n' +
+        '[실행] bark() - bori가 짖음\n' +
         '[결과] 소리: bori! woof\n' +
         'bori! woof',
       realWorldUsage:
@@ -225,7 +225,7 @@ print(d.bark())`,
     file: 'account.py',
     code: `class Account:
   def __init__(self, owner: str, balance: int = 0) -> None:
-    print(f"[실행] Account.__init__ — owner: {owner}, balance: {balance}")
+    print(f"[실행] Account.__init__ - owner: {owner}, balance: {balance}")
     self.owner = owner
     self.balance = balance
 
@@ -251,8 +251,8 @@ print(f"[결과] b: owner={b.owner}, balance={b.balance}")`,
         '초기 상태가 잘못되면 이후 모든 로직이 꼬이므로 __init__에서 철저히 검증하는 게 중요해요.',
       expectedOutput:
         'Account 두 개 생성 시:\n' +
-        '[실행] Account.__init__ — owner: jimin, balance: 1000\n' +
-        '[실행] Account.__init__ — owner: soyi, balance: 0\n' +
+        '[실행] Account.__init__ - owner: jimin, balance: 1000\n' +
+        '[실행] Account.__init__ - owner: soyi, balance: 0\n' +
         '[결과] a: owner=jimin, balance=1000\n' +
         '[결과] b: owner=soyi, balance=0',
       realWorldUsage:
@@ -271,7 +271,7 @@ print(f"[결과] b: owner={b.owner}, balance={b.balance}")`,
 
   @classmethod
   def make(cls, title: str) -> 'Book':
-    print(f"[실행] Book.make() — title: {title}, 현재 count: {cls.count}")
+    print(f"[실행] Book.make() - title: {title}, 현재 count: {cls.count}")
     cls.count += 1
     print(f"[결과] count 증가 → {cls.count}")
     return cls(title)
@@ -300,7 +300,7 @@ print(f"[완료] Book.count = {Book.count}, b.title = {b.title}")`,
         '데이터베이스에서 조회한 결과를 객체로 변환하거나, JSON 응답을 파싱해서 객체로 만들 때 @classmethod가 편리해요.',
       expectedOutput:
         "Book.make('python') 호출 시:\n" +
-        '[실행] Book.make() — title: python, 현재 count: 0\n' +
+        '[실행] Book.make() - title: python, 현재 count: 0\n' +
         '[결과] count 증가 → 1\n' +
         '[완료] Book.count = 1, b.title = python',
       realWorldUsage:
@@ -366,7 +366,7 @@ class Rect:
 
   def area(self) -> int:
     result = self.w * self.h
-    print(f"[실행] area() — w={self.w}, h={self.h} → 넓이={result}")
+    print(f"[실행] area() - w={self.w}, h={self.h} → 넓이={result}")
     return result
 
 
@@ -388,7 +388,7 @@ print(f"[완료] 사각형 넓이: {r.area()}")`,
         '로직이 여기저기 퍼지지 않고 데이터 바로 옆에 있어 유지보수가 쉬워져요.',
       expectedOutput:
         'Rect(5, 3).area() 호출 시:\n' +
-        '[실행] area() — w=5, h=3 → 넓이=15\n' +
+        '[실행] area() - w=5, h=3 → 넓이=15\n' +
         '[완료] 사각형 넓이: 15',
       realWorldUsage:
         '실제 결제 시스템에서 Payment 객체에 tax(), total_amount() 같은 계산 메서드를 붙여서, 결제 데이터와 계산 로직을 한 곳에 모아 관리해요.',
@@ -402,7 +402,7 @@ print(f"[완료] 사각형 넓이: {r.area()}")`,
     title: 'list 타입 힌트',
     file: 'nums.py',
     code: `def first(nums: list[int]) -> int:
-  print(f"[실행] first() 호출 — 리스트: {nums}")
+  print(f"[실행] first() 호출 - 리스트: {nums}")
   if not nums:
     print(f"[결과] 빈 리스트 → 0 반환")
     return 0
@@ -429,10 +429,10 @@ print(first([]))`,
         '실무에서 API 응답 데이터를 파싱한 리스트를 함수에 넘길 때, 타입 힌트가 있으면 "여기엔 User 객체 리스트가 들어와야 한다"고 IDE가 알려줘서 잘못된 타입을 넘기는 실수를 막아줘요.',
       expectedOutput:
         'first([10, 20, 30]), first([]) 호출 시:\n' +
-        '[실행] first() 호출 — 리스트: [10, 20, 30]\n' +
+        '[실행] first() 호출 - 리스트: [10, 20, 30]\n' +
         '[결과] 첫 번째 원소: 10\n' +
         '10\n' +
-        '[실행] first() 호출 — 리스트: []\n' +
+        '[실행] first() 호출 - 리스트: []\n' +
         '[결과] 빈 리스트 → 0 반환\n' +
         '0',
       realWorldUsage:
@@ -447,7 +447,7 @@ print(first([]))`,
     title: 'dict 타입 힌트',
     file: 'scores.py',
     code: `def top(scores: dict[str, int]) -> str:
-  print(f"[실행] top() 호출 — 점수표: {scores}")
+  print(f"[실행] top() 호출 - 점수표: {scores}")
   best = max(scores, key=scores.get)
   print(f"[결과] 최고점: {best} → {scores[best]}점")
   return best
@@ -471,7 +471,7 @@ print(top({'jimin': 90, 'soyi': 95}))`,
         '예를 들어 게임 리더보드에서 최고 점수 플레이어를 찾는 로직에 활용돼요.',
       expectedOutput:
         "top({'jimin': 90, 'soyi': 95}) 호출 시:\n" +
-        "[실행] top() 호출 — 점수표: {'jimin': 90, 'soyi': 95}\n" +
+        "[실행] top() 호출 - 점수표: {'jimin': 90, 'soyi': 95}\n" +
         '[결과] 최고점: soyi → 95점\n' +
         'soyi',
       realWorldUsage:
@@ -489,7 +489,7 @@ print(top({'jimin': 90, 'soyi': 95}))`,
 
 
 def find(items: list[int], target: int) -> Optional[int]:
-  print(f"[실행] find() — 리스트: {items}, 찾는 값: {target}")
+  print(f"[실행] find() - 리스트: {items}, 찾는 값: {target}")
   for i, v in enumerate(items):
     if v == target:
       print(f"[결과] 인덱스 {i}에서 발견")
@@ -517,10 +517,10 @@ print(find([1, 2, 3], 5))`,
         '호출한 쪽에서 "찾은 경우"와 "못 찾은 경우"를 분기해서 처리할 수 있어요.',
       expectedOutput:
         'find([1, 2, 3], 2), find([1, 2, 3], 5) 호출 시:\n' +
-        '[실행] find() — 리스트: [1, 2, 3], 찾는 값: 2\n' +
+        '[실행] find() - 리스트: [1, 2, 3], 찾는 값: 2\n' +
         '[결과] 인덱스 1에서 발견\n' +
         '1\n' +
-        '[실행] find() — 리스트: [1, 2, 3], 찾는 값: 5\n' +
+        '[실행] find() - 리스트: [1, 2, 3], 찾는 값: 5\n' +
         '[결과] 찾지 못함 → None 반환\n' +
         'None',
       realWorldUsage:
@@ -781,10 +781,10 @@ def memo(fn):
   def wrapper(*a, **k):
     key = str(a) + str(k)
     if key not in cache:
-      print(f"[실행] {fn.__name__}{a} — 캐시 없음, 계산 수행")
+      print(f"[실행] {fn.__name__}{a} - 캐시 없음, 계산 수행")
       cache[key] = fn(*a, **k)
     else:
-      print(f"[실행] {fn.__name__}{a} — 캐시 히트!")
+      print(f"[실행] {fn.__name__}{a} - 캐시 히트!")
     return cache[key]
 
   return wrapper
@@ -814,9 +814,9 @@ print(f"[결과] add(1,2) = {add(1, 2)}, 이름: {add.__name__}")`,
         '반드시 붙여야 하는 습관성 장식이에요.',
       expectedOutput:
         'add(1,2) 두 번 호출 시:\n' +
-        '[실행] add(1, 2) — 캐시 없음, 계산 수행\n' +
+        '[실행] add(1, 2) - 캐시 없음, 계산 수행\n' +
         '[결과] add(1,2) = 3, 이름: add\n' +
-        '[실행] add(1, 2) — 캐시 히트!\n' +
+        '[실행] add(1, 2) - 캐시 히트!\n' +
         '[결과] add(1,2) = 3, 이름: add',
       realWorldUsage:
         '실제 프로젝트에서 Redis 같은 외부 캐시와 연동하는 데코레이터를 만들어서, 동일한 쿼리가 반복 호출될 때 데이터베이스 부하를 획기적으로 줄여요.',
@@ -839,7 +839,7 @@ print(f"[결과] add(1,2) = {add(1, 2)}, 이름: {add.__name__}")`,
 
 class Cat(Animal):
   def speak(self) -> str:
-    print(f"[실행] Cat.speak() — {self.name}가 울음")
+    print(f"[실행] Cat.speak() - {self.name}가 울음")
     result = self.name + ' meow'
     print(f"[결과] 소리: {result}")
     return result
@@ -868,7 +868,7 @@ print(f"[Cat] {c.speak()}")`,
         '필요한 메서드만 오버라이드해서 빠르게 기능을 구현해요.',
       expectedOutput:
         '실행 시:\n' +
-        '[실행] Cat.speak() — nabi가 울음\n' +
+        '[실행] Cat.speak() - nabi가 울음\n' +
         '[결과] 소리: nabi meow\n' +
         '[Animal] beast ...\n' +
         '[Cat] nabi meow',

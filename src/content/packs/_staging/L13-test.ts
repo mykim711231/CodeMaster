@@ -17,7 +17,7 @@ class CalculatorTest {
     Calculator calc = new Calculator();
     int result = calc.add(2, 3);
     assertThat(result).isEqualTo(5);
-    System.out.println("[결과] add(2, 3) = " + result + " — 검증 통과");
+    System.out.println("[결과] add(2, 3) = " + result + " - 검증 통과");
   }
 }`,
     explain: {
@@ -37,7 +37,7 @@ class CalculatorTest {
       expectedOutput:
         '테스트 실행 시 콘솔:\n' +
         '[실행] 계산기 add() 테스트 시작\n' +
-        '[결과] add(2, 3) = 5 — 검증 통과\n' +
+        '[결과] add(2, 3) = 5 - 검증 통과\n' +
         '\nBUILD SUCCESSFUL',
       realWorldUsage:
         '실제 프로젝트에서 CI/CD 파이프라인이 코드를 푸시할 때마다 모든 @Test를 자동 실행해요. GitHub Actions나 Jenkins가 ./gradlew test를 실행하고, 하나라도 실패하면 빨간 불이 들어와서 머지를 막아줘요. 이 덕분에 "내 코드가 다른 기능을 망가뜨리진 않았나"를 자동으로 확인할 수 있어요.',
@@ -69,13 +69,13 @@ class UserServiceTest {
     System.out.println("[실행] create() 테스트");
     User result = service.create("kim");
     assertThat(result).isNotNull();
-    System.out.println("[결과] 생성된 사용자: " + result + " — not null 검증 통과");
+    System.out.println("[결과] 생성된 사용자: " + result + " - not null 검증 통과");
   }
 }`,
     explain: {
       concept:
         '@BeforeEach는 매 테스트 메서드가 실행되기 직전에 호출되는 준비 단계예요. ' +
-        '모든 테스트는 서로 독립적이어야 한다는 게 JUnit의 핵심 철학이에요 — test A의 결과가 test B에 영향을 주면 안 돼요. ' +
+        '모든 테스트는 서로 독립적이어야 한다는 게 JUnit의 핵심 철학이에요 - test A의 결과가 test B에 영향을 주면 안 돼요. ' +
         '이 코드에서는 매 테스트마다 새 UserService 인스턴스를 만들어서, 이전 테스트에서 객체 상태가 오염되는 걸 방지하고 있어요. ' +
         'setUp()이라는 이름은 관례일 뿐이고, 메서드 이름은 무엇이든 상관없어요.',
       terms: [
@@ -87,7 +87,7 @@ class UserServiceTest {
       expectedOutput:
         '[준비] UserService 새 인스턴스 생성\n' +
         '[실행] create() 테스트\n' +
-        '[결과] 생성된 사용자: User[name=kim] — not null 검증 통과',
+        '[결과] 생성된 사용자: User[name=kim] - not null 검증 통과',
       realWorldUsage:
         '실제 프로젝트에서 서비스 테스트를 작성할 때 @BeforeEach로 Mockito 가짜 객체들을 초기화하고 테스트 대상 객체에 주입해요. @BeforeEach가 매 테스트마다 실행되므로, 한 테스트에서 가짜 객체의 동작(when)을 다르게 정의해도 다른 테스트에 영향이 없어요. 이게 테스트 독립성의 핵심이에요.',
       why: '모든 테스트가 동일한 초기 상태에서 시작하게 해서, 테스트 간 순서 의존성과 상태 오염을 제거하려고요.',
@@ -112,7 +112,7 @@ class UserTest {
       .isNotNull()
       .extracting(User::name, User::age)
       .containsExactly("kim", 25);
-    System.out.println("[결과] name=kim, age=25 — 모든 필드 검증 통과");
+    System.out.println("[결과] name=kim, age=25 - 모든 필드 검증 통과");
   }
 }`,
     explain: {
@@ -129,7 +129,7 @@ class UserTest {
       ],
       expectedOutput:
         '[실행] User 필드 검증 테스트\n' +
-        '[결과] name=kim, age=25 — 모든 필드 검증 통과',
+        '[결과] name=kim, age=25 - 모든 필드 검증 통과',
       realWorldUsage:
         '실제 프로젝트에서 DTO 매핑 테스트를 작성할 때 AssertJ 체인을 애용해요. API 응답 DTO의 모든 필드가 제대로 변환됐는지 extracting으로 한 번에 검증할 수 있어서, 필드가 10개인 DTO도 3줄로 깔끔하게 검증할 수 있어요. JUnit의 assertEquals를 필드마다 10번 호출하는 것보다 훨씬 가독성이 좋아요.',
       why: '복잡한 객체의 필드 검증을 읽기 좋고 간결하게 작성해서, 테스트 의도를 명확히 전달하려고요.',
@@ -165,7 +165,7 @@ class OrderServiceTest {
     when(repo.findById(1L)).thenReturn(Optional.of(new Order(1L)));
     Optional<Order> result = service.find(1L);
     assertThat(result).isPresent();
-    System.out.println("[결과] repo.findById(1L) Mock 동작 — 가짜 주문 반환됨");
+    System.out.println("[결과] repo.findById(1L) Mock 동작 - 가짜 주문 반환됨");
   }
 }`,
     explain: {
@@ -183,7 +183,7 @@ class OrderServiceTest {
       ],
       expectedOutput:
         '[실행] 주문 조회 Mock 테스트\n' +
-        '[결과] repo.findById(1L) Mock 동작 — 가짜 주문 반환됨',
+        '[결과] repo.findById(1L) Mock 동작 - 가짜 주문 반환됨',
       realWorldUsage:
         '실제 프로젝트에서 서비스 레이어의 단위 테스트를 작성할 때 모든 의존성을 Mock으로 대체해요. UserService가 UserRepository, PasswordEncoder, MailSender에 의존한다면 세 개 모두 @Mock으로 만들고, 오직 UserService의 비즈니스 로직만 검증해요. CI에서 300개 테스트가 3초 안에 완료되는 건 이 Mock 테스트 덕분이에요.',
       why: 'DB·외부 API 등 느리고 불안정한 의존성을 제거해서, 빠르고 안정적인 단위 테스트를 작성하려고요.',
@@ -215,7 +215,7 @@ class EmailServiceTest {
     System.out.println("[실행] 이메일 전송 검증 테스트");
     service.welcome("kim");
     verify(sender).send("kim", "환영해요");
-    System.out.println("[결과] sender.send(kim, 환영해요) 호출 확인됨 — 검증 통과");
+    System.out.println("[결과] sender.send(kim, 환영해요) 호출 확인됨 - 검증 통과");
   }
 }`,
     explain: {
@@ -232,7 +232,7 @@ class EmailServiceTest {
       ],
       expectedOutput:
         '[실행] 이메일 전송 검증 테스트\n' +
-        '[결과] sender.send(kim, 환영해요) 호출 확인됨 — 검증 통과',
+        '[결과] sender.send(kim, 환영해요) 호출 확인됨 - 검증 통과',
       realWorldUsage:
         '실제 프로젝트에서 이벤트 발행이나 알림 전송처럼 부수 효과(side effect)가 있는 로직을 검증할 때 verify를 써요. 주문이 생성되면 "주문 생성 이벤트가 발행됐는가", 회원가입하면 "환영 이메일이 발송됐는가"를 값 검증 없이 행위로 확인해요. 부수 효과가 누락되면 실제 운영에서 "왜 이메일이 안 왔지?" 같은 버그로 이어지기 때문에 중요한 검증이에요.',
       why: '값을 반환하지 않는 void 메서드의 호출 여부를 검증하고, 비즈니스 로직이 의도한 부수 효과를 제대로 발생시키는지 확인하려고요.',
@@ -259,7 +259,7 @@ class ApplicationIntegrationTest {
   void contextLoads() {
     System.out.println("[실행] 스프링 컨텍스트 로딩 확인");
     assertThat(userService).isNotNull();
-    System.out.println("[결과] UserService 빈 정상 로딩 — 통합 테스트 통과");
+    System.out.println("[결과] UserService 빈 정상 로딩 - 통합 테스트 통과");
   }
 }`,
     explain: {
@@ -276,7 +276,7 @@ class ApplicationIntegrationTest {
       ],
       expectedOutput:
         '[실행] 스프링 컨텍스트 로딩 확인\n' +
-        '[결과] UserService 빈 정상 로딩 — 통합 테스트 통과',
+        '[결과] UserService 빈 정상 로딩 - 통합 테스트 통과',
       realWorldUsage:
         '실제 프로젝트에서 @SpringBootTest는 CI/CD 파이프라인의 최종 관문이에요. 단위 테스트가 모두 통과한 후 @SpringBootTest가 실행되고, 여기서 컨텍스트 로딩에 실패하면 "설정이 잘못돼서 앱이 아예 안 뜰 거예요"라는 신호로 받아들여져요. 새 의존성을 추가했는데 @SpringBootTest가 깨지면, 빈 충돌이나 설정 오류를 의심해요.',
       why: '전체 스프링 컨텍스트가 에러 없이 조립되는지 검증해서, 배포 후 "앱이 안 떠요"라는 최악의 상황을 방지하려고요.',
@@ -309,7 +309,7 @@ class UserControllerTest {
     System.out.println("[실행] GET /users/1 MockMvc 요청");
     mockMvc.perform(get("/users/1"))
       .andExpect(status().isOk());
-    System.out.println("[결과] HTTP 200 OK 응답 확인 — 검증 통과");
+    System.out.println("[결과] HTTP 200 OK 응답 확인 - 검증 통과");
   }
 }`,
     explain: {
@@ -317,7 +317,7 @@ class UserControllerTest {
         '@WebMvcTest는 웹 계층(Controller)만 따로 떼어서 가볍게 테스트하는 슬라이스 테스트예요. ' +
         '전체 컨텍스트를 띄우는 @SpringBootTest와 달리, @Controller·@ControllerAdvice·Filter·Converter 등 웹 관련 빈만 로드해요. ' +
         'MockMvc는 실제 HTTP 서버를 띄우지 않고도 요청을 보내고 응답을 검증할 수 있는 가짜 HTTP 클라이언트예요. ' +
-        '@MockBean은 스프링 컨텍스트 안의 실제 서비스를 가짜로 교체해줘요 — 컨트롤러만 검증하고 서비스는 가짜로 두는 전략이에요.',
+        '@MockBean은 스프링 컨텍스트 안의 실제 서비스를 가짜로 교체해줘요 - 컨트롤러만 검증하고 서비스는 가짜로 두는 전략이에요.',
       terms: [
         { t: '@WebMvcTest(UserController.class)', d: '지정한 컨트롤러만 로드해서 웹 계층만 테스트해요. @Service나 @Repository 빈은 로드되지 않아요.' },
         { t: 'MockMvc', d: '실제 HTTP 서버 없이 요청을 시뮬레이션하는 가짜 클라이언트예요. perform()으로 요청을 보내요.' },
@@ -328,7 +328,7 @@ class UserControllerTest {
       ],
       expectedOutput:
         '[실행] GET /users/1 MockMvc 요청\n' +
-        '[결과] HTTP 200 OK 응답 확인 — 검증 통과',
+        '[결과] HTTP 200 OK 응답 확인 - 검증 통과',
       realWorldUsage:
         '실제 프로젝트에서 컨트롤러 테스트는 @WebMvcTest로, 서비스 테스트는 Mockito 단위 테스트로 분리해서 작성해요. 컨트롤러는 "요청 매핑이 제대로 됐는가, 응답 상태 코드는 맞는가, JSON 본문 검증은 통과하는가"만 확인하고, 비즈니스 로직은 서비스 단위 테스트에서 별도로 검증해요.',
       why: '웹 계층만 빠르게 검증하려고요. @SpringBootTest는 수 초 걸리지만 @WebMvcTest는 1초 내로 완료돼서 개발 중에 자주 실행할 수 있어요.',
@@ -357,7 +357,7 @@ class UserRepositoryTest {
     User u = repo.save(new User("kim"));
     User found = repo.findById(u.getId()).orElseThrow();
     assertThat(found).isNotNull();
-    System.out.println("[결과] 저장된 사용자 조회 성공 — id: " + u.getId() + ", name: " + found.getName());
+    System.out.println("[결과] 저장된 사용자 조회 성공 - id: " + u.getId() + ", name: " + found.getName());
   }
 }`,
     explain: {
@@ -375,7 +375,7 @@ class UserRepositoryTest {
       ],
       expectedOutput:
         '[실행] User 저장 후 조회 테스트\n' +
-        '[결과] 저장된 사용자 조회 성공 — id: 1, name: kim',
+        '[결과] 저장된 사용자 조회 성공 - id: 1, name: kim',
       realWorldUsage:
         '실제 프로젝트에서 커스텀 쿼리(@Query, 메서드 이름 기반 쿼리)를 작성할 때 @DataJpaTest로 검증해요. "이 복잡한 JPQL 쿼리가 의도한 대로 동작하는가"를 실제 SQL 로그를 보면서 확인할 수 있어요. 인메모리 DB라서 테스트 후 데이터가 자동으로 롤백돼서, 테스트 데이터가 남지 않아요.',
       why: 'JPA 쿼리와 엔티티 매핑이 실제 DB 수준에서 정상 동작하는지 빠르게 검증하려고요.',
@@ -415,7 +415,7 @@ class ContainerTest {
   void containerIsRunning() {
     System.out.println("[실행] PostgreSQL 컨테이너 상태 확인");
     assertThat(postgres.isRunning()).isTrue();
-    System.out.println("[결과] PostgreSQL 16 컨테이너 실행 중 — " + postgres.getJdbcUrl());
+    System.out.println("[결과] PostgreSQL 16 컨테이너 실행 중 - " + postgres.getJdbcUrl());
   }
 }`,
     explain: {
@@ -435,7 +435,7 @@ class ContainerTest {
       expectedOutput:
         '[준비] Testcontainers PostgreSQL 포트 매핑\n' +
         '[실행] PostgreSQL 컨테이너 상태 확인\n' +
-        '[결과] PostgreSQL 16 컨테이너 실행 중 — jdbc:postgresql://localhost:54321/test',
+        '[결과] PostgreSQL 16 컨테이너 실행 중 - jdbc:postgresql://localhost:54321/test',
       realWorldUsage:
         '실제 프로젝트에서 CI/CD 파이프라인에 Testcontainers를 도입하면, PR마다 진짜 PostgreSQL과 Redis를 띄워서 통합 테스트를 수행해요. "운영은 PostgreSQL인데 테스트는 H2" 같은 설정 차이로 인한 버그가 완전히 사라져요. GitHub Actions 러너에 Docker만 설치돼 있으면 추가 설정 없이 바로 동작해요.',
       why: '인메모리 DB와 실제 DB의 차이로 발생하는 "테스트는 통과, 운영은 실패" 문제를 원천적으로 막으려고요.',
@@ -472,7 +472,7 @@ class UserControllerTest {
     mockMvc.perform(get("/users/1"))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.name").value("kim"));
-    System.out.println("[결과] 응답 JSON name=kim 확인 — 검증 통과");
+    System.out.println("[결과] 응답 JSON name=kim 확인 - 검증 통과");
   }
 }`,
     explain: {
@@ -489,7 +489,7 @@ class UserControllerTest {
       ],
       expectedOutput:
         '[실행] Mock 서비스 설정 + GET /users/1 요청\n' +
-        '[결과] 응답 JSON name=kim 확인 — 검증 통과',
+        '[결과] 응답 JSON name=kim 확인 - 검증 통과',
       realWorldUsage:
         '실제 프로젝트에서 컨트롤러 테스트 시 모든 서비스 의존성을 @MockBean으로 교체해요. 사용자 인증·권한 확인·외부 API 호출 등 실제로 실행하면 복잡한 의존성을 전부 가짜로 대체해서, 오직 컨트롤러의 요청-응답 흐름만 깔끔하게 집중해서 검증해요.',
       why: '컨트롤러의 요청 매핑·응답 형식·상태 코드를 서비스 로직과 분리해서 집중 검증하려고요.',
@@ -556,7 +556,7 @@ class UserValidatorTest {
     System.out.println("[실행] 빈 이름으로 User 생성 시도");
     assertThatThrownBy(() -> new User(""))
       .isInstanceOf(IllegalArgumentException.class);
-    System.out.println("[결과] IllegalArgumentException 발생 확인 — 검증 통과");
+    System.out.println("[결과] IllegalArgumentException 발생 확인 - 검증 통과");
   }
 }`,
     explain: {
@@ -564,7 +564,7 @@ class UserValidatorTest {
         '@DisplayName은 테스트에 사람이 읽기 좋은 설명을 붙여주는 어노테이션이에요. ' +
         '"shouldThrowWhenNameEmpty" 같은 메서드 이름은 개발자만 이해할 수 있지만, "이름이 비어있으면 IllegalArgumentException 발생"은 누구나 이해할 수 있어요. ' +
         'IDE의 테스트 러너나 CI 리포트에서 이 DisplayName이 표시돼서, 어떤 테스트가 실패했는지 한눈에 파악할 수 있어요. ' +
-        'assertThatThrownBy는 람다 실행 중 예외가 발생하는지 검증하는 AssertJ 도구예요 — 예외를 던지는 게 정상 동작인 경우에 써요.',
+        'assertThatThrownBy는 람다 실행 중 예외가 발생하는지 검증하는 AssertJ 도구예요 - 예외를 던지는 게 정상 동작인 경우에 써요.',
       terms: [
         { t: '@DisplayName', d: '테스트 결과 리포트에 표시될 사람이 읽는 이름을 지정해요. 클래스와 메서드 모두에 붙일 수 있어요.' },
         { t: 'assertThatThrownBy(() -> ...)', d: '람다 실행 중 예외가 발생하는지 검증해요. 예외가 안 나면 테스트가 실패해요.' },
@@ -573,7 +573,7 @@ class UserValidatorTest {
       ],
       expectedOutput:
         '[실행] 빈 이름으로 User 생성 시도\n' +
-        '[결과] IllegalArgumentException 발생 확인 — 검증 통과',
+        '[결과] IllegalArgumentException 발생 확인 - 검증 통과',
       realWorldUsage:
         '실제 프로젝트에서 DisplayName을 한국어로 작성하면 비개발자(기획자, QA)도 테스트 리포트를 이해할 수 있어요. CI/CD 대시보드에 "shouldThrowWhenNameEmpty FAILED"보다 "이름이 비어있으면 예외 발생 FAILED"가 훨씬 빨리 문제를 파악하게 해줘요. 팀 내 의사소통 비용을 줄이는 데 크게 기여해요.',
       why: '테스트 의도를 코드가 아닌 사람의 언어로 명확히 전달해서, 실패 시 원인 파악 시간을 단축하려고요.',
@@ -601,7 +601,7 @@ class StackTest {
       System.out.println("[실행] 빈 스택에서 pop() 시도");
       assertThatThrownBy(() -> new Stack<>().pop())
         .isInstanceOf(EmptyStackException.class);
-      System.out.println("[결과] EmptyStackException 발생 — 검증 통과");
+      System.out.println("[결과] EmptyStackException 발생 - 검증 통과");
     }
   }
 
@@ -616,7 +616,7 @@ class StackTest {
       stack.push("a");
       stack.push("b");
       String result = stack.pop();
-      System.out.println("[결과] pop() = " + result + " — 마지막 원소 b 반환 확인");
+      System.out.println("[결과] pop() = " + result + " - 마지막 원소 b 반환 확인");
     }
   }
 }`,
@@ -635,10 +635,10 @@ class StackTest {
       expectedOutput:
         'WhenEmpty > pop() 호출 시:\n' +
         '[실행] 빈 스택에서 pop() 시도\n' +
-        '[결과] EmptyStackException 발생 — 검증 통과\n\n' +
+        '[결과] EmptyStackException 발생 - 검증 통과\n\n' +
         'WhenPushed > pop() 호출 시:\n' +
         '[실행] 원소 추가 후 pop() 시도\n' +
-        '[결과] pop() = b — 마지막 원소 b 반환 확인',
+        '[결과] pop() = b - 마지막 원소 b 반환 확인',
       realWorldUsage:
         '실제 프로젝트에서 도메인 객체(Order, User, Cart)의 상태별 동작을 테스트할 때 @Nested를 써요. "주문이 DRAFT일 때", "주문이 CONFIRMED일 때", "주문이 CANCELLED일 때" 각각 addLine(), cancel(), confirm()의 기대 동작을 그룹으로 정리해요. BDD(Behavior-Driven Development) 스타일 테스트와 궁합이 아주 좋아요.',
       why: '상황별로 테스트를 계층적으로 정리해 가독성을 높이고, 관련 테스트를 한 곳에서 관리하려고요.',
@@ -674,7 +674,7 @@ class OrderServiceTest {
     ArgumentCaptor<Order> captor = ArgumentCaptor.forClass(Order.class);
     verify(repo).save(captor.capture());
     assertThat(captor.getValue().buyer()).isEqualTo("kim");
-    System.out.println("[결과] 저장된 주문의 buyer 확인 — kim");
+    System.out.println("[결과] 저장된 주문의 buyer 확인 - kim");
   }
 }`,
     explain: {
@@ -691,7 +691,7 @@ class OrderServiceTest {
       ],
       expectedOutput:
         '[실행] 주문 생성 + ArgumentCaptor로 저장 객체 검증\n' +
-        '[결과] 저장된 주문의 buyer 확인 — kim',
+        '[결과] 저장된 주문의 buyer 확인 - kim',
       realWorldUsage:
         '실제 프로젝트에서 복잡한 도메인 객체를 생성하는 서비스 메서드를 검증할 때 ArgumentCaptor를 써요. "save()가 호출됐다" 대신 "save()에 전달된 Order의 buyer가 kim이고, totalAmount가 1000이고, status가 DRAFT인가"를 한 번에 검증해요. 생성된 객체의 모든 필수 필드가 올바르게 설정됐는지 완전히 확인할 수 있어요.',
       why: 'Mock 객체에 전달된 인자의 내부 상태까지 정밀하게 검증해서, 단순 호출 여부를 넘어 비즈니스 로직의 정확성을 확인하려고요.',
@@ -726,7 +726,7 @@ class PaymentServiceTest {
     when(gateway.charge(any())).thenThrow(new RuntimeException("결제 실패"));
     assertThatThrownBy(() -> service.pay(1000))
       .hasMessageContaining("결제 실패");
-    System.out.println("[결과] RuntimeException 감지 + 메시지 확인 — 검증 통과");
+    System.out.println("[결과] RuntimeException 감지 + 메시지 확인 - 검증 통과");
   }
 }`,
     explain: {
@@ -743,7 +743,7 @@ class PaymentServiceTest {
       ],
       expectedOutput:
         '[실행] 결제 게이트웨이 에러 시뮬레이션\n' +
-        '[결과] RuntimeException 감지 + 메시지 확인 — 검증 통과',
+        '[결과] RuntimeException 감지 + 메시지 확인 - 검증 통과',
       realWorldUsage:
         '실제 프로젝트에서 외부 API 타임아웃·잔액 부족·인증 실패 등 다양한 장애 시나리오를 thenThrow로 시뮬레이션해요. "PG사가 5초 타임아웃을 내면 우리 서비스는 어떻게 반응하는가" 같은 복원력(resilience) 테스트를 외부 의존성 없이도 안전하게 수행할 수 있어요. Circuit Breaker 패턴 테스트도 이 방식으로 작성해요.',
       why: '예외 상황에서도 애플리케이션이 적절히 대응하는지(적절한 예외 변환·로깅·폴백) 검증하려고요.',
@@ -779,14 +779,14 @@ class UserControllerTest {
         .contentType(MediaType.APPLICATION_JSON)
         .content("{\"name\":\"kim\"}"))
       .andExpect(status().isCreated());
-    System.out.println("[결과] HTTP 201 Created 확인 — 검증 통과");
+    System.out.println("[결과] HTTP 201 Created 확인 - 검증 통과");
   }
 }`,
     explain: {
       concept:
         'MockMvc로 GET뿐 아니라 POST·PUT·DELETE 같은 쓰기 요청도 시뮬레이션할 수 있어요. ' +
         'contentType으로 요청의 Content-Type 헤더를 application/json으로 설정하고, content로 JSON 본문을 문자열로 전달하고 있어요. ' +
-        'status().isCreated()는 응답 상태 코드가 201 Created인지 검증해요 — RESTful API에서는 리소스 생성 성공 시 201을 반환하는 게 관례예요. ' +
+        'status().isCreated()는 응답 상태 코드가 201 Created인지 검증해요 - RESTful API에서는 리소스 생성 성공 시 201을 반환하는 게 관례예요. ' +
         '실제 서버를 띄우지 않고도 JSON 요청-응답 전체를 검증할 수 있어서, 컨트롤러의 요청 매핑과 응답 형식을 빠르게 확인할 수 있어요.',
       terms: [
         { t: 'post("/users")', d: 'POST /users 요청을 생성해요. get() 대신 post()를 쓰는 게 유일한 차이예요.' },
@@ -796,7 +796,7 @@ class UserControllerTest {
       ],
       expectedOutput:
         '[실행] POST /users JSON 요청\n' +
-        '[결과] HTTP 201 Created 확인 — 검증 통과',
+        '[결과] HTTP 201 Created 확인 - 검증 통과',
       realWorldUsage:
         '실제 프로젝트에서 POST API의 입력 검증(Validation) 테스트에 MockMvc를 많이 써요. 필수 필드 누락 시 400 Bad Request, 잘못된 형식 시 400, 정상 요청 시 201 Created를 각각 테스트해요. @Valid 어노테이션이 붙은 DTO의 검증 로직이 예상대로 응답 코드를 반환하는지 완전히 확인할 수 있어요.',
       why: 'POST/PUT/DELETE 같은 쓰기 요청의 매핑과 응답 상태 코드를 빠르게 검증하려고요.',
@@ -820,12 +820,12 @@ class SharedStateTest {
   @Test
   void first() {
     counter++;
-    System.out.println("[실행] first() — counter: " + counter);
+    System.out.println("[실행] first() - counter: " + counter);
   }
 
   @Test
   void second() {
-    System.out.println("[실행] second() — counter: " + counter);
+    System.out.println("[실행] second() - counter: " + counter);
     assertThat(counter).isLessThan(100);
   }
 }`,
@@ -842,8 +842,8 @@ class SharedStateTest {
         { t: 'isLessThan(100)', d: 'counter 값이 100보다 작은지 검증해요. 공유 상태를 확인하는 느슨한 검증이에요.' },
       ],
       expectedOutput:
-        '[실행] first() — counter: 1\n' +
-        '[실행] second() — counter: 1',
+        '[실행] first() - counter: 1\n' +
+        '[실행] second() - counter: 1',
       realWorldUsage:
         '실제 프로젝트에서 @SpringBootTest + @TestInstance(PER_CLASS) 조합으로 컨텍스트 로딩 시간을 줄여요. 컨텍스트를 한 번만 띄우고(@BeforeAll) 모든 테스트가 공유하면, PER_METHOD로 매번 컨텍스트를 띄우는 것보다 CI 시간이 수십 초 단축돼요. 대신 테스트 간 상태 공유로 인한 부작용을 주의해야 해요.',
       why: '무거운 사전 작업을 한 번만 수행해 테스트 실행 시간을 단축하려고요. PER_METHOD는 안전하지만 느려요.',
@@ -873,7 +873,7 @@ class FlakyTest {
   void shouldCallExternalApi() {
     System.out.println("[실행] 외부 API 상태 확인");
     assertThat(externalApi.status()).isEqualTo("OK");
-    System.out.println("[결과] 외부 API 정상 — 검증 통과");
+    System.out.println("[결과] 외부 API 정상 - 검증 통과");
   }
 }`,
     explain: {
@@ -889,7 +889,7 @@ class FlakyTest {
         { t: 'status()', d: '외부 API의 상태를 확인하는 메서드예요. 현재 비활성화된 상태라 호출되지 않아요.' },
       ],
       expectedOutput:
-        '(테스트 실행 로그 없음 — @Disabled로 건너뜀)\n' +
+        '(테스트 실행 로그 없음 - @Disabled로 건너뜀)\n' +
         '테스트 리포트: shouldCallExternalApi SKIPPED',
       realWorldUsage:
         '실제 프로젝트에서 외부 API 장애나 아직 계약되지 않은 서비스의 테스트를 @Disabled로 관리해요. 매일 아침 스탠드업에서 "@Disabled된 테스트 목록"을 확인하고, 외부 API가 복구되면 바로 활성화해서 CI에 반영해요. 오래 방치되는 걸 막기 위해 Jira 티켓 번호를 이유에 함께 적는 팀도 많아요.',
@@ -915,7 +915,7 @@ class UserValidationTest {
       soft.assertThat(user.age()).isEqualTo(25);
       soft.assertThat(user.isActive()).isTrue();
     });
-    System.out.println("[결과] name=kim, age=25, active=true — 모두 검증 통과");
+    System.out.println("[결과] name=kim, age=25, active=true - 모두 검증 통과");
   }
 }`,
     explain: {
@@ -932,7 +932,7 @@ class UserValidationTest {
       ],
       expectedOutput:
         '[실행] SoftAssertions로 모든 필드 한 번에 검증\n' +
-        '[결과] name=kim, age=25, active=true — 모두 검증 통과',
+        '[결과] name=kim, age=25, active=true - 모두 검증 통과',
       realWorldUsage:
         '실제 프로젝트에서 API 응답 DTO의 모든 필드를 한 번에 검증할 때 SoftAssertions를 써요. 10개 필드가 있는 DTO 검증에서 첫 번째 필드가 틀렸다고 테스트가 끝나버리면, 나머지 9개 필드는 코드를 고친 후 다시 실행해야 발견할 수 있어요. SoftAssertions면 한 번에 10개 중 3개가 틀렸다는 걸 바로 알 수 있어서, 수정 → 실행 반복 횟수가 크게 줄어요.',
       why: '한 번의 테스트 실행으로 모든 실패 지점을 발견해서, 수정-재실행 사이클을 단축하려고요.',

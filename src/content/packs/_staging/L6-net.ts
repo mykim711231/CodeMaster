@@ -10,7 +10,7 @@ export const network: Snippet[] = [
 import java.net.Socket;
 
 try (Socket socket = new Socket("localhost", 8080)) {
-  System.out.println("[실행] 서버 연결 시도 — localhost:8080");
+  System.out.println("[실행] 서버 연결 시도 - localhost:8080");
   OutputStream out = socket.getOutputStream();
   out.write("hello\\n".getBytes());
   out.flush();
@@ -34,7 +34,7 @@ try (Socket socket = new Socket("localhost", 8080)) {
       why:
         'TCP 기반 통신이 필요한 모든 곳에서 써요. HTTP 클라이언트 라이브러리들도 내부적으로는 Socket을 이용해 통신하고 있어요.',
       expectedOutput:
-        '[실행] 서버 연결 시도 — localhost:8080\n' +
+        '[실행] 서버 연결 시도 - localhost:8080\n' +
         '[완료] 데이터 전송 완료',
       realWorldUsage:
         '실제 프로젝트에서 레거시 TCP 서버와 통신하거나, 커스텀 프로토콜로 하드웨어 장비(센서, 프린터 등)에 명령을 보낼 때 Socket을 직접 생성해 연결해요. ' +
@@ -183,7 +183,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 try (ServerSocket server = new ServerSocket(8080)) {
-  System.out.println("[실행] 멀티스레드 서버 시작 — port: 8080");
+  System.out.println("[실행] 멀티스레드 서버 시작 - port: 8080");
   while (true) {
     Socket client = server.accept();
     System.out.println("[연결] 클라이언트 접속: " + client.getInetAddress());
@@ -215,7 +215,7 @@ try (ServerSocket server = new ServerSocket(8080)) {
       why:
         '여러 클라이언트를 동시에 처리할 수 있어서 단일 스레드 서버의 한계(앞 손님이 끝날 때까지 뒷손님 대기)를 극복해요.',
       expectedOutput:
-        '[실행] 멀티스레드 서버 시작 — port: 8080\n' +
+        '[실행] 멀티스레드 서버 시작 - port: 8080\n' +
         '[연결] 클라이언트 접속: /127.0.0.1\n' +
         '[완료] 에코 처리 완료',
       realWorldUsage:
@@ -277,7 +277,7 @@ try (DatagramSocket socket = new DatagramSocket()) {
   byte[] data = "ping".getBytes();
   InetAddress addr = InetAddress.getByName("localhost");
   DatagramPacket packet = new DatagramPacket(data, data.length, addr, 9090);
-  System.out.println("[실행] UDP 패킷 전송 — 대상: 9090");
+  System.out.println("[실행] UDP 패킷 전송 - 대상: 9090");
   socket.send(packet);
   System.out.println("[완료] 패킷 전송 완료");
 }`,
@@ -297,7 +297,7 @@ try (DatagramSocket socket = new DatagramSocket()) {
       why:
         '속도가 가장 중요하고 일부 데이터 유실을 허용할 수 있는 상황에서 써요. TCP의 3-way 핸드셰이크 오버헤드가 부담스러울 때 선택해요.',
       expectedOutput:
-        '[실행] UDP 패킷 전송 — 대상: 9090\n' +
+        '[실행] UDP 패킷 전송 - 대상: 9090\n' +
         '[완료] 패킷 전송 완료',
       realWorldUsage:
         '실제 프로젝트에서 화상 회의(Zoom, WebRTC)는 UDP로 영상 데이터를 전송해요. ' +
@@ -319,7 +319,7 @@ import java.net.DatagramSocket;
 try (DatagramSocket socket = new DatagramSocket(9090)) {
   byte[] buf = new byte[1024];
   DatagramPacket packet = new DatagramPacket(buf, buf.length);
-  System.out.println("[실행] UDP 수신 대기 — port: 9090");
+  System.out.println("[실행] UDP 수신 대기 - port: 9090");
   socket.receive(packet);
   String msg = new String(packet.getData(), 0, packet.getLength());
   System.out.println("[결과] 수신 메시지: " + msg);
@@ -340,7 +340,7 @@ try (DatagramSocket socket = new DatagramSocket(9090)) {
       why:
         'UDP로 전송된 메시지를 받으려면 미리 포트를 열고 receive()로 대기해야 해요. 클라이언트가 보내기 전에 서버가 먼저 준비돼 있어야 해요.',
       expectedOutput:
-        '[실행] UDP 수신 대기 — port: 9090\n' +
+        '[실행] UDP 수신 대기 - port: 9090\n' +
         '[결과] 수신 메시지: ping',
       realWorldUsage:
         '실제 프로젝트에서 IoT 센서가 주기적으로 온도·습도 데이터를 UDP로 뿌리면, 수집 서버가 이 코드로 받아서 DB에 저장해요. ' +
@@ -358,10 +358,10 @@ try (DatagramSocket socket = new DatagramSocket(9090)) {
     code: `import java.nio.ByteBuffer;
 
 ByteBuffer buf = ByteBuffer.allocate(16);
-System.out.println("[실행] ByteBuffer 16바이트 할당 — position: " + buf.position());
+System.out.println("[실행] ByteBuffer 16바이트 할당 - position: " + buf.position());
 buf.putInt(42);
 buf.putChar('A');
-System.out.println("[실행] putInt(42), putChar('A') 완료 — position: " + buf.position());
+System.out.println("[실행] putInt(42), putChar('A') 완료 - position: " + buf.position());
 buf.flip();
 int n = buf.getInt();
 char c = buf.getChar();
@@ -382,8 +382,8 @@ System.out.println("[결과] n=" + n + ", c=" + c);`,
       why:
         'NIO 프로그래밍에서 데이터를 읽고 쓰는 기본 단위예요. Channel과 Selector를 사용할 때 ByteBuffer 없이는 아무것도 할 수 없어요.',
       expectedOutput:
-        '[실행] ByteBuffer 16바이트 할당 — position: 0\n' +
-        '[실행] putInt(42), putChar(\'A\') 완료 — position: 6\n' +
+        '[실행] ByteBuffer 16바이트 할당 - position: 0\n' +
+        '[실행] putInt(42), putChar(\'A\') 완료 - position: 6\n' +
         '[결과] n=42, c=A',
       realWorldUsage:
         '실제 프로젝트에서 Netty, Vert.x 같은 NIO 기반 프레임워크의 내부 구현은 모두 ByteBuffer로 데이터를 주고받아요. ' +
@@ -408,7 +408,7 @@ try (FileChannel in = FileChannel.open(Path.of("a.txt"));
          StandardOpenOption.WRITE,
          StandardOpenOption.TRUNCATE_EXISTING)) {
   long size = in.size();
-  System.out.println("[실행] 파일 복사 시작 — 크기: " + size + " bytes");
+  System.out.println("[실행] 파일 복사 시작 - 크기: " + size + " bytes");
   long transferred = in.transferTo(0, size, out);
   System.out.println("[완료] 복사된 바이트: " + transferred);
 }`,
@@ -428,7 +428,7 @@ try (FileChannel in = FileChannel.open(Path.of("a.txt"));
       why:
         '대용량 파일을 빠르게 복사하거나, 파일의 특정 영역만 네트워크로 전송할 때 써요. 제로 카피 덕분에 CPU 사용량도 적어요.',
       expectedOutput:
-        '[실행] 파일 복사 시작 — 크기: 4096 bytes\n' +
+        '[실행] 파일 복사 시작 - 크기: 4096 bytes\n' +
         '[완료] 복사된 바이트: 4096',
       realWorldUsage:
         '실제 프로젝트에서 정적 파일 서버(Nginx 유사)나 대용량 로그 파일 아카이브 시스템을 구현할 때 FileChannel.transferTo()를 써서 디스크 I/O를 최적화해요. ' +
@@ -455,7 +455,7 @@ ServerSocketChannel server = ServerSocketChannel.open();
 server.configureBlocking(false);
 server.bind(new InetSocketAddress(8080));
 server.register(selector, SelectionKey.OP_ACCEPT);
-System.out.println("[실행] Selector 서버 시작 — port: 8080");
+System.out.println("[실행] Selector 서버 시작 - port: 8080");
 while (true) {
   int ready = selector.select();
   if (ready == 0) continue;
@@ -468,7 +468,7 @@ while (true) {
       if (ch != null) {
         ch.configureBlocking(false);
         ch.register(selector, SelectionKey.OP_READ);
-        System.out.println("[연결] 새 클라이언트 — " + ch.getRemoteAddress());
+        System.out.println("[연결] 새 클라이언트 - " + ch.getRemoteAddress());
       }
     }
     keys.remove();
@@ -491,8 +491,8 @@ while (true) {
       why:
         '스레드를 적게 쓰면서도 많은 클라이언트를 동시에 처리하려고 해요. C10K 문제(1만 동시 접속)를 해결하는 핵심 기술이에요.',
       expectedOutput:
-        '[실행] Selector 서버 시작 — port: 8080\n' +
-        '[연결] 새 클라이언트 — /127.0.0.1:54321',
+        '[실행] Selector 서버 시작 - port: 8080\n' +
+        '[연결] 새 클라이언트 - /127.0.0.1:54321',
       realWorldUsage:
         '실제 프로젝트에서 모든 논블로킹 네트워크 프레임워크(Netty, Vert.x, Undertow)는 내부적으로 Java NIO Selector를 기반으로 동작해요. ' +
         'Tomcat의 NIO 커넥터도 Selector를 이용해 수천 개의 keep-alive 연결을 단 몇 개의 스레드로 관리해요.',
@@ -645,7 +645,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 NioEventLoopGroup bossGroup = new NioEventLoopGroup(1);
 NioEventLoopGroup workerGroup = new NioEventLoopGroup();
-System.out.println("[실행] Netty 서버 기동 — boss: 1, worker: 기본");
+System.out.println("[실행] Netty 서버 기동 - boss: 1, worker: 기본");
 try {
   new ServerBootstrap()
       .group(bossGroup, workerGroup)
@@ -657,7 +657,7 @@ try {
         }
       })
       .bind(8080).sync();
-  System.out.println("[완료] 서버 바인딩 완료 — port: 8080");
+  System.out.println("[완료] 서버 바인딩 완료 - port: 8080");
   new ServerBootstrap().config().group().next().next()
       .closeFuture().sync();
 } finally {
@@ -685,8 +685,8 @@ try {
       why:
         'Netty는 Tomcat보다 월등히 적은 리소스로 더 많은 동시 연결을 처리할 수 있어서, API Gateway, 프록시 서버, 게임 서버 등 고성능 네트워크 서버의 표준이에요.',
       expectedOutput:
-        '[실행] Netty 서버 기동 — boss: 1, worker: 기본\n' +
-        '[완료] 서버 바인딩 완료 — port: 8080\n' +
+        '[실행] Netty 서버 기동 - boss: 1, worker: 기본\n' +
+        '[완료] 서버 바인딩 완료 - port: 8080\n' +
         '[종료] 서버 셧다운',
       realWorldUsage:
         '실제 프로젝트에서 Spring Cloud Gateway, gRPC 서버, Elasticsearch, Cassandra 같은 분산 시스템이 내부 통신에 Netty를 써요. ' +
@@ -707,7 +707,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 public class EchoHandler extends ChannelInboundHandlerAdapter {
   @Override
   public void channelRead(ChannelHandlerContext ctx, Object msg) {
-    System.out.println("[수신] 데이터 도착 — " + msg);
+    System.out.println("[수신] 데이터 도착 - " + msg);
     ctx.write(msg);
     ctx.flush();
     System.out.println("[응답] 에코 전송 완료");
@@ -736,7 +736,7 @@ public class EchoHandler extends ChannelInboundHandlerAdapter {
       why:
         '들어오는 데이터를 변환하거나 응답을 생성하려면 핸들러가 필수예요. Netty 파이프라인의 핵심 구성 요소예요.',
       expectedOutput:
-        '[수신] 데이터 도착 — hello\n' +
+        '[수신] 데이터 도착 - hello\n' +
         '[응답] 에코 전송 완료',
       realWorldUsage:
         '실제 프로젝트에서 HTTP 요청 핸들러, WebSocket 메시지 처리기, TCP 프로토콜 파서 등 Netty 기반 애플리케이션의 모든 비즈니스 로직은 ChannelInboundHandlerAdapter를 상속한 핸들러로 구현해요.',
@@ -784,7 +784,7 @@ new ServerBootstrap()
       }
     })
     .bind(8080).sync();
-System.out.println("[실행] 라인 기반 서버 시작 — port: 8080");`,
+System.out.println("[실행] 라인 기반 서버 시작 - port: 8080");`,
     explain: {
       concept:
         '파이프라인에 디코더를 끼우면 바이트 덩어리를 의미 있는 메시지(문자열)로 변환해서 다음 핸들러에게 넘겨줘요. ' +
@@ -802,7 +802,7 @@ System.out.println("[실행] 라인 기반 서버 시작 — port: 8080");`,
       why:
         '바이트 스트림을 바로 다루면 메시지 경계 구분이 어려워요. 디코더로 프레임 단위 처리를 하면 상위 핸들러는 순수한 메시지 객체만 다루면 돼요.',
       expectedOutput:
-        '[실행] 라인 기반 서버 시작 — port: 8080\n' +
+        '[실행] 라인 기반 서버 시작 - port: 8080\n' +
         '[수신] 줄 단위 메시지: hello',
       realWorldUsage:
         '실제 프로젝트에서 Redis 프로토콜, STOMP 메시징, SMTP 명령어 등 줄 단위 텍스트 프로토콜을 구현할 때 LineBasedFrameDecoder를 기본 프레이머로 사용해요. ' +

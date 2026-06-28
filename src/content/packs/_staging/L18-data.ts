@@ -15,7 +15,7 @@ public List<UserEntity> search(String name) {
   if (name != null) {
     builder.and(user.name.contains(name));
   }
-  System.out.println("[실행] search — name: " + name + ", 조건: " + builder);
+  System.out.println("[실행] search - name: " + name + ", 조건: " + builder);
   return queryFactory.selectFrom(user).where(builder).fetch();
 }`,
     explain: {
@@ -35,7 +35,7 @@ public List<UserEntity> search(String name) {
         '검색 조건이 사용자 입력에 따라 매번 달라지는 동적 쿼리를 만들 때, ' +
         '문자열 이어 붙이기(StringBuilder + SQL)보다 안전하고 읽기 쉽게 조립하려고요.',
       expectedOutput:
-        '[실행] search — name: kim, 조건: contains(kim)\n' +
+        '[실행] search - name: kim, 조건: contains(kim)\n' +
         'Hibernate: select ... from users where name like ? escape \'\\\'\n' +
         '(kim을 포함하는 UserEntity 리스트 반환)',
       realWorldUsage:
@@ -55,7 +55,7 @@ public List<UserEntity> search(String name) {
 
 public List<OrderEntity> findAllByStatus(String status) {
   QOrderEntity order = QOrderEntity.orderEntity;
-  System.out.println("[실행] findAllByStatus — status: " + status);
+  System.out.println("[실행] findAllByStatus - status: " + status);
   return queryFactory
     .selectFrom(order)
     .where(order.status.eq(status))
@@ -79,7 +79,7 @@ public List<OrderEntity> findAllByStatus(String status) {
         'SQL이나 JPQL을 문자열로 쓰는 대신 자바 코드로 쿼리를 작성해 ' +
         '컴파일 시점에 오타·타입 불일치를 모두 감지하려고요.',
       expectedOutput:
-        '[실행] findAllByStatus — status: PAID\n' +
+        '[실행] findAllByStatus - status: PAID\n' +
         'Hibernate: select ... from orders where status = ? order by created_at desc\n' +
         '(PAID 상태인 주문 리스트가 최신순으로 반환됨)',
       realWorldUsage:
@@ -100,7 +100,7 @@ public List<OrderEntity> findAllByStatus(String status) {
 public List<PostEntity> findWithComments() {
   QPostEntity post = QPostEntity.postEntity;
   QCommentEntity comment = QCommentEntity.commentEntity;
-  System.out.println("[실행] findWithComments — Fetch Join");
+  System.out.println("[실행] findWithComments - Fetch Join");
   return queryFactory
     .selectFrom(post)
     .join(post.comments, comment).fetchJoin()
@@ -124,7 +124,7 @@ public List<PostEntity> findWithComments() {
         '여러 개의 부모-자식 관계를 한 번에 로딩해 ' +
         'DB 통신 횟수를 1/N으로 줄이고 응답 속도를 획기적으로 개선하려고요.',
       expectedOutput:
-        '[실행] findWithComments — Fetch Join\n' +
+        '[실행] findWithComments - Fetch Join\n' +
         'Hibernate: select ... from post join fetch post.comments\n' +
         '(PostEntity 리스트 반환, 각 Post의 comments 필드에 댓글 목록 이미 로딩됨)',
       realWorldUsage:
@@ -153,7 +153,7 @@ public class MemberService {
 
   public void printTeams(Long memberId) {
     MemberEntity m = em.find(MemberEntity.class, memberId);
-    System.out.println("[실행] printTeams — memberId: " + memberId + ", name: " + m.getName());
+    System.out.println("[실행] printTeams - memberId: " + memberId + ", name: " + m.getName());
     for (TeamEntity t : m.getTeams()) {
       System.out.println("[쿼리] getTeams() → " + t.getName());
     }
@@ -176,7 +176,7 @@ public class MemberService {
         'LAZY 로딩 자체는 초기 로딩을 가볍게 해주는 좋은 전략이지만, ' +
         '루프 안에서 컬렉션에 접근할 때 발생하는 N+1을 반드시 인지하고 회피하려고요.',
       expectedOutput:
-        '[실행] printTeams — memberId: 1, name: Alice\n' +
+        '[실행] printTeams - memberId: 1, name: Alice\n' +
         'Hibernate: select ... from member where id=?\n' +
         '[쿼리] getTeams() → TeamA\n' +
         'Hibernate: select ... from team where member_id=?\n' +
@@ -210,7 +210,7 @@ public class ProductService {
 
   public Page<ProductEntity> list(int page, int size) {
     Pageable pageable = PageRequest.of(page, size, Sort.by("price").ascending());
-    System.out.println("[실행] list — page: " + page + ", size: " + size + ", sort: price ASC");
+    System.out.println("[실행] list - page: " + page + ", size: " + size + ", sort: price ASC");
     return productRepository.findAll(pageable);
   }
 }`,
@@ -231,7 +231,7 @@ public class ProductService {
         '대량 데이터를 브라우저에 한 번에 보내지 않고 조금씩 잘라서 전송해 ' +
         '메모리 사용량과 네트워크 전송 시간을 제어하려고요.',
       expectedOutput:
-        '[실행] list — page: 0, size: 10, sort: price ASC\n' +
+        '[실행] list - page: 0, size: 10, sort: price ASC\n' +
         'Hibernate: select ... from product order by price asc limit 10 offset 0\n' +
         'Hibernate: select count(*) from product\n' +
         'Page<ProductEntity>(content=10건, totalElements=42, totalPages=5)',
@@ -266,7 +266,7 @@ public class OrderService {
       Sort.Order.desc("priority"),
       Sort.Order.asc("createdAt")
     );
-    System.out.println("[실행] recent — page: " + page + ", sort: priority DESC, createdAt ASC");
+    System.out.println("[실행] recent - page: " + page + ", sort: priority DESC, createdAt ASC");
     return orderRepository.findAll(PageRequest.of(page, 20, sort));
   }
 }`,
@@ -285,7 +285,7 @@ public class OrderService {
       why:
         'UI에서 "정렬 기준을 여러 개 동시에 적용"해야 할 때, 단일 ORDER BY로는 표현할 수 없는 복합 정렬을 간결하게 만들려고요.',
       expectedOutput:
-        '[실행] recent — page: 0, sort: priority DESC, createdAt ASC\n' +
+        '[실행] recent - page: 0, sort: priority DESC, createdAt ASC\n' +
         'Hibernate: select ... from orders order by priority desc, created_at asc limit 20 offset 0',
       realWorldUsage:
         '실제 대시보드 화면에서 "에러 로그는 심각도 내림차순, 같은 심각도면 발생 시간 오름차순" 정렬이 필요할 때 ' +
@@ -322,7 +322,7 @@ public class FeedService {
     if (hasNext) {
       rows.remove(size);
     }
-    System.out.println("[실행] olderThan — lastId: " + lastId + ", size: " + size + ", hasNext: " + hasNext);
+    System.out.println("[실행] olderThan - lastId: " + lastId + ", size: " + size + ", hasNext: " + hasNext);
     return new SliceImpl<>(rows, pageable, hasNext);
   }
 }`,
@@ -342,7 +342,7 @@ public class FeedService {
       why:
         'count(*) 쿼리를 없애 DB 부하를 줄이고, 무한 스크롤 UI에 최적화된 연속적 데이터 로딩을 하려고요.',
       expectedOutput:
-        '[실행] olderThan — lastId: 100, size: 10, hasNext: true\n' +
+        '[실행] olderThan - lastId: 100, size: 10, hasNext: true\n' +
         'Hibernate: select ... from feed where id < 100 order by id desc limit 11\n' +
         '(FeedEntity 10개 + hasNext=true인 Slice 반환)',
       realWorldUsage:
@@ -363,7 +363,7 @@ import java.util.List;
 
 public List<UserSummary> summaries() {
   QUserEntity user = QUserEntity.userEntity;
-  System.out.println("[실행] summaries — id, name 프로젝션");
+  System.out.println("[실행] summaries - id, name 프로젝션");
   return queryFactory
     .select(Projections.constructor(UserSummary.class, user.id, user.name))
     .from(user)
@@ -385,7 +385,7 @@ public List<UserSummary> summaries() {
       why:
         '전체 엔티티 대신 필요한 컬럼만 조회해 네트워크·메모리·DB 부하를 한 번에 줄이려고요.',
       expectedOutput:
-        '[실행] summaries — id, name 프로젝션\n' +
+        '[실행] summaries - id, name 프로젝션\n' +
         'Hibernate: select id, name from users\n' +
         '(UserSummary(id=1, name="Alice"), UserSummary(id=2, name="Bob"), ...)',
       realWorldUsage:
@@ -407,7 +407,7 @@ import java.util.List;
 public List<OrderEntity> expensiveOrders() {
   QOrderEntity order = QOrderEntity.orderEntity;
   QOrderEntity orderSub = new QOrderEntity("orderSub");
-  System.out.println("[실행] expensiveOrders — 평균보다 높은 금액");
+  System.out.println("[실행] expensiveOrders - 평균보다 높은 금액");
   return queryFactory
     .selectFrom(order)
     .where(order.amount.gt(
@@ -433,7 +433,7 @@ public List<OrderEntity> expensiveOrders() {
         '비교 기준(전체 평균)을 한 번의 DB 왕복으로 계산해서, ' +
         '"평균 조회 API → 평균값으로 다시 필터 API"라는 두 번의 왕복을 없애려고요.',
       expectedOutput:
-        '[실행] expensiveOrders — 평균보다 높은 금액\n' +
+        '[실행] expensiveOrders - 평균보다 높은 금액\n' +
         'Hibernate: select ... from orders where amount > (select avg(amount) from orders)\n' +
         '(전체 평균보다 금액이 높은 OrderEntity 리스트 반환)',
       realWorldUsage:
@@ -454,7 +454,7 @@ import java.util.List;
 
 public List<Tuple> salesByCategory() {
   QSalesEntity s = QSalesEntity.salesEntity;
-  System.out.println("[실행] salesByCategory — 카테고리별 집계");
+  System.out.println("[실행] salesByCategory - 카테고리별 집계");
   return queryFactory
     .select(s.category, s.amount.sum(), s.count())
     .from(s)
@@ -478,7 +478,7 @@ public List<Tuple> salesByCategory() {
         '카테고리별 매출 합계·주문 건수 같은 통계를 ' +
         'DB에서 바로 집계해 애플리케이션에서 재계산하는 비용을 없애려고요.',
       expectedOutput:
-        '[실행] salesByCategory — 카테고리별 집계\n' +
+        '[실행] salesByCategory - 카테고리별 집계\n' +
         'Hibernate: select category, sum(amount), count(*) from sales group by category\n' +
         'Tuple([전자기기, 5000000, 12]), Tuple([도서, 1200000, 45])',
       realWorldUsage:
@@ -502,7 +502,7 @@ public List<UserEntity> sorted(boolean asc) {
   OrderSpecifier<String> spec = asc
     ? user.name.asc()
     : user.name.desc();
-  System.out.println("[실행] sorted — asc: " + asc);
+  System.out.println("[실행] sorted - asc: " + asc);
   return queryFactory.selectFrom(user).orderBy(spec).fetch();
 }`,
     explain: {
@@ -522,9 +522,9 @@ public List<UserEntity> sorted(boolean asc) {
         '사용자가 정렬 방향을 토글할 때마다 별도의 쿼리 메서드를 만들지 않고, ' +
         '하나의 쿼리 코드로 오름차순·내림차순을 동적으로 전환하려고요.',
       expectedOutput:
-        '[실행] sorted — asc: true\n' +
+        '[실행] sorted - asc: true\n' +
         'Hibernate: select ... from users order by name asc\n' +
-        '[실행] sorted — asc: false\n' +
+        '[실행] sorted - asc: false\n' +
         'Hibernate: select ... from users order by name desc',
       realWorldUsage:
         '실제 게시판 목록에서 "제목순↑/↓", "날짜순↑/↓" 토글 컬럼 헤더를 클릭할 때, ' +
@@ -594,7 +594,7 @@ public class DataSourceConfig {
     cfg.setPassword("postgres");
     cfg.setMaximumPoolSize(20);
     cfg.setPoolName("shop-pool");
-    System.out.println("[생성] HikariCP 풀 생성 — poolName: shop-pool, maxSize: 20");
+    System.out.println("[생성] HikariCP 풀 생성 - poolName: shop-pool, maxSize: 20");
     return new HikariDataSource(cfg);
   }
 }`,
@@ -615,7 +615,7 @@ public class DataSourceConfig {
         'application.properties에서 표현하기 어려운 고급 설정(DB 읽기/쓰기 분리, SSL 인증서 경로, 조건 분기)을 ' +
         '자바 코드로 정밀하게 제어하려고요.',
       expectedOutput:
-        '[생성] HikariCP 풀 생성 — poolName: shop-pool, maxSize: 20\n' +
+        '[생성] HikariCP 풀 생성 - poolName: shop-pool, maxSize: 20\n' +
         'HikariPool-shop-pool - Starting...\n' +
         'HikariPool-shop-pool - Start completed.',
       realWorldUsage:
@@ -679,7 +679,7 @@ public class V2__seed_admin extends BaseJavaMigration {
 
   @Override
   public void migrate(Context context) throws SQLException {
-    System.out.println("[실행] V2__seed_admin 마이그레이션 — admin 계정 생성");
+    System.out.println("[실행] V2__seed_admin 마이그레이션 - admin 계정 생성");
     try (PreparedStatement ps = context.getConnection()
         .prepareStatement("INSERT INTO users(email) VALUES(?)")) {
       ps.setString(1, "admin@shop.com");
@@ -704,7 +704,7 @@ public class V2__seed_admin extends BaseJavaMigration {
         '초기 데이터 셋업에 반복문·조건·외부 API 호출이 필요할 때 SQL만으로는 표현하기 어려워, ' +
         '자바 코드로 자유롭게 마이그레이션 로직을 작성하려고요.',
       expectedOutput:
-        '[실행] V2__seed_admin 마이그레이션 — admin 계정 생성\n' +
+        '[실행] V2__seed_admin 마이그레이션 - admin 계정 생성\n' +
         'Flyway: Successfully applied 1 migration(s) to schema "public"',
       realWorldUsage:
         '실제 멀티테넌시 SaaS 앱에서 새 테넌트 생성 시, Java 마이그레이션으로 기본 역할·권한·초기 설정을 ' +

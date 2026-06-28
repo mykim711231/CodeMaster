@@ -52,7 +52,7 @@ model = LogisticRegression(max_iter=1000)
 model.fit(X_train, y_train)
 print(f"[학습] LogisticRegression fit 완료")
 pred = model.predict(X_test)
-print(f"[예측] 테스트 데이터 예측 완료 — {len(pred)}건")
+print(f"[예측] 테스트 데이터 예측 완료 - {len(pred)}건")
 score = model.score(X_test, y_test)
 print(f"[결과] 정확도: {score:.4f}")`,
     explain: {
@@ -73,7 +73,7 @@ print(f"[결과] 정확도: {score:.4f}")`,
       expectedOutput:
         '예시 (80개 훈련, 20개 테스트):\n' +
         '[학습] LogisticRegression fit 완료\n' +
-        '[예측] 테스트 데이터 예측 완료 — 20건\n' +
+        '[예측] 테스트 데이터 예측 완료 - 20건\n' +
         '[결과] 정확도: 0.9500',
       realWorldUsage:
         '실제 스팸 메일 분류기에서 fit()으로 수만 건의 메일을 학습하고, predict()로 새 메일이 스팸인지 아닌지를 밀리초 안에 예측해서 자동 분류함에 넣어요.',
@@ -279,7 +279,7 @@ print(f"[결과] 평균 정확도: {scores.mean():.4f} (+/- {scores.std():.4f})"
     code: `from sklearn.model_selection import StratifiedKFold
 
 skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-print(f"[실행] StratifiedKFold — 5겹, 클래스 비율 유지")
+print(f"[실행] StratifiedKFold - 5겹, 클래스 비율 유지")
 for fold, (tr_idx, va_idx) in enumerate(skf.split(X, y)):
   print(f"  폴드 {fold}: 훈련={len(tr_idx)}, 검증={len(va_idx)}")
 print(f"[정보] shuffle=True, random_state=42")`,
@@ -299,7 +299,7 @@ print(f"[정보] shuffle=True, random_state=42")`,
         '실무에서 사기 탐지(사기:0.1%) 같은 극단적 불균형 데이터를 일반 KFold로 나누면, 어떤 폴드엔 사기 데이터가 하나도 없어서 평가가 무의미해져요. StratifiedKFold가 필수예요.',
       expectedOutput:
         '예시 (100개 샘플, 5겹):\n' +
-        '[실행] StratifiedKFold — 5겹, 클래스 비율 유지\n' +
+        '[실행] StratifiedKFold - 5겹, 클래스 비율 유지\n' +
         '  폴드 0: 훈련=80, 검증=20\n' +
         '  폴드 1: 훈련=80, 검증=20\n' +
         '  폴드 2: 훈련=80, 검증=20\n' +
@@ -563,7 +563,7 @@ X_train2, X_val, y_train2, y_val = train_test_split(
 model = XGBClassifier(n_estimators=1000, learning_rate=0.05, early_stopping_rounds=20)
 model.fit(X_train2, y_train2, eval_set=[(X_val, y_val)], verbose=False)
 print(f"[결과] 최적 트리 수 (best_iteration): {model.best_iteration}")
-print(f"[정보] early_stopping_rounds=20 — 20번 연속 미개선 시 중단")`,
+print(f"[정보] early_stopping_rounds=20 - 20번 연속 미개선 시 중단")`,
     explain: {
       concept:
         '조기 종료(Early Stopping)는 검증 데이터에 대한 성능이 더 이상 향상되지 않으면 알아서 학습을 멈추는 장치예요. ' +
@@ -583,7 +583,7 @@ print(f"[정보] early_stopping_rounds=20 — 20번 연속 미개선 시 중단"
       expectedOutput:
         '예시:\n' +
         '[결과] 최적 트리 수 (best_iteration): 247\n' +
-        '[정보] early_stopping_rounds=20 — 20번 연속 미개선 시 중단',
+        '[정보] early_stopping_rounds=20 - 20번 연속 미개선 시 중단',
       realWorldUsage:
         '실제 프로덕션 모델 학습 파이프라인에서 early_stopping을 쓰면, 매번 트리 개수를 수동으로 튜닝하지 않아도 데이터 특성에 맞는 최적의 복잡도를 자동으로 찾아줘요.',
       pitfall: 'eval_set에 최종 테스트 데이터(X_test)를 넣으면, 테스트 데이터 정보가 학습 결정에 유입되는 치명적 데이터 누수가 발생해요. 반드시 훈련 데이터에서 분리한 별도 검증 세트를 써야 해요.',

@@ -15,7 +15,7 @@ import { pythonPrompt } from './_staging/P13-pprompt';
 import { pythonFineTuning } from './_staging/P14-pft';
 import { pythonQuality } from './_staging/P15-pqual';
 
-// Python 3.12 (안정) 기준 — PRD §8 / §8.1
+// Python 3.12 (안정) 기준 - PRD §8 / §8.1
 
 const L = (no: number, name: string, snippets: Snippet[] = []): Level => ({ no, name, snippets });
 

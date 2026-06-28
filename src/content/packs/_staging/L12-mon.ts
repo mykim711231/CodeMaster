@@ -143,9 +143,9 @@ public class FeatureToggleEndpoint {
 
   @WriteOperation
   public void setFlag(String name, boolean enabled) {
-    System.out.println("[실행] 기능 플래그 변경 — name: " + name + ", enabled: " + enabled);
+    System.out.println("[실행] 기능 플래그 변경 - name: " + name + ", enabled: " + enabled);
     flags.put(name, enabled);
-    System.out.println("[결과] 플래그 저장 완료 — 현재: " + flags);
+    System.out.println("[결과] 플래그 저장 완료 - 현재: " + flags);
   }
 }`,
     explain: {
@@ -162,8 +162,8 @@ public class FeatureToggleEndpoint {
       ],
       expectedOutput:
         'POST /actuator/features (name=beta-api, enabled=true):\n' +
-        '[실행] 기능 플래그 변경 — name: beta-api, enabled: true\n' +
-        '[결과] 플래그 저장 완료 — 현재: {new-ui=true, beta-api=true}',
+        '[실행] 기능 플래그 변경 - name: beta-api, enabled: true\n' +
+        '[결과] 플래그 저장 완료 - 현재: {new-ui=true, beta-api=true}',
       realWorldUsage:
         '실제 프로젝트에서 긴급 장애 대응용 킬 스위치(kill switch)로 이 패턴을 써요. 외부 결제 API에 장애가 발생하면 POST로 payment.enabled=false를 호출해서 결제 기능을 즉시 차단하고, 사용자에게 "점검 중" 메시지를 보여줘요. 외부 API가 복구되면 다시 true로 바꾸는 식이에요.',
       why: '재배포 없이 런타임에 애플리케이션의 동작을 동적으로 변경하려고요. 기능 플래그·설정값 등을 코드 배포 주기와 분리할 수 있어요.',
@@ -188,12 +188,12 @@ public class OrderMetrics {
     this.orderCounter = Counter.builder("orders.created")
       .description("생성된 주문 수")
       .register(registry);
-    System.out.println("[결과] Counter 등록 완료 — 이름: orders.created");
+    System.out.println("[결과] Counter 등록 완료 - 이름: orders.created");
   }
 
   public void incrementOrder() {
     orderCounter.increment();
-    System.out.println("[실행] 주문 카운터 증가 — 현재: " + orderCounter.count());
+    System.out.println("[실행] 주문 카운터 증가 - 현재: " + orderCounter.count());
   }
 }`,
     explain: {
@@ -212,9 +212,9 @@ public class OrderMetrics {
       expectedOutput:
         '앱 시작 시:\n' +
         '[실행] 메트릭 등록 시작\n' +
-        '[결과] Counter 등록 완료 — 이름: orders.created\n' +
+        '[결과] Counter 등록 완료 - 이름: orders.created\n' +
         'incrementOrder() 호출 시:\n' +
-        '[실행] 주문 카운터 증가 — 현재: 1.0',
+        '[실행] 주문 카운터 증가 - 현재: 1.0',
       realWorldUsage:
         '실제 전자상거래 프로젝트에서 주문 생성 API가 호출될 때마다 orderCounter.increment()를 호출해요. Prometheus가 /actuator/prometheus에서 orders.created_total 값을 수집하고, Grafana 대시보드에서 "분당 주문 수" 그래프로 시각화해요. 갑자기 주문이 0건으로 떨어지면 알람이 울리도록 설정해둬요.',
       why: '비즈니스 이벤트의 발생 횟수를 추적해 서비스 이용량을 파악하고, 이상 징후를 조기에 감지하려고요.',
@@ -241,11 +241,11 @@ public class PaymentMetrics {
     this.paymentTimer = Timer.builder("payment.duration")
       .description("결제 처리 시간")
       .register(registry);
-    System.out.println("[결과] Timer 등록 완료 — 이름: payment.duration");
+    System.out.println("[결과] Timer 등록 완료 - 이름: payment.duration");
   }
 
   public void record(long millis) {
-    System.out.println("[실행] 결제 소요 시간 기록 — " + millis + "ms");
+    System.out.println("[실행] 결제 소요 시간 기록 - " + millis + "ms");
     paymentTimer.record(Duration.ofMillis(millis));
   }
 }`,
@@ -264,9 +264,9 @@ public class PaymentMetrics {
       expectedOutput:
         '앱 시작 시:\n' +
         '[실행] Timer 등록 시작\n' +
-        '[결과] Timer 등록 완료 — 이름: payment.duration\n' +
+        '[결과] Timer 등록 완료 - 이름: payment.duration\n' +
         'record(235) 호출 시:\n' +
-        '[실행] 결제 소요 시간 기록 — 235ms',
+        '[실행] 결제 소요 시간 기록 - 235ms',
       realWorldUsage:
         '실제 결제 시스템에서 모든 결제 API 호출의 전후 시간을 측정해서 Timer에 기록해요. Prometheus가 payment.duration_seconds_sum과 payment.duration_seconds_count를 수집하고, Grafana에서 "결제 API P95 응답 시간" 그래프를 그려요. P95가 평소 500ms에서 갑자기 3초로 늘어나면 결제 대행사 장애를 의심하고 알람을 보내요.',
       why: '느린 작업을 찾아내 성능 병목을 개선하고, 사용자 체감 성능이 악화되기 전에 선제적으로 감지하려고요.',
@@ -293,11 +293,11 @@ public class QueueMetrics {
     Gauge.builder("queue.size", queueSize, AtomicInteger::get)
       .description("작업 대기열 크기")
       .register(registry);
-    System.out.println("[결과] Gauge 등록 완료 — 이름: queue.size, 초기값: 0");
+    System.out.println("[결과] Gauge 등록 완료 - 이름: queue.size, 초기값: 0");
   }
 
   public void setSize(int size) {
-    System.out.println("[실행] 큐 크기 변경 — " + queueSize.get() + " -> " + size);
+    System.out.println("[실행] 큐 크기 변경 - " + queueSize.get() + " -> " + size);
     queueSize.set(size);
   }
 }`,
@@ -316,9 +316,9 @@ public class QueueMetrics {
       expectedOutput:
         '앱 시작 시:\n' +
         '[실행] Gauge 등록 시작\n' +
-        '[결과] Gauge 등록 완료 — 이름: queue.size, 초기값: 0\n' +
+        '[결과] Gauge 등록 완료 - 이름: queue.size, 초기값: 0\n' +
         'setSize(42) 호출 시:\n' +
-        '[실행] 큐 크기 변경 — 0 -> 42',
+        '[실행] 큐 크기 변경 - 0 -> 42',
       realWorldUsage:
         '실제 프로젝트에서 스레드 풀의 활성 스레드 수, Redis 커넥션 풀의 사용 중인 커넥션 수, Kafka 컨슈머 랙(lag) 등을 Gauge로 추적해요. 대시보드에서 "작업 큐가 1000개를 넘으면 빨간색" 같은 시각적 경고를 설정하고, 실제로 임계치를 넘으면 담당자에게 알람을 보내요.',
       why: '증감이 아니라 현재 상태가 중요한 메트릭(큐 길이, 메모리, 접속자 수 등)을 실시간으로 추적하려고요.',
@@ -380,7 +380,7 @@ public class PaymentController {
   @Timed(value = "payment.process", description = "결제 처리 시간")
   @PostMapping("/pay")
   public ResponseEntity<String> pay(@RequestBody PayRequest req) {
-    System.out.println("[실행] 결제 요청 수신 — amount: " + req.amount());
+    System.out.println("[실행] 결제 요청 수신 - amount: " + req.amount());
     ResponseEntity<String> response = ResponseEntity.ok("ok");
     System.out.println("[결과] 결제 응답 반환");
     return response;
@@ -402,7 +402,7 @@ record PayRequest(long amount) {}`,
       ],
       expectedOutput:
         'POST /pay {amount: 5000}:\n' +
-        '[실행] 결제 요청 수신 — amount: 5000\n' +
+        '[실행] 결제 요청 수신 - amount: 5000\n' +
         '[결과] 결제 응답 반환',
       realWorldUsage:
         '실제 프로젝트에서 핵심 API마다 @Timed를 붙여서 성능을 추적해요. 결제·주문·인증 API의 P95 응답 시간을 Grafana 대시보드에서 실시간으로 보고, 특정 API가 느려지면 담당 팀에 슬랙 알람이 가도록 설정해요. 장애 발생 시 어떤 API부터 문제가 시작됐는지 추적하는 데도 유용해요.',
@@ -424,7 +424,7 @@ import org.springframework.context.annotation.Configuration;
 public class MetricsConfig {
   @Bean
   public TimedAspect timedAspect(MeterRegistry registry) {
-    System.out.println("[실행] TimedAspect 등록 — @Timed 활성화");
+    System.out.println("[실행] TimedAspect 등록 - @Timed 활성화");
     return new TimedAspect(registry);
   }
 }`,
@@ -432,7 +432,7 @@ public class MetricsConfig {
       concept:
         '@Timed 어노테이션이 실제로 동작하려면 TimedAspect라는 AOP 도우미 빈이 반드시 필요해요. ' +
         '이 도우미는 @Timed가 붙은 메서드를 찾아서, 메서드 실행 전후를 가로채는 프록시를 만들어줘요. ' +
-        '안타깝게도 Spring Boot가 Micrometer 의존성만 추가한다고 해서 이 빈이 자동 등록되지는 않아요 — 개발자가 명시적으로 @Bean으로 등록해야 해요. ' +
+        '안타깝게도 Spring Boot가 Micrometer 의존성만 추가한다고 해서 이 빈이 자동 등록되지는 않아요 - 개발자가 명시적으로 @Bean으로 등록해야 해요. ' +
         '이 빈을 등록하지 않으면 @Timed 어노테이션은 아무 효과도 없이 조용히 무시되니, 꼭 확인하는 습관을 들이세요.',
       terms: [
         { t: 'TimedAspect', d: '@Timed 어노테이션을 처리하는 AOP Aspect예요. 이 빈이 있어야 @Timed가 동작해요.' },
@@ -442,7 +442,7 @@ public class MetricsConfig {
       ],
       expectedOutput:
         '앱 시작 시:\n' +
-        '[실행] TimedAspect 등록 — @Timed 활성화',
+        '[실행] TimedAspect 등록 - @Timed 활성화',
       realWorldUsage:
         '실제 프로젝트의 공통 설정 모듈에 이 클래스를 만들어 두고 모든 마이크로서비스가 공유해요. 신규 서비스를 만들 때 이 설정을 깜빡하고 추가하지 않으면 @Timed가 동작하지 않아서, "배포했는데 메트릭이 안 나와요"라는 장애 문의가 올 수 있어요. 팀에서는 템플릿 프로젝트에 이 설정을 기본 포함해서 실수를 방지해요.',
       why: 'AOP를 통해 @Timed 어노테이션이 붙은 메서드의 실행을 가로채고, 소요 시간을 자동 측정하기 위해 필수적으로 등록해야 해요.',
@@ -470,10 +470,10 @@ public class ApiKeyHealthIndicator implements HealthIndicator {
   public Health health() {
     System.out.println("[실행] API 키 건강 점검 시작");
     if (apiKeyService.isValid()) {
-      System.out.println("[결과] API 키 유효 — UP");
+      System.out.println("[결과] API 키 유효 - UP");
       return Health.up().withDetail("key", "valid").build();
     }
-    System.out.println("[결과] API 키 만료 — DOWN");
+    System.out.println("[결과] API 키 만료 - DOWN");
     return Health.down().withDetail("error", "API 키 만료").build();
   }
 }`,
@@ -493,10 +493,10 @@ public class ApiKeyHealthIndicator implements HealthIndicator {
       expectedOutput:
         'API 키 유효할 때 health() 호출:\n' +
         '[실행] API 키 건강 점검 시작\n' +
-        '[결과] API 키 유효 — UP\n\n' +
+        '[결과] API 키 유효 - UP\n\n' +
         'API 키 만료됐을 때 health() 호출:\n' +
         '[실행] API 키 건강 점검 시작\n' +
-        '[결과] API 키 만료 — DOWN',
+        '[결과] API 키 만료 - DOWN',
       realWorldUsage:
         '실제 프로젝트에서 외부 SMS·결제·지도 API의 키 상태를 HealthIndicator로 점검해요. API 키가 실수로 재발급되거나 만료되면 /actuator/health가 DOWN으로 떨어져서 Kubernetes가 새 배포를 막고, 담당자에게 알람이 가요. 배포 전에 외부 의존성도 함께 확인할 수 있어서 "배포했는데 API가 안 돼요" 상황을 방지해요.',
       why: '외부 API·메시지 큐·파일 시스템 등 모든 외부 의존성을 포함한 전체 건강 상태를 한눈에 파악하려고요.',
@@ -525,7 +525,7 @@ public class LoginMetrics {
     this.failCounter = Counter.builder("login.fail")
       .description("로그인 실패 횟수")
       .register(registry);
-    System.out.println("[결과] 등록 완료 — success: 0, fail: 0");
+    System.out.println("[결과] 등록 완료 - success: 0, fail: 0");
   }
 }`,
     explain: {
@@ -543,7 +543,7 @@ public class LoginMetrics {
       expectedOutput:
         '앱 시작 시:\n' +
         '[실행] 로그인 메트릭 등록 시작\n' +
-        '[결과] 등록 완료 — success: 0, fail: 0',
+        '[결과] 등록 완료 - success: 0, fail: 0',
       realWorldUsage:
         '실제 프로젝트에서 로그인 API에 이 클래스를 주입해서, 인증 성공/실패 횟수를 추적해요. 실패 카운터가 급증하면 무차별 대입 공격(brute force)을 의심하고 보안팀에 알람을 보내요. 또한 Grafana에서 로그인 성공률(성공/(성공+실패)*100)을 계산해 대시보드에 표시해요.',
       why: '한 MeterRegistry에 모든 메트릭을 등록해 중앙에서 관리하고, 다양한 지표를 조합해 의미 있는 정보를 도출하려고요.',
@@ -570,12 +570,12 @@ public class OrderMetrics {
       .tag("channel", "mobile")
       .description("아시아 모바일 채널 주문 수")
       .register(registry);
-    System.out.println("[결과] 등록 완료 — region=asia, channel=mobile");
+    System.out.println("[결과] 등록 완료 - region=asia, channel=mobile");
   }
 
   public void increment() {
     asiaMobileCounter.increment();
-    System.out.println("[실행] 주문 카운터 증가 — region=asia, channel=mobile");
+    System.out.println("[실행] 주문 카운터 증가 - region=asia, channel=mobile");
   }
 }`,
     explain: {
@@ -593,9 +593,9 @@ public class OrderMetrics {
       expectedOutput:
         '앱 시작 시:\n' +
         '[실행] 태그 기반 메트릭 등록\n' +
-        '[결과] 등록 완료 — region=asia, channel=mobile\n' +
+        '[결과] 등록 완료 - region=asia, channel=mobile\n' +
         'increment() 호출 시:\n' +
-        '[실행] 주문 카운터 증가 — region=asia, channel=mobile',
+        '[실행] 주문 카운터 증가 - region=asia, channel=mobile',
       realWorldUsage:
         '실제 글로벌 전자상거래 프로젝트에서 region(asia, europe, americas)과 channel(mobile, web, app) 태그로 주문 메트릭을 구분해요. 마케팅팀이 "유럽 모바일 사용자의 주문량이 지난주 대비 20% 감소" 같은 인사이트를 Grafana에서 직접 확인할 수 있고, 특정 지역·채널에 장애가 발생하면 알람을 세분화해서 보낼 수 있어요.',
       why: '같은 메트릭을 여러 차원으로 나눠서 분석해, 지역별·채널별·버전별로 세밀한 인사이트를 얻으려고요.',
@@ -620,7 +620,7 @@ public class LogbackMetricsDemo {
     System.out.println("[실행] 작업 시작");
     log.info("작업 시작");
     log.warn("경고 발생");
-    System.out.println("[결과] 로그 2건 출력 — logback.events 카운터 +2");
+    System.out.println("[결과] 로그 2건 출력 - logback.events 카운터 +2");
   }
 }`,
     explain: {
@@ -640,7 +640,7 @@ public class LogbackMetricsDemo {
         '[실행] 작업 시작\n' +
         '2025-XX-XX ... INFO ... LogbackMetricsDemo - 작업 시작\n' +
         '2025-XX-XX ... WARN ... LogbackMetricsDemo - 경고 발생\n' +
-        '[결과] 로그 2건 출력 — logback.events 카운터 +2',
+        '[결과] 로그 2건 출력 - logback.events 카운터 +2',
       realWorldUsage:
         '실제 프로젝트에서 ERROR 로그의 logback.events 카운터를 Prometheus 알람 규칙과 연동해요. "5분간 ERROR 로그가 10건 이상이면 슬랙 알람" 같은 규칙을 설정해서, 무증상 장애(사용자는 정상 응답을 받지만 내부에서 예외가 발생하는 경우)도 빠르게 감지해요.',
       why: '에러 로그 급증을 실시간으로 감지해 사용자보다 먼저 장애를 인지하고 대응하려고요.',
@@ -669,7 +669,7 @@ public class SloMetricsDemo {
       .meterFilter(MeterFilter.maxExpected(
         "http.server.requests",
         Duration.ofMillis(200)));
-    System.out.println("[결과] SLO 설정 완료 — 최대 예상 응답 200ms");
+    System.out.println("[결과] SLO 설정 완료 - 최대 예상 응답 200ms");
     return customizer;
   }
 }`,
@@ -688,7 +688,7 @@ public class SloMetricsDemo {
       expectedOutput:
         '앱 시작 시:\n' +
         '[실행] SLO 구간 설정 시작\n' +
-        '[결과] SLO 설정 완료 — 최대 예상 응답 200ms',
+        '[결과] SLO 설정 완료 - 최대 예상 응답 200ms',
       realWorldUsage:
         '실제 프로젝트에서 API 게이트웨이나 프록시 서버들은 대부분 SLO를 엄격하게 관리해요. "P99 응답 시간이 200ms를 넘으면 장애로 간주" 같은 SLA(Service Level Agreement)가 있고, 이를 위반하면 고객사에 환불 패널티가 발생해요. SLO 메트릭을 Grafana에서 실시간 모니터링하고, 위반 임박 시 온콜 담당자에게 즉시 알람이 가요.',
       why: '평균이 아닌 상위 분위수로 실제 사용자 체감 성능을 추적하고, SLA 위반을 조기에 감지하려고요.',
@@ -755,14 +755,14 @@ public class SecurityConfig {
       .anyRequest().authenticated()
     );
     SecurityFilterChain chain = http.build();
-    System.out.println("[결과] 보안 설정 완료 — health: all, actuator: ADMIN, others: authenticated");
+    System.out.println("[결과] 보안 설정 완료 - health: all, actuator: ADMIN, others: authenticated");
     return chain;
   }
 }`,
     explain: {
       concept:
         'Actuator 엔드포인트는 내부 정보를 많이 노출하기 때문에 반드시 접근 제어가 필요해요. ' +
-        '이 코드는 세 가지 수준의 접근 제어를 설정하고 있어요 — health는 로드밸런서가 인증 없이 접근해야 하므로 permitAll, 나머지 actuator 엔드포인트는 ADMIN 역할만 접근 가능, 그 외 모든 요청은 인증된 사용자만 허용해요. ' +
+        '이 코드는 세 가지 수준의 접근 제어를 설정하고 있어요 - health는 로드밸런서가 인증 없이 접근해야 하므로 permitAll, 나머지 actuator 엔드포인트는 ADMIN 역할만 접근 가능, 그 외 모든 요청은 인증된 사용자만 허용해요. ' +
         'requestMatchers는 URL 패턴과 HTTP 메서드를 기준으로 접근 규칙을 정의하고, 위에서 아래로 순서대로 평가돼요. 더 구체적인 패턴(/actuator/health)을 먼저 배치해야 해요.',
       terms: [
         { t: 'requestMatchers("/actuator/health")', d: '/actuator/health 경로에 대한 접근 규칙을 정의해요. 첫 번째로 평가되는 규칙이에요.' },
@@ -773,7 +773,7 @@ public class SecurityConfig {
       expectedOutput:
         '앱 시작 시:\n' +
         '[실행] Actuator 보안 설정 적용\n' +
-        '[결과] 보안 설정 완료 — health: all, actuator: ADMIN, others: authenticated',
+        '[결과] 보안 설정 완료 - health: all, actuator: ADMIN, others: authenticated',
       realWorldUsage:
         '실제 프로젝트에서 Actuator 경로 보호는 보안 감사에서 가장 먼저 확인하는 항목이에요. 모든 actuator 엔드포인트가 permitAll로 열려 있으면 심각한 보안 취약점으로 분류돼요. audit 팀이 침투 테스트(pentest)에서 actuator 엔드포인트를 스캔하고, 인증 없이 접근되면 즉시 티켓이 발행돼요.',
       why: '애플리케이션 내부 정보·설정·메트릭이 외부에 노출되는 것을 막고, 운영자만 접근할 수 있도록 제어하려고요.',
@@ -798,11 +798,11 @@ public class BatchMetrics {
     this.batchTimer = LongTaskTimer.builder("batch.export")
       .description("배치 내보내기 진행 시간")
       .register(registry);
-    System.out.println("[결과] LongTaskTimer 등록 완료 — 이름: batch.export");
+    System.out.println("[결과] LongTaskTimer 등록 완료 - 이름: batch.export");
   }
 
   public void start(Runnable task) {
-    System.out.println("[실행] 배치 작업 시작 — LongTaskTimer 측정 중");
+    System.out.println("[실행] 배치 작업 시작 - LongTaskTimer 측정 중");
     batchTimer.record(task);
     System.out.println("[결과] 배치 작업 완료");
   }
@@ -822,9 +822,9 @@ public class BatchMetrics {
       expectedOutput:
         '앱 시작 시:\n' +
         '[실행] LongTaskTimer 등록 시작\n' +
-        '[결과] LongTaskTimer 등록 완료 — 이름: batch.export\n' +
+        '[결과] LongTaskTimer 등록 완료 - 이름: batch.export\n' +
         'start(task) 호출 시:\n' +
-        '[실행] 배치 작업 시작 — LongTaskTimer 측정 중\n' +
+        '[실행] 배치 작업 시작 - LongTaskTimer 측정 중\n' +
         '[결과] 배치 작업 완료',
       realWorldUsage:
         '실제 프로젝트의 야간 배치 작업(정산·통계 집계·대량 메일 발송)을 LongTaskTimer로 추적해요. Grafana에서 "현재 진행 중인 배치 작업 수"와 "가장 오래 실행 중인 작업의 경과 시간"을 대시보드에 표시하고, 특정 배치가 30분 이상 실행되면 알람을 보내요. 작업이 너무 오래 걸려서 다음 배치 시간과 겹치는 걸 방지해요.',
@@ -848,7 +848,7 @@ public class BatchMetrics {
       concept:
         'Health Group은 여러 건강 점검 항목을 목적별로 묶어서 별도 URL로 제공하는 기능이에요. ' +
         '/actuator/health는 모든 항목의 종합 결과를 보여주지만, /actuator/health/readiness는 DB와 Redis만 확인해요. ' +
-        'readiness(준비도)와 liveness(생존도)를 분리하는 것은 Kubernetes의 핵심 개념이에요 — liveness는 "앱이 살아 있는가"를, readiness는 "트래픽을 받을 준비가 됐는가"를 판단해요. ' +
+        'readiness(준비도)와 liveness(생존도)를 분리하는 것은 Kubernetes의 핵심 개념이에요 - liveness는 "앱이 살아 있는가"를, readiness는 "트래픽을 받을 준비가 됐는가"를 판단해요. ' +
         'readiness 그룹에 DB와 Redis만 포함시켜서, 두 외부 의존성이 모두 정상일 때만 트래픽을 받도록 할 수 있어요.',
       terms: [
         { t: 'health.group', d: '건강 점검 항목을 논리적 그룹으로 묶는 설정이에요. 각 그룹은 독립된 URL을 가져요.' },

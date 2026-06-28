@@ -15,7 +15,7 @@ public class HelloController {
 
   @GetMapping(path = "/hi")
   public Mono<String> hi() {
-    System.out.println("[실행] hi 호출 — 구독 시점에 Hello Reactor 반환");
+    System.out.println("[실행] hi 호출 - 구독 시점에 Hello Reactor 반환");
     return Mono.just("Hello Reactor");
   }
 }`,
@@ -37,7 +37,7 @@ public class HelloController {
         '내장 Netty 서버가 스레드 하나로 수천 개의 동시 연결을 처리할 수 있어요.',
       expectedOutput:
         'curl http://localhost:8080/hi 실행 시:\n' +
-        '[실행] hi 호출 — 구독 시점에 Hello Reactor 반환\n' +
+        '[실행] hi 호출 - 구독 시점에 Hello Reactor 반환\n' +
         'HTTP/1.1 200 OK\n' +
         'Hello Reactor',
       realWorldUsage:
@@ -63,7 +63,7 @@ public class CountController {
 
   @GetMapping(path = "/nums", produces = "text/event-stream")
   public Flux<Long> nums() {
-    System.out.println("[실행] nums 호출 — 0~4까지 1초 간격");
+    System.out.println("[실행] nums 호출 - 0~4까지 1초 간격");
     return Flux.interval(Duration.ofSeconds(1)).take(5);
   }
 }`,
@@ -85,7 +85,7 @@ public class CountController {
         '브라우저가 한 번 연결을 맺으면 계속 데이터를 받아볼 수 있어요.',
       expectedOutput:
         'curl http://localhost:8080/nums 실행 시:\n' +
-        '[실행] nums 호출 — 0~4까지 1초 간격\n' +
+        '[실행] nums 호출 - 0~4까지 1초 간격\n' +
         'data: 0 (1초 후)\n' +
         'data: 1 (1초 후)\n' +
         'data: 2 (1초 후)\n' +
@@ -111,11 +111,11 @@ import org.springframework.stereotype.Service;
 public class NameService {
 
   public Mono<String> shout(String name) {
-    System.out.println("[실행] shout — input: " + name);
+    System.out.println("[실행] shout - input: " + name);
     return Mono.just(name)
       .map(s -> {
         String result = s.toUpperCase();
-        System.out.println("[변환] map — " + s + " → " + result);
+        System.out.println("[변환] map - " + s + " → " + result);
         return result;
       });
   }
@@ -137,15 +137,15 @@ public class NameService {
         '상자(Mono/Flux)의 구조를 유지한 채 값만 변환하려고요. ' +
         'map은 1:1 변환이라서 결과 타입도 여전히 Mono<String>으로 유지돼요.',
       expectedOutput:
-        '[실행] shout — input: hello\n' +
-        '[변환] map — hello → HELLO\n' +
+        '[실행] shout - input: hello\n' +
+        '[변환] map - hello → HELLO\n' +
         '(구독 시 "HELLO" 반환)',
       realWorldUsage:
         '실제 API에서 DB에서 조회한 Entity를 DTO로 변환하거나, ' +
         '외부 API 응답의 필드명을 카멜케이스로 바꾸는 변환 파이프라인에서 map이 가장 많이 쓰여요.',
       pitfall:
         'map 안에서 또 다른 Mono를 반환하면 상자가 이중으로 겹쳐 Mono<Mono<String>>이 돼요. ' +
-        '예: .map(s -> findById(s)) — 이렇게 비동기 호출을 중첩하려면 flatMap을 써야 해요.',
+        '예: .map(s -> findById(s)) - 이렇게 비동기 호출을 중첩하려면 flatMap을 써야 해요.',
     },
   },
   {
@@ -160,17 +160,17 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
   public Mono<String> greeting(Long id) {
-    System.out.println("[실행] greeting — id: " + id);
+    System.out.println("[실행] greeting - id: " + id);
     return findById(id)
       .flatMap(u -> {
         String msg = "hi " + u.getName();
-        System.out.println("[비동기] flatMap — " + msg);
+        System.out.println("[비동기] flatMap - " + msg);
         return Mono.just(msg);
       });
   }
 
   private Mono<User> findById(Long id) {
-    System.out.println("[조희] findById — id: " + id);
+    System.out.println("[조희] findById - id: " + id);
     return Mono.just(new User(id, "Alice"));
   }
 
@@ -200,9 +200,9 @@ public class UserService {
         '비동기 작업(DB 조회 → HTTP 호출 → 결과 변환)을 순서대로 이어서 하나의 흐름으로 만들려고요. ' +
         'flatMap 덕분에 콜백 지옥 없이 깔끔한 체이닝이 돼요.',
       expectedOutput:
-        '[실행] greeting — id: 1\n' +
-        '[조희] findById — id: 1\n' +
-        '[비동기] flatMap — hi Alice\n' +
+        '[실행] greeting - id: 1\n' +
+        '[조희] findById - id: 1\n' +
+        '[비동기] flatMap - hi Alice\n' +
         '(구독 시 "hi Alice" 반환)',
       realWorldUsage:
         '실제 WebFlux 서비스에서 "회원 조회(findById) → 권한 확인(checkPermission, 외부 API) → 응답 변환(toDto)"처럼 ' +
@@ -224,13 +224,13 @@ import org.springframework.stereotype.Service;
 public class PairService {
 
   public Mono<String> label(Long id) {
-    System.out.println("[실행] label — id: " + id);
+    System.out.println("[실행] label - id: " + id);
     return Mono.zip(
       findById(id),
       findStatus(id)
     ).map(t -> {
       String result = t.getT1().getName() + ":" + t.getT2();
-      System.out.println("[결과] zip — " + result);
+      System.out.println("[결과] zip - " + result);
       return result;
     });
   }
@@ -267,8 +267,8 @@ public class PairService {
         '두 개의 독립적인 비동기 조회를 순차가 아니라 동시에 날려서 전체 지연 시간을 더 긴 쪽 하나로 줄이려고요. ' +
         'findById가 100ms, findStatus가 80ms면 순차는 180ms, zip은 100ms로 끝나요.',
       expectedOutput:
-        '[실행] label — id: 1\n' +
-        '[결과] zip — Alice:ACTIVE\n' +
+        '[실행] label - id: 1\n' +
+        '[결과] zip - Alice:ACTIVE\n' +
         '(구독 시 "Alice:ACTIVE" 반환)',
       realWorldUsage:
         '실제 API에서 상품 정보(ProductService, 50ms)와 리뷰 평점(ReviewService, 80ms)을 Mono.zip으로 병렬 조회해 ' +
@@ -299,7 +299,7 @@ public class UserR2dbcDao {
   }
 
   public Flux<UserEntity> findAll() {
-    System.out.println("[실행] findAll — R2DBC 조회");
+    System.out.println("[실행] findAll - R2DBC 조회");
     return databaseClient
       .sql("select id, name from users")
       .map((row, meta) -> {
@@ -335,7 +335,7 @@ public class UserR2dbcDao {
         'JDBC/JPA처럼 쿼리 결과를 기다리며 스레드가 블로킹되는 대신, ' +
         '논블로킹으로 DB 결과를 Flux 스트림으로 받아 리액티브 파이프라인과 자연스럽게 연결하려고요.',
       expectedOutput:
-        '[실행] findAll — R2DBC 조회\n' +
+        '[실행] findAll - R2DBC 조회\n' +
         '[매핑] row → UserEntity(id=1, name=Alice)\n' +
         '[매핑] row → UserEntity(id=2, name=Bob)\n' +
         '(Flux<UserEntity>로 Alice, Bob 순차 방출)',
@@ -366,7 +366,7 @@ public class UserR2dbcDao {
   }
 
   public Mono<Long> save(String name) {
-    System.out.println("[실행] save — name: " + name);
+    System.out.println("[실행] save - name: " + name);
     return databaseClient
       .sql("insert into users(name) values(:n)")
       .bind("n", name)
@@ -391,8 +391,8 @@ public class UserR2dbcDao {
         '블로킹 없이 데이터를 삽입하면서 SQL 인젝션을 방지하고, ' +
         '영향받은 행 수를 Mono로 받아 후속 비동기 체인에서 성공 여부를 처리하려고요.',
       expectedOutput:
-        '[실행] save — name: Charlie\n' +
-        '(구독 시 Mono<Long>으로 1L 반환 — 1건 삽입 성공)',
+        '[실행] save - name: Charlie\n' +
+        '(구독 시 Mono<Long>으로 1L 반환 - 1건 삽입 성공)',
       realWorldUsage:
         '실제 회원가입 API에서 R2DBC save로 DB에 INSERT하고, rowsUpdated() 결과가 1이면 성공, 0이면 실패로 판단해 ' +
         '성공 시 onSuccess 이벤트로 환영 이메일 발송을 트리거하는 패턴이 흔해요.',
@@ -417,14 +417,14 @@ public class SseController {
 
   @GetMapping(path = "/tick", produces = "text/event-stream")
   public Flux<ServerSentEvent<String>> tick() {
-    System.out.println("[실행] tick — 2초마다 tick 이벤트");
+    System.out.println("[실행] tick - 2초마다 tick 이벤트");
     return Flux.interval(Duration.ofSeconds(2))
       .map(i -> {
         ServerSentEvent<String> evt = ServerSentEvent.<String>builder()
             .event("tick")
             .data("n=" + i)
             .build();
-        System.out.println("[이벤트] tick — n=" + i);
+        System.out.println("[이벤트] tick - n=" + i);
         return evt;
       });
   }
@@ -446,7 +446,7 @@ public class SseController {
         '서버 푸시 알림을 WebSocket보다 가볍게 구현하고, HTTP 인프라(프록시, 방화벽)와의 호환성을 높이려고요.',
       expectedOutput:
         'curl http://localhost:8080/tick 실행 시:\n' +
-        '[실행] tick — 2초마다 tick 이벤트\n' +
+        '[실행] tick - 2초마다 tick 이벤트\n' +
         'event:tick\ndata:n=0\n' +
         'event:tick\ndata:n=1\n' +
         '(계속 2초 간격으로 이어짐)',
@@ -470,7 +470,7 @@ import org.springframework.stereotype.Service;
 public class FastSourceService {
 
   public Flux<Integer> throttled() {
-    System.out.println("[실행] throttled — limitRate 100 적용");
+    System.out.println("[실행] throttled - limitRate 100 적용");
     return fastSource()
       .limitRate(100)
       .doOnNext(n -> System.out.println("[수신] " + n));
@@ -497,7 +497,7 @@ public class FastSourceService {
         '생산 속도가 소비자 처리 속도를 압도할 때, 소비자 쪽 메모리가 Overflow되는 걸 막고 ' +
         '생산자-소비자 간 처리 속도 차이를 조절하려고요.',
       expectedOutput:
-        '[실행] throttled — limitRate 100 적용\n' +
+        '[실행] throttled - limitRate 100 적용\n' +
         '[수신] 1 ... [수신] 100 (첫 청크)\n' +
         '[수신] 101 ... [수신] 200 (두 번째 청크)\n' +
         '...\n' +
@@ -526,11 +526,11 @@ public class ApiService {
 
   public ApiService(WebClient.Builder builder) {
     this.webClient = builder.baseUrl("http://localhost:8081").build();
-    System.out.println("[생성] WebClient 생성 — baseUrl: http://localhost:8081");
+    System.out.println("[생성] WebClient 생성 - baseUrl: http://localhost:8081");
   }
 
   public Mono<String> fetchName(Long id) {
-    System.out.println("[실행] fetchName — id: " + id);
+    System.out.println("[실행] fetchName - id: " + id);
     return webClient
       .get()
       .uri("/users/{id}", id)
@@ -556,8 +556,8 @@ public class ApiService {
         '블로킹 없이 외부 HTTP API를 호출해 리액티브 파이프라인에서 중간 결과로 사용하려고요. ' +
         'RestTemplate은 호출 스레드를 블로킹하지만, WebClient는 이벤트 루프 스레드를 물고 있지 않아요.',
       expectedOutput:
-        '[생성] WebClient 생성 — baseUrl: http://localhost:8081\n' +
-        '[실행] fetchName — id: 1\n' +
+        '[생성] WebClient 생성 - baseUrl: http://localhost:8081\n' +
+        '[실행] fetchName - id: 1\n' +
         '[응답] {"name":"Alice"}\n' +
         '(Mono<String>로 JSON 본문 반환)',
       realWorldUsage:
@@ -580,10 +580,10 @@ import org.springframework.stereotype.Service;
 public class SafeService {
 
   public Mono<String> safeName(Long id) {
-    System.out.println("[실행] safeName — id: " + id);
+    System.out.println("[실행] safeName - id: " + id);
     return findById(id)
       .onErrorResume(e -> {
-        System.out.println("[폴백] 에러 발생 — " + e.getMessage() + ", guest로 대체");
+        System.out.println("[폴백] 에러 발생 - " + e.getMessage() + ", guest로 대체");
         return Mono.just("guest");
       });
   }
@@ -609,8 +609,8 @@ public class SafeService {
         '예외를 숨기거나 로그만 남기지 않고, 대체값(기본 프로필 이미지, 캐시 데이터)으로 정상 흐름을 유지해 ' +
         '사용자에게 "오류가 발생했습니다" 대신 부분적으로라도 서비스를 계속 제공하려고요.',
       expectedOutput:
-        '[실행] safeName — id: 999\n' +
-        '[폴백] 에러 발생 — user not found: 999, guest로 대체\n' +
+        '[실행] safeName - id: 999\n' +
+        '[폴백] 에러 발생 - user not found: 999, guest로 대체\n' +
         '(구독 시 "guest" 반환)',
       realWorldUsage:
         '실제 상품 추천 API에서 추천 엔진이 타임아웃되면 onErrorResume으로 "지난주 인기 상품" 캐시를 대신 반환해 ' +
@@ -632,7 +632,7 @@ import org.springframework.stereotype.Service;
 public class NumberService {
 
   public Flux<Integer> onlyEven() {
-    System.out.println("[실행] onlyEven — 1~10 중 짝수만");
+    System.out.println("[실행] onlyEven - 1~10 중 짝수만");
     return Flux.range(1, 10)
       .filter(n -> n % 2 == 0)
       .doOnNext(n -> System.out.println("[통과] " + n));
@@ -655,7 +655,7 @@ public class NumberService {
         '방대한 데이터 스트림에서 조건에 맞는 일부만 추려서 ' +
         '불필요한 처리 비용과 메모리 사용을 줄이려고요.',
       expectedOutput:
-        '[실행] onlyEven — 1~10 중 짝수만\n' +
+        '[실행] onlyEven - 1~10 중 짝수만\n' +
         '[통과] 2\n' +
         '[통과] 4\n' +
         '[통과] 6\n' +
@@ -682,7 +682,7 @@ import org.springframework.stereotype.Service;
 public class SumService {
 
   public Mono<Integer> total() {
-    System.out.println("[실행] total — 1부터 100까지 합");
+    System.out.println("[실행] total - 1부터 100까지 합");
     return Flux.range(1, 100)
       .reduce(0, (acc, n) -> acc + n)
       .doOnNext(result -> System.out.println("[결과] 합계: " + result));
@@ -705,7 +705,7 @@ public class SumService {
         '여러 건의 데이터에서 합계·평균·통계 같은 하나의 대푯값을 추출하려고요. ' +
         'reduce는 마지막 값이 나올 때까지 하류로 값을 방출하지 않고 기다렸다 한 번에 반환해요.',
       expectedOutput:
-        '[실행] total — 1부터 100까지 합\n' +
+        '[실행] total - 1부터 100까지 합\n' +
         '[결과] 합계: 5050',
       realWorldUsage:
         '실제 주문 분석 시스템에서 "일일 총 매출"을 계산할 때, 오늘의 모든 주문 Flux를 reduce로 합산해 Mono<BigDecimal>로 반환해요. ' +
@@ -729,7 +729,7 @@ import org.springframework.stereotype.Service;
 public class BatchService {
 
   public Mono<List<String>> allNames() {
-    System.out.println("[실행] allNames — Flux → List");
+    System.out.println("[실행] allNames - Flux → List");
     return findAllNames()
       .collectList()
       .doOnNext(list -> System.out.println("[결과] 수집된 개수: " + list.size()));
@@ -743,7 +743,7 @@ public class BatchService {
       concept:
         'collectList는 "흐르는 여러 개의 값을 전부 모아서 하나의 List 상자에 담는" 수집 연산자예요. ' +
         'findAllNames()가 Alice, Bob, Charlie를 순차로 Flux에 흘려보내면, collectList()가 이 3개를 전부 모아 List<String> 하나로 만들어 Mono<List<String>>에 담아 반환해요. ' +
-        '반환 타입이 Flux가 아니라 Mono인 점이 핵심이에요 — "여러 건이 흐르는 Flux"가 "리스트 한 건을 담은 Mono"로 바뀌는 거예요. ' +
+        '반환 타입이 Flux가 아니라 Mono인 점이 핵심이에요 - "여러 건이 흐르는 Flux"가 "리스트 한 건을 담은 Mono"로 바뀌는 거예요. ' +
         '실무에서는 여러 건을 한 번에 모아서 처리해야 할 때, 예를 들어 배치 저장이나 일괄 이메일 발송에 collectList를 써요.',
       terms: [
         { t: 'findAllNames()', d: '여러 이름을 Flux로 흘려보내는 소스 메서드예요' },
@@ -756,7 +756,7 @@ public class BatchService {
         '개별 항목을 스트리밍하다가 특정 시점에 전체를 모아서 일괄 처리하려고요. ' +
         '예: 100개씩 청크로 모아서 DB batch INSERT를 실행하거나, 전체를 모아서 JSON 배열로 한 번에 응답할 때 써요.',
       expectedOutput:
-        '[실행] allNames — Flux → List\n' +
+        '[실행] allNames - Flux → List\n' +
         '[결과] 수집된 개수: 3',
       realWorldUsage:
         '실제 WebFlux API에서 DB에서 Flux로 읽은 결과를 컨트롤러 반환 직전 collectList()로 모아 ' +
@@ -782,7 +782,7 @@ public class SlowController {
 
   @GetMapping(path = "/drip", produces = "text/event-stream")
   public Flux<String> drip() {
-    System.out.println("[실행] drip — a,b,c를 500ms 간격으로");
+    System.out.println("[실행] drip - a,b,c를 500ms 간격으로");
     return Flux.fromIterable(List.of("a", "b", "c"))
       .delayElements(Duration.ofMillis(500))
       .doOnNext(s -> System.out.println("[방출] " + s));
@@ -805,7 +805,7 @@ public class SlowController {
         '값을 일정한 간격으로 나눠 보내야 할 때 써요. ' +
         'API 호출 속도 제한을 맞추거나, 스트리밍 응답을 사람이 읽을 수 있는 속도로 조절할 때 유용해요.',
       expectedOutput:
-        '[실행] drip — a,b,c를 500ms 간격으로\n' +
+        '[실행] drip - a,b,c를 500ms 간격으로\n' +
         '[방출] a (0.5초 후)\n' +
         '[방출] b (0.5초 후)\n' +
         '[방출] c (0.5초 후)',
@@ -829,7 +829,7 @@ import org.springframework.stereotype.Service;
 public class FanInService {
 
   public Flux<String> both() {
-    System.out.println("[실행] both — 두 소스를 merge");
+    System.out.println("[실행] both - 두 소스를 merge");
     return Flux.merge(
       sourceA().doOnNext(s -> System.out.println("[A] " + s)),
       sourceB().doOnNext(s -> System.out.println("[B] " + s))
@@ -861,7 +861,7 @@ public class FanInService {
         '여러 독립적인 데이터 소스를 하나의 통합 스트림으로 모아서 일관된 방식으로 처리하려고요. ' +
         '소스 간 순서 의존성이 없을 때 사용해요.',
       expectedOutput:
-        '[실행] both — 두 소스를 merge\n' +
+        '[실행] both - 두 소스를 merge\n' +
         '[A] A1\n' +
         '[B] B1\n' +
         '[A] A2\n' +
@@ -889,16 +889,16 @@ import org.springframework.stereotype.Service;
 public class FallbackService {
 
   public Mono<String> display(Long id) {
-    System.out.println("[실행] display — id: " + id);
+    System.out.println("[실행] display - id: " + id);
     return findById(id)
       .switchIfEmpty(Mono.defer(() -> {
-        System.out.println("[대체] 데이터 없음 — 기본값 사용");
+        System.out.println("[대체] 데이터 없음 - 기본값 사용");
         return Mono.just("default");
       }));
   }
 
   private Mono<String> findById(Long id) {
-    System.out.println("[조회] findById — 결과 없음(Mono.empty)");
+    System.out.println("[조회] findById - 결과 없음(Mono.empty)");
     return Mono.empty();
   }
 }`,
@@ -919,9 +919,9 @@ public class FallbackService {
         '데이터가 없을 때 오류를 내지 않고 기본값으로 우아하게 대응하려고요. ' +
         '"Not Found" 404 대신 "guest"나 빈 리스트로 정상 응답을 보내 사용자 경험을 저해하지 않아요.',
       expectedOutput:
-        '[실행] display — id: 999\n' +
-        '[조회] findById — 결과 없음(Mono.empty)\n' +
-        '[대체] 데이터 없음 — 기본값 사용\n' +
+        '[실행] display - id: 999\n' +
+        '[조회] findById - 결과 없음(Mono.empty)\n' +
+        '[대체] 데이터 없음 - 기본값 사용\n' +
         '(구독 시 "default" 반환)',
       realWorldUsage:
         '실제 상품 상세 API에서 해당 상품이 없으면 switchIfEmpty로 "판매 종료된 상품입니다" 페이지 데이터를 반환해 ' +
@@ -945,10 +945,10 @@ import org.springframework.stereotype.Service;
 public class LoggingService {
 
   public Mono<String> load(Long id) {
-    System.out.println("[실행] load — id: " + id);
+    System.out.println("[실행] load - id: " + id);
     return findById(id)
       .doOnNext(u -> {
-        System.out.println("[부수효과] doOnNext — loaded " + u);
+        System.out.println("[부수효과] doOnNext - loaded " + u);
         log.info("loaded {}", u);
       });
   }
@@ -974,10 +974,10 @@ public class LoggingService {
         '리액티브 체인의 핵심 로직을 변경하지 않고, 로깅이나 모니터링 같은 관찰 코드를 파이프라인에 투명하게 끼워넣으려고요. ' +
         'doOnNext 없이 로깅을 하려면 map 안에 로그+return을 섞어야 해서 코드가 지저분해져요.',
       expectedOutput:
-        '[실행] load — id: 1\n' +
-        '[부수효과] doOnNext — loaded User-1\n' +
+        '[실행] load - id: 1\n' +
+        '[부수효과] doOnNext - loaded User-1\n' +
         'INFO LoggingService - loaded User-1\n' +
-        '(구독 시 "User-1" 반환 — 값은 변경되지 않음)',
+        '(구독 시 "User-1" 반환 - 값은 변경되지 않음)',
       realWorldUsage:
         '실제 리액티브 API에서 doOnNext로 응답 전에 Prometheus Counter를 증가시키거나, ' +
         'doOnError로 예외 발생 횟수를 기록해 모니터링 대시보드에 반영하는 패턴이 흔해요.',
@@ -1000,7 +1000,7 @@ import org.springframework.stereotype.Service;
 public class WindowService {
 
   public Flux<List<String>> windows() {
-    System.out.println("[실행] windows — 3초마다 묶어서 방출");
+    System.out.println("[실행] windows - 3초마다 묶어서 방출");
     return events()
       .buffer(Duration.ofSeconds(3))
       .doOnNext(batch -> System.out.println("[버퍼] 묶음 크기: " + batch.size()));
@@ -1028,7 +1028,7 @@ public class WindowService {
         '작은 데이터를 낱개로 처리하는 대신 일정량을 모아서 한 번에 처리해 ' +
         'DB 커밋 횟수, 네트워크 왕복 횟수를 줄이고 처리 효율을 높이려고요.',
       expectedOutput:
-        '[실행] windows — 3초마다 묶어서 방출\n' +
+        '[실행] windows - 3초마다 묶어서 방출\n' +
         '[버퍼] 묶음 크기: 3 (e1, e2, e3)\n' +
         '[버퍼] 묶음 크기: 2 (e4, e5)',
       realWorldUsage:
@@ -1053,11 +1053,11 @@ import org.springframework.stereotype.Service;
 public class ResilientService {
 
   public Mono<String> callApi(Long id) {
-    System.out.println("[실행] callApi — id: " + id + ", 최대 3회 재시도");
+    System.out.println("[실행] callApi - id: " + id + ", 최대 3회 재시도");
     return fetch(id)
       .retryWhen(Retry.backoff(3, Duration.ofSeconds(1))
         .doBeforeRetry(signal ->
-          System.out.println("[재시도] " + signal.totalRetries() + "회차 — 대기 1초~")
+          System.out.println("[재시도] " + signal.totalRetries() + "회차 - 대기 1초~")
         )
         .onRetryExhaustedThrow((builder, signal) ->
           new RuntimeException("3회 재시도 모두 실패: " + signal.failure().getMessage())
@@ -1086,10 +1086,10 @@ public class ResilientService {
         '잠깐 네트워크가 불안정하거나 외부 서비스가 순간적으로 과부하 걸렸을 때, ' +
         '바로 실패를 반환하지 않고 시간을 두고 재시도해 회복 기회를 주려고요.',
       expectedOutput:
-        '[실행] callApi — id: 1001, 최대 3회 재시도\n' +
-        '[재시도] 1회차 — 대기 1초~\n' +
-        '[재시도] 2회차 — 대기 2초~\n' +
-        '[재시도] 3회차 — 대기 4초~\n' +
+        '[실행] callApi - id: 1001, 최대 3회 재시도\n' +
+        '[재시도] 1회차 - 대기 1초~\n' +
+        '[재시도] 2회차 - 대기 2초~\n' +
+        '[재시도] 3회차 - 대기 4초~\n' +
         '(에러) RuntimeException: 3회 재시도 모두 실패: 일시적 네트워크 오류: 1001',
       realWorldUsage:
         '실제 PG사 결제 API에서 Retry.backoff(3, 500ms)를 걸어 네트워크 일시 장애를 자동 복구하고, ' +

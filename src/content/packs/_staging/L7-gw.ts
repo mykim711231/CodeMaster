@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Bean;
 
 @Bean
 public RouteLocator routes(RouteLocatorBuilder b) {
-  System.out.println("[설정] 게이트웨이 라우트 등록 — /user/** -> localhost:9000");
+  System.out.println("[설정] 게이트웨이 라우트 등록 - /user/** -> localhost:9000");
   return b.routes()
     .route("to-user", r -> r.path("/user/**")
         .uri("http://localhost:9000"))
@@ -36,7 +36,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       why:
         '마이크로서비스 아키텍처에서 모든 입구 요청을 한 곳에서 받아 적절한 서비스로 분배하려고 해요. 클라이언트는 여러 서비스 주소를 알 필요가 없어져요.',
       expectedOutput:
-        '[설정] 게이트웨이 라우트 등록 — /user/** -> localhost:9000',
+        '[설정] 게이트웨이 라우트 등록 - /user/** -> localhost:9000',
       realWorldUsage:
         '실제 프로젝트에서 API Gateway의 가장 기본적인 역할이에요. /api/users로 오면 user-service로, /api/orders로 오면 order-service로 라우팅해요. ' +
         '넷플릭스 Zuul, Spring Cloud Gateway, Kong 등 모든 API Gateway가 이 라우팅 개념을 기반으로 동작해요.',
@@ -55,7 +55,7 @@ import org.springframework.context.annotation.Bean;
 
 @Bean
 public RouteLocator routes(RouteLocatorBuilder b) {
-  System.out.println("[설정] 멀티 라우트 등록 — user + order");
+  System.out.println("[설정] 멀티 라우트 등록 - user + order");
   return b.routes()
     .route("user", r -> r.path("/user/**").uri("lb://user-service"))
     .route("order", r -> r.path("/order/**").uri("lb://order-service"))
@@ -76,7 +76,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       why:
         '여러 마이크로서비스를 한 게이트웨이에서 통합 관리하려고 해요. 서비스별로 게이트웨이를 따로 두지 않아도 되고, 공통 정책을 적용하기도 쉬워져요.',
       expectedOutput:
-        '[설정] 멀티 라우트 등록 — user + order',
+        '[설정] 멀티 라우트 등록 - user + order',
       realWorldUsage:
         '실제 프로젝트에서 수십 개의 마이크로서비스(user, order, payment, notification 등)를 하나의 API Gateway에서 라우팅해요. ' +
         '넷플릭스는 Zuul로 수백 개의 마이크로서비스를 라우팅하고, 각 라우트에 인증·로깅·속도 제한 필터를 붙여서 공통으로 적용해요.',
@@ -95,7 +95,7 @@ import org.springframework.context.annotation.Bean;
 
 @Bean
 public RouteLocator routes(RouteLocatorBuilder b) {
-  System.out.println("[설정] Host 기반 라우트 — api.example.com");
+  System.out.println("[설정] Host 기반 라우트 - api.example.com");
   return b.routes()
     .route("by-host", r -> r.host("api.example.com")
         .uri("lb://api-service"))
@@ -115,7 +115,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       why:
         '한 게이트웨이로 여러 도메인의 트래픽을 받아서 각각 다른 마이크로서비스로 분배하려고 해요. 도메인별로 별도 게이트웨이를 둘 필요가 없어져요.',
       expectedOutput:
-        '[설정] Host 기반 라우트 — api.example.com',
+        '[설정] Host 기반 라우트 - api.example.com',
       realWorldUsage:
         '실제 프로젝트에서 SaaS(Software as a Service) 플랫폼이 tenant-a.example.com, tenant-b.example.com 같은 멀티테넌트 도메인을 각기 다른 서비스나 DB로 라우팅할 때 host predicate를 써요. ' +
         'Kubernetes Ingress도 동일한 Host 기반 라우팅을 사용해요.',
@@ -135,7 +135,7 @@ import org.springframework.context.annotation.Bean;
 
 @Bean
 public RouteLocator routes(RouteLocatorBuilder b) {
-  System.out.println("[설정] Method 기반 라우트 — GET /items/**");
+  System.out.println("[설정] Method 기반 라우트 - GET /items/**");
   return b.routes()
     .route("get-only", r -> r.method("GET")
         .and().path("/items/**")
@@ -157,7 +157,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       why:
         'HTTP 메서드별로 요청을 다른 서비스로 분리해서 보내려고 해요. 읽기와 쓰기의 부하를 분산하거나, 서로 다른 스케일링 정책을 적용할 수 있어요.',
       expectedOutput:
-        '[설정] Method 기반 라우트 — GET /items/**',
+        '[설정] Method 기반 라우트 - GET /items/**',
       realWorldUsage:
         '실제 프로젝트에서 CQRS 아키텍처에서 GET 요청은 읽기 최적화된 Query Service로, POST/PUT/DELETE 요청은 Command Service로 라우팅해요. ' +
         '또한 인증이 필요 없는 GET 요청과 인증이 필수인 POST 요청을 다른 필터 체인으로 처리할 때도 method predicate를 사용해요.',
@@ -176,7 +176,7 @@ import org.springframework.context.annotation.Bean;
 
 @Bean
 public RouteLocator routes(RouteLocatorBuilder b) {
-  System.out.println("[설정] 헤더 추가 필터 — X-Trace: gw");
+  System.out.println("[설정] 헤더 추가 필터 - X-Trace: gw");
   return b.routes()
     .route("add-header", r -> r.path("/secure/**")
         .filters(f -> f.addRequestHeader("X-Trace", "gw"))
@@ -198,7 +198,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       why:
         '백엔드 서비스에서 추적 ID나 인증 정보 같은 공통 헤더를 받을 수 있게 하려고 해요. 각 서비스가 헤더 생성 로직을 중복 구현하지 않아도 돼요.',
       expectedOutput:
-        '[설정] 헤더 추가 필터 — X-Trace: gw',
+        '[설정] 헤더 추가 필터 - X-Trace: gw',
       realWorldUsage:
         '실제 프로젝트에서 분산 추적 시스템(Zipkin, Jaeger)의 traceId를 모든 요청에 주입하거나, 게이트웨이에서 JWT 토큰을 파싱해서 userId 헤더로 변환해 백엔드에 전달할 때 사용해요. ' +
         '이렇게 하면 각 마이크로서비스가 JWT 라이브러리를 일일이 의존하지 않아도 돼요.',
@@ -217,7 +217,7 @@ import org.springframework.context.annotation.Bean;
 
 @Bean
 public RouteLocator routes(RouteLocatorBuilder b) {
-  System.out.println("[설정] 경로 재작성 필터 — /api/** -> /**");
+  System.out.println("[설정] 경로 재작성 필터 - /api/** -> /**");
   return b.routes()
     .route("rewrite", r -> r.path("/api/**")
         .filters(f -> f.rewritePath("/api/(.*)", "/$1"))
@@ -239,7 +239,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       why:
         'API 버저닝(/api/v1, /api/v2)이나 게이트웨이 경로 구조와 백엔드 경로 구조가 다를 때 둘 사이를 연결해주는 다리 역할을 해요.',
       expectedOutput:
-        '[설정] 경로 재작성 필터 — /api/** -> /**',
+        '[설정] 경로 재작성 필터 - /api/** -> /**',
       realWorldUsage:
         '실제 프로젝트에서 레거시 모놀리스 앞에 API Gateway를 두고 점진적으로 마이크로서비스를 추출할 때, 기존 클라이언트가 보내는 /api/users 경로를 새로운 user-service의 /users로 변환해서 전달해요. ' +
         '프론트엔드 코드를 수정하지 않고 백엔드만 마이그레이션할 수 있게 해줘요.',
@@ -259,7 +259,7 @@ import org.springframework.context.annotation.Bean;
 
 @Bean
 public RouteLocator routes(RouteLocatorBuilder b) {
-  System.out.println("[설정] 접두어 추가 필터 — +/api/v1");
+  System.out.println("[설정] 접두어 추가 필터 - +/api/v1");
   return b.routes()
     .route("prefix", r -> r.path("/user/**")
         .filters(f -> f.prefixPath("/api/v1"))
@@ -281,7 +281,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       why:
         '클라이언트가 알기 쉬운 짧은 경로를 사용하면서도, 백엔드는 일관된 API 경로 구조(/api/v1/*)를 유지하려고 해요.',
       expectedOutput:
-        '[설정] 접두어 추가 필터 — +/api/v1',
+        '[설정] 접두어 추가 필터 - +/api/v1',
       realWorldUsage:
         '실제 프로젝트에서 BFF(Backend for Frontend) 패턴 구현 시, 모바일 앱은 /m/user로 요청하고 웹은 /web/user로 요청할 때, ' +
         '게이트웨이에서 prefixPath로 각각 /api/mobile/user, /api/web/user로 변환해서 동일한 user-service의 다른 컨트롤러로 라우팅해요.',
@@ -301,7 +301,7 @@ import org.springframework.context.annotation.Bean;
 
 @Bean
 public RouteLocator routes(RouteLocatorBuilder b) {
-  System.out.println("[설정] 경로 앞부분 제거 필터 — 2칸 제거");
+  System.out.println("[설정] 경로 앞부분 제거 필터 - 2칸 제거");
   return b.routes()
     .route("strip", r -> r.path("/api/user/**")
         .filters(f -> f.stripPrefix(2))
@@ -324,7 +324,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       why:
         '게이트웨이 전용 경로 구조(/api/user 같은 접두어)를 백엔드에 노출하지 않고 깨끗한 경로만 전달하려고 해요.',
       expectedOutput:
-        '[설정] 경로 앞부분 제거 필터 — 2칸 제거',
+        '[설정] 경로 앞부분 제거 필터 - 2칸 제거',
       realWorldUsage:
         '실제 프로젝트에서 Spring Cloud Gateway를 API Gateway로 사용할 때, /api/user-service/users/123 → stripPrefix(2) → /users/123 으로 변환해서 user-service에 전달해요. ' +
         '마이크로서비스마다 다른 서비스 이름을 경로에 포함하지만, 실제 서비스 내부에서는 짧은 경로만 사용하는 구조가 일반적이에요.',
@@ -442,7 +442,7 @@ import org.springframework.context.annotation.Bean;
 
 @Bean
 public RouteLocator routes(RouteLocatorBuilder b) {
-  System.out.println("[설정] 로드밸런서 라우트 — lb://user-service");
+  System.out.println("[설정] 로드밸런서 라우트 - lb://user-service");
   return b.routes()
     .route("lb", r -> r.path("/user/**")
         .uri("lb://user-service"))
@@ -463,7 +463,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       why:
         '서비스의 인스턴스가 여러 개일 때 부하를 고르게 분산하고, 장애가 발생한 인스턴스를 자동으로 제외하려고 해요.',
       expectedOutput:
-        '[설정] 로드밸런서 라우트 — lb://user-service',
+        '[설정] 로드밸런서 라우트 - lb://user-service',
       realWorldUsage:
         '실제 프로젝트에서 user-service가 Kubernetes에서 5개의 Pod로 운영될 때, 게이트웨이가 lb://user-service로 요청을 5개 Pod에 고르게 분배해요. ' +
         '오토스케일링으로 Pod가 늘어나거나 줄어들면 디스커버리에서 자동으로 반영돼요.',
@@ -483,7 +483,7 @@ import org.springframework.context.annotation.Bean;
 
 @Bean
 public RouteLocator routes(RouteLocatorBuilder b) {
-  System.out.println("[설정] 서킷 브레이커 필터 — order-service");
+  System.out.println("[설정] 서킷 브레이커 필터 - order-service");
   return b.routes()
     .route("cb", r -> r.path("/order/**")
         .filters(f -> f.circuitBreaker(c -> c.name("orderCB")
@@ -507,7 +507,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       why:
         '분산 시스템에서 한 서비스의 장애가 연쇄 실패로 번지는 걸 막으려고 해요. 장애를 격리해서 나머지 서비스는 정상 동작하게 유지해요.',
       expectedOutput:
-        '[설정] 서킷 브레이커 필터 — order-service',
+        '[설정] 서킷 브레이커 필터 - order-service',
       realWorldUsage:
         '실제 프로젝트에서 결제 게이트웨이 연동이나 외부 API 호출처럼 불안정한 서비스 앞에 서킷 브레이커를 둬서, 장애 시 "잠시 후 다시 시도해주세요" 같은 fallback 응답을 보내줘요. ' +
         '넷플릭스가 Hystrix(현재 Resilience4j)를 모든 마이크로서비스 간 통신에 적용해서 시스템 탄력성을 확보한 것으로 유명해요.',
@@ -528,7 +528,7 @@ import org.springframework.http.HttpStatus;
 
 @Bean
 public RouteLocator routes(RouteLocatorBuilder b) {
-  System.out.println("[설정] 재시도 필터 — 최대 3회, 500/502 대상");
+  System.out.println("[설정] 재시도 필터 - 최대 3회, 500/502 대상");
   return b.routes()
     .route("retry", r -> r.path("/flaky/**")
         .filters(f -> f.retry(r2 -> r2.retries(3)
@@ -551,7 +551,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       why:
         '분산 시스템에서는 일시적 네트워크 오류나 서비스 재시작 중인 순간이 항상 존재해요. 재시도로 이런 순간적 오류를 자동 복구해서 가용성을 높여요.',
       expectedOutput:
-        '[설정] 재시도 필터 — 최대 3회, 500/502 대상',
+        '[설정] 재시도 필터 - 최대 3회, 500/502 대상',
       realWorldUsage:
         '실제 프로젝트에서 클라우드 환경(Kubernetes)의 Pod 재시작 중 잠깐 실패하는 요청들을 Retry로 흡수해요. ' +
         '외부 결제 API 호출도 일시적 오류에 2~3회 재시도하고, 그래도 실패하면 서킷 브레이커가 열리는 2단계 방어 전략이 일반적이에요.',
@@ -614,7 +614,7 @@ import org.springframework.context.annotation.Bean;
 
 @Bean
 public RouteLocator routes(RouteLocatorBuilder b) {
-  System.out.println("[설정] 외부 직접 라우트 — legacy.example.com");
+  System.out.println("[설정] 외부 직접 라우트 - legacy.example.com");
   return b.routes()
     .route("legacy", r -> r.path("/legacy/**")
         .uri("https://legacy.example.com"))
@@ -636,7 +636,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       why:
         '모든 서비스가 디스커버리에 등록돼 있지 않은 경우(레거시, 외부 API)에도 게이트웨이를 통해 통합 라우팅하려고 해요.',
       expectedOutput:
-        '[설정] 외부 직접 라우트 — legacy.example.com',
+        '[설정] 외부 직접 라우트 - legacy.example.com',
       realWorldUsage:
         '실제 프로젝트에서 모놀리스 → 마이크로서비스 전환 과정에서, 아직 분리되지 않은 레거시 시스템으로의 요청을 게이트웨이가 직접 URL로 전달해요. ' +
         '또한 외부 결제사(PG), SMS 발송 서비스, 지도 API 등 서드파티 서비스와의 통합 지점을 게이트웨이로 중앙화할 때도 직접 URL을 사용해요.',
@@ -659,7 +659,7 @@ import org.springframework.context.annotation.Bean;
 public RouteLocator routes(RouteLocatorBuilder b) {
   ZonedDateTime releaseTime = ZonedDateTime.parse(
       "2026-07-01T00:00:00+09:00[Asia/Seoul]");
-  System.out.println("[설정] 시간 기반 라우트 — 2026-07-01 이후 활성화");
+  System.out.println("[설정] 시간 기반 라우트 - 2026-07-01 이후 활성화");
   return b.routes()
     .route("after-release", r -> r.after(releaseTime)
         .and().path("/v2/**")
@@ -682,7 +682,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       why:
         '릴리스 일정에 맞춰 트래픽을 자동으로 전환하려고 해요. 사람이 수동으로 배포하는 대신, 미리 라우트를 설정해두고 시간이 되면 자동으로 새 서비스로 전환돼요.',
       expectedOutput:
-        '[설정] 시간 기반 라우트 — 2026-07-01 이후 활성화',
+        '[설정] 시간 기반 라우트 - 2026-07-01 이후 활성화',
       realWorldUsage:
         '실제 프로젝트에서 새 버전의 API를 배포할 때, 특정 날짜에 자동으로 트래픽이 새 서비스로 흐르도록 설정해요. ' +
         '마케팅 프로모션 페이지도 프로모션 기간에만 활성화되는 라우트로 구성할 수 있어요. ' +
@@ -708,7 +708,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       "2026-07-01T00:00:00+09:00[Asia/Seoul]");
   ZonedDateTime end = ZonedDateTime.parse(
       "2026-07-03T00:00:00+09:00[Asia/Seoul]");
-  System.out.println("[설정] 기간 한정 라우트 — 7/1~7/3");
+  System.out.println("[설정] 기간 한정 라우트 - 7/1~7/3");
   return b.routes()
     .route("event", r -> r.between(start, end)
         .and().path("/event/**")
@@ -730,7 +730,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       why:
         '기간 한정으로 운영되는 서비스(이벤트, 프로모션)를 배포 없이 게이트웨이 설정만으로 자동으로 켜고 끄려고 해요.',
       expectedOutput:
-        '[설정] 기간 한정 라우트 — 7/1~7/3',
+        '[설정] 기간 한정 라우트 - 7/1~7/3',
       realWorldUsage:
         '실제 프로젝트에서 블랙프라이데이 세일 페이지, 신년 이벤트 API, 한정판 상품预售 페이지 등 기간 한정 기능을 between Predicate로 구현해요. ' +
         '배포 일정에 구애받지 않고 마케팅 일정에 맞춰 자동으로 서비스를 활성화/비활성화할 수 있어요.',
@@ -750,7 +750,7 @@ import org.springframework.context.annotation.Bean;
 
 @Bean
 public RouteLocator routes(RouteLocatorBuilder b) {
-  System.out.println("[설정] 헤더 기반 라우트 — X-Client: mobile");
+  System.out.println("[설정] 헤더 기반 라우트 - X-Client: mobile");
   return b.routes()
     .route("by-header", r -> r.header("X-Client", "mobile")
         .and().path("/m/**")
@@ -772,7 +772,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       why:
         '같은 URL 경로라도 요청을 보낸 클라이언트 종류(모바일·웹·IoT)나 API 버전에 따라 다른 서비스로 분기하려고 해요.',
       expectedOutput:
-        '[설정] 헤더 기반 라우트 — X-Client: mobile',
+        '[설정] 헤더 기반 라우트 - X-Client: mobile',
       realWorldUsage:
         '실제 프로젝트에서 API 버저닝을 헤더로 구현해요. Accept-Version: v1 헤더가 있으면 구버전 서비스로, v2면 신버전 서비스로 라우팅해요. ' +
         'BFF 패턴에서 모바일 앱의 요청(경량 응답)과 웹 요청(풀 데이터)을 같은 엔드포인트에서 헤더로 구분해 다른 BFF로 라우팅하는 방식도 흔해요.',
@@ -792,7 +792,7 @@ import org.springframework.context.annotation.Bean;
 
 @Bean
 public RouteLocator routes(RouteLocatorBuilder b) {
-  System.out.println("[설정] IP 기반 라우트 — 10.0.0.0/8 내부망");
+  System.out.println("[설정] IP 기반 라우트 - 10.0.0.0/8 내부망");
   return b.routes()
     .route("internal", r -> r.remoteAddr("10.0.0.0/8")
         .and().path("/internal/**")
@@ -814,7 +814,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       why:
         '보안상 내부망에서만 접근 가능해야 하는 관리자 API나, 특정 파트너사 IP만 허용하는 전용 API를 게이트웨이 레벨에서 막으려고 해요.',
       expectedOutput:
-        '[설정] IP 기반 라우트 — 10.0.0.0/8 내부망',
+        '[설정] IP 기반 라우트 - 10.0.0.0/8 내부망',
       realWorldUsage:
         '실제 프로젝트에서 관리자 대시보드 API(/admin/**), 서버 헬스체크(/actuator/**), 내부 배치 트리거 API 같은 민감한 엔드포인트를 IP 기반으로 제한해요. ' +
         'AWS Security Group이나 방화벽을 대체할 순 없지만, 애플리케이션 레벨의 추가 방어 계층으로 유용해요.',
@@ -835,7 +835,7 @@ import org.springframework.context.annotation.Bean;
 
 @Bean
 public RouteLocator routes(RouteLocatorBuilder b) {
-  System.out.println("[설정] 커스텀 Predicate — 짝수 분에만 활성화");
+  System.out.println("[설정] 커스텀 Predicate - 짝수 분에만 활성화");
   return b.routes()
     .route("even-minute", r -> r.path("/roll/**")
         .and().predicate(exchange -> {
@@ -862,7 +862,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       why:
         '기본 제공되는 Predicate로는 커버할 수 없는 비즈니스 로직 기반의 라우팅 조건이 필요할 때 써요. 거의 무제한의 커스텀 조건을 구현할 수 있어요.',
       expectedOutput:
-        '[설정] 커스텀 Predicate — 짝수 분에만 활성화\n' +
+        '[설정] 커스텀 Predicate - 짝수 분에만 활성화\n' +
         '[판단] 현재 분=34, 짝수=true',
       realWorldUsage:
         '실제 프로젝트에서 A/B 테스트를 할 때 요청의 사용자 ID를 해시해서 50%는 A 서비스, 50%는 B 서비스로 라우팅하는 커스텀 Predicate를 구현해요. ' +

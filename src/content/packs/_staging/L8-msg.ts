@@ -16,7 +16,7 @@ props.put("bootstrap.servers", "localhost:9092");
 props.put("key.serializer", StringSerializer.class.getName());
 props.put("value.serializer", StringSerializer.class.getName());
 try (KafkaProducer<String, String> producer = new KafkaProducer<>(props)) {
-  System.out.println("[실행] KafkaProducer 생성 — broker: localhost:9092");
+  System.out.println("[실행] KafkaProducer 생성 - broker: localhost:9092");
   producer.send(new ProducerRecord<>("hello", "k1", "안녕"));
   System.out.println("[전송] 토픽=hello, key=k1, value=안녕");
 }`,
@@ -37,7 +37,7 @@ try (KafkaProducer<String, String> producer = new KafkaProducer<>(props)) {
       why:
         '마이크로서비스 간 비동기 통신, 로그 수집, 이벤트 소싱 등에서 데이터를 안정적으로 전달하고 싶을 때 Kafka를 써요. 디스크에 저장돼서 데이터 손실이 거의 없어요.',
       expectedOutput:
-        '[실행] KafkaProducer 생성 — broker: localhost:9092\n' +
+        '[실행] KafkaProducer 생성 - broker: localhost:9092\n' +
         '[전송] 토픽=hello, key=k1, value=안녕',
       realWorldUsage:
         '실제 프로젝트에서 사용자 가입 → Kafka "user-registered" 토픽 발행 → 알림 서비스·마케팅 서비스·분석 서비스가 각각 소비하는 이벤트 기반 아키텍처를 구성해요. ' +
@@ -243,7 +243,7 @@ public class HelloService {
   }
 
   public void send(String msg) {
-    System.out.println("[실행] KafkaTemplate send — msg: " + msg);
+    System.out.println("[실행] KafkaTemplate send - msg: " + msg);
     template.send("hello", msg);
     System.out.println("[전송] 토픽=hello, 비동기 발행 완료");
   }
@@ -263,7 +263,7 @@ public class HelloService {
       why:
         '스프링 환경에서 Kafka를 최소한의 코드로 사용하려고 해요. Producer의 수명 주기(생성→사용→종료)를 스프링이 모두 관리해줘요.',
       expectedOutput:
-        '[실행] KafkaTemplate send — msg: 안녕하세요\n' +
+        '[실행] KafkaTemplate send - msg: 안녕하세요\n' +
         '[전송] 토픽=hello, 비동기 발행 완료',
       realWorldUsage:
         '실제 프로젝트에서 컨트롤러→서비스→KafkaTemplate 흐름으로 사용자 요청을 이벤트로 변환해서 발행해요. ' +
@@ -291,7 +291,7 @@ public class NotifyService {
   }
 
   public void publish(String msg) {
-    System.out.println("[실행] RabbitMQ 발행 — exchange=orders, key=new");
+    System.out.println("[실행] RabbitMQ 발행 - exchange=orders, key=new");
     rabbit.convertAndSend("orders", "new", msg);
     System.out.println("[전송] 발행 완료: " + msg);
   }
@@ -312,7 +312,7 @@ public class NotifyService {
       why:
         '비동기 작업 큐(주문 처리, 이미지 리사이징), 실시간 알림 발송, 마이크로서비스 간 명령 전달에 RabbitMQ를 써요.',
       expectedOutput:
-        '[실행] RabbitMQ 발행 — exchange=orders, key=new\n' +
+        '[실행] RabbitMQ 발행 - exchange=orders, key=new\n' +
         '[전송] 발행 완료: 새 주문이 도착했어요',
       realWorldUsage:
         '실제 프로젝트에서 사용자가 주문을 넣으면 "orders" exchange에 "new" 라우팅 키로 메시지를 보내고, ' +
@@ -425,7 +425,7 @@ public class JmsProducer {
   }
 
   public void send(String text) {
-    System.out.println("[실행] JMS 발송 — mailbox");
+    System.out.println("[실행] JMS 발송 - mailbox");
     jms.convertAndSend("mailbox", text);
     System.out.println("[전송] 발송 완료: " + text);
   }
@@ -445,7 +445,7 @@ public class JmsProducer {
       why:
         'ActiveMQ 같은 전통적인 JMS 브로커와 통합해야 하거나, 자바 진영 표준을 준수해야 하는 기업 환경에서 써요.',
       expectedOutput:
-        '[실행] JMS 발송 — mailbox\n' +
+        '[실행] JMS 발송 - mailbox\n' +
         '[전송] 발송 완료: 새 메일이 도착했어요',
       realWorldUsage:
         '실제 프로젝트에서 은행·보험·공공기관처럼 JMS 기반의 레거시 메시징 인프라(IBM MQ, ActiveMQ)와 통합할 때 JmsTemplate을 써요. ' +
@@ -512,7 +512,7 @@ public class OrderService {
   }
 
   public void place(String id) {
-    System.out.println("[실행] 주문 생성 — id: " + id);
+    System.out.println("[실행] 주문 생성 - id: " + id);
     publisher.publishEvent(new OrderPlaced(id, false));
     System.out.println("[발행] OrderPlaced 이벤트 발행 완료");
   }
@@ -533,7 +533,7 @@ public class OrderService {
       why:
         '한 서비스의 동작(주문 생성)에 대해 다른 서비스(알림, 감사, 통계)가 반응해야 하지만, 서로 직접 의존하기 싫을 때 써요.',
       expectedOutput:
-        '[실행] 주문 생성 — id: 12345\n' +
+        '[실행] 주문 생성 - id: 12345\n' +
         '[발행] OrderPlaced 이벤트 발행 완료',
       realWorldUsage:
         '실제 프로젝트에서 주문 생성 후 이메일 발송, 포인트 적립, 감사 로그 기록, 캐시 무효화 같은 후처리 작업을 이벤트로 분리해요. ' +

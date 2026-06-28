@@ -166,7 +166,7 @@ import numpy as np
 data = np.random.rand(100, 8).astype('float32')
 idx = faiss.IndexFlatL2(8)
 idx.add(data)
-print(f"[실행] IndexFlatL2(8) 생성 — 데이터 {data.shape[0]}개 추가 완료")
+print(f"[실행] IndexFlatL2(8) 생성 - 데이터 {data.shape[0]}개 추가 완료")
 
 
 d, i = idx.search(data[:1], 3)
@@ -190,7 +190,7 @@ print(f"[결과] 각 거리: {d}")`,
         '오차 없는 정확한 검색 결과를 얻을 수 있어서, 데이터가 적을 때 정답 기준으로 삼기에 좋아요. ' +
         '실무에서는 Flat 결과와 근사 인덱스 결과를 비교해 근사 방식의 품질을 평가해요.',
       expectedOutput:
-        '[실행] IndexFlatL2(8) 생성 — 데이터 100개 추가 완료\n[결과] 가장 가까운 3개 인덱스: [[0 42 77]]\n[결과] 각 거리: [[0.   1.23 1.45]]',
+        '[실행] IndexFlatL2(8) 생성 - 데이터 100개 추가 완료\n[결과] 가장 가까운 3개 인덱스: [[0 42 77]]\n[결과] 각 거리: [[0.   1.23 1.45]]',
       realWorldUsage:
         '프로토타입 RAG 시스템에서 문서 임베딩 5,000건을 Flat 인덱스에 올려두고, 사용자 질문과 가장 가까운 문서 3개를 찾는 용도로 먼저 써봐요. 이후 데이터가 10만 건을 넘으면 IVF나 HNSW로 전환하는 게 일반적이에요.',
       pitfall:
@@ -211,7 +211,7 @@ quan = faiss.IndexFlatL2(16)
 idx = faiss.IndexIVFFlat(quan, 16, 10)
 idx.train(data)
 idx.add(data)
-print(f"[실행] IndexIVFFlat(10 clusters) — 데이터 {data.shape[0]}개 추가 완료")
+print(f"[실행] IndexIVFFlat(10 clusters) - 데이터 {data.shape[0]}개 추가 완료")
 
 
 idx.nprobe = 2
@@ -236,7 +236,7 @@ print(f"[결과] 각 거리: {d}")`,
         '백만 건 이상의 벡터에서도 초 단위로 검색이 가능해 실시간 추천·검색 서비스의 핵심 인덱스로 쓰여요. ' +
         'nprobe로 정확도와 속도의 트레이드오프를 상황에 맞게 조절할 수 있어요.',
       expectedOutput:
-        '[실행] IndexIVFFlat(10 clusters) — 데이터 1000개 추가 완료\n[결과] nprobe=2일 때 가장 가까운 3개 인덱스: [[0 543 278]]\n[결과] 각 거리: [[0.   2.11 2.34]]',
+        '[실행] IndexIVFFlat(10 clusters) - 데이터 1000개 추가 완료\n[결과] nprobe=2일 때 가장 가까운 3개 인덱스: [[0 543 278]]\n[결과] 각 거리: [[0.   2.11 2.34]]',
       realWorldUsage:
         '쇼핑몰 상품 추천 시스템에서 500만 개 상품 이미지의 특징 벡터를 IVF 인덱스로 구축해, 사용자가 클릭한 상품과 가장 비슷한 상품 10개를 100ms 이내에 찾아내는 데 사용해요.',
       pitfall:
@@ -256,7 +256,7 @@ data = np.random.rand(500, 12).astype('float32')
 idx = faiss.IndexHNSWFlat(12, 16)
 idx.hnsw.efConstruction = 40
 idx.add(data)
-print(f"[실행] IndexHNSWFlat(12, M=16) — 데이터 {data.shape[0]}개 추가 완료")
+print(f"[실행] IndexHNSWFlat(12, M=16) - 데이터 {data.shape[0]}개 추가 완료")
 
 
 idx.hnsw.efSearch = 8
@@ -280,7 +280,7 @@ print(f"[결과] 각 거리: {d}")`,
         'HNSW는 삽입과 검색이 모두 빠르고, 정확도도 높아 대부분의 벡터DB에서 기본 옵션이에요. ' +
         '데이터를 추가할 때마다 재학습이 필요 없는 점도 실시간 갱신이 필요한 서비스에 큰 장점이에요.',
       expectedOutput:
-        '[실행] IndexHNSWFlat(12, M=16) — 데이터 500개 추가 완료\n[결과] 가장 가까운 3개 인덱스: [[0 312 89]]\n[결과] 각 거리: [[0.   1.87 2.05]]',
+        '[실행] IndexHNSWFlat(12, M=16) - 데이터 500개 추가 완료\n[결과] 가장 가까운 3개 인덱스: [[0 312 89]]\n[결과] 각 거리: [[0.   1.87 2.05]]',
       realWorldUsage:
         'pgvector의 HNSW 인덱스를 만들 때 내부적으로 바로 이 FAISS의 HNSW 구현이 사용돼요. 실시간 채팅 검색 서비스에서 새 메시지가 들어올 때마다 인덱스에 추가하면서도 검색 지연 없이 동작할 수 있어요.',
       pitfall:
@@ -853,7 +853,7 @@ class S:
 
 
 total = batch_upsert(S(), list(enumerate([[0.1]] * 250)), 100)
-print(f"[실행] batch_upsert() 완료 — 처리된 항목: {total}")
+print(f"[실행] batch_upsert() 완료 - 처리된 항목: {total}")
 print(f"[결과] store 크기: {len(store)}")`,
     explain: {
       concept:
@@ -871,7 +871,7 @@ print(f"[결과] store 크기: {len(store)}")`,
       why:
         '대량 데이터를 한 번에 전송하면 네트워크 패킷이 끊기거나 서버 메모리가 터질 수 있어요. 배치로 나누면 장애가 발생해도 마지막 성공 지점부터 이어서 재개할 수 있어요.',
       expectedOutput:
-        '[실행] batch_upsert() 완료 — 처리된 항목: 250\n[결과] store 크기: 250',
+        '[실행] batch_upsert() 완료 - 처리된 항목: 250\n[결과] store 크기: 250',
       realWorldUsage:
         '데이터 마이그레이션 스크립트에서 500만 건의 임베딩을 Qdrant로 옮길 때, 2,000개씩 배치로 나눠 upsert 하면서 진행률을 tqdm으로 표시하고, 실패한 배치는 3회 재시도하는 패턴으로 구현해요.',
       pitfall:

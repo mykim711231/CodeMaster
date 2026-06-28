@@ -9,13 +9,13 @@ export const pythonAsync: Snippet[] = [
     code: `import asyncio
 
 async def fetch_data():
-  print("[실행] fetch_data() — 데이터 가져오는 중...")
+  print("[실행] fetch_data() - 데이터 가져오는 중...")
   await asyncio.sleep(0.1)
-  print("[결과] fetch_data() — 완료")
+  print("[결과] fetch_data() - 완료")
   return '결과'
 
 async def main():
-  print("[실행] main() — 시작")
+  print("[실행] main() - 시작")
   data = await fetch_data()
   print(f"[결과] 받은 데이터: {data}")
 
@@ -38,9 +38,9 @@ asyncio.run(main())`,
         '데이터베이스 조회나 외부 API 호출을 기다리는 동안 다른 요청을 처리해서 서버 처리량을 극대화해요.',
       expectedOutput:
         '실행 시:\n' +
-        '[실행] main() — 시작\n' +
-        '[실행] fetch_data() — 데이터 가져오는 중...\n' +
-        '[결과] fetch_data() — 완료\n' +
+        '[실행] main() - 시작\n' +
+        '[실행] fetch_data() - 데이터 가져오는 중...\n' +
+        '[결과] fetch_data() - 완료\n' +
         '[결과] 받은 데이터: 결과',
       realWorldUsage:
         '실제 서비스에서 사용자 프로필 조회 API를 async로 만들면, 프로필 이미지를 CDN에서 가져오는 동안 다른 사용자의 요청을 처리할 수 있어서 초당 처리량이 수십 배 늘어나요.',
@@ -55,7 +55,7 @@ asyncio.run(main())`,
     code: `import asyncio
 
 async def greet():
-  print("[실행] greet() — 비동기 함수 실행 중")
+  print("[실행] greet() - 비동기 함수 실행 중")
 
 if __name__ == '__main__':
   print("[시작] 프로그램 시작")
@@ -78,7 +78,7 @@ if __name__ == '__main__':
       expectedOutput:
         '실행 시:\n' +
         '[시작] 프로그램 시작\n' +
-        '[실행] greet() — 비동기 함수 실행 중\n' +
+        '[실행] greet() - 비동기 함수 실행 중\n' +
         '[완료] 프로그램 종료',
       realWorldUsage:
         '실제 FastAPI 서버는 uvicorn.run() 내부에서 asyncio.run()과 유사한 방식으로 이벤트 루프를 시작하고, 모든 API 핸들러가 이 루프 위에서 비동기로 실행돼요.',
@@ -93,13 +93,13 @@ if __name__ == '__main__':
     code: `import asyncio
 
 async def work(name, delay):
-  print(f"[실행] work('{name}') 시작 — {delay}초 대기")
+  print(f"[실행] work('{name}') 시작 - {delay}초 대기")
   await asyncio.sleep(delay)
   print(f"[완료] work('{name}') 종료")
   return name
 
 async def main():
-  print("[실행] gather — 모든 작업 동시 시작")
+  print("[실행] gather - 모든 작업 동시 시작")
   results = await asyncio.gather(work('A', 1), work('B', 2))
   print(f"[결과] 모인 결과: {results}")
 
@@ -120,9 +120,9 @@ asyncio.run(main())`,
         '실무에서 마이크로서비스 간 병렬 호출 시 gather를 쓰면 전체 응답 시간이 가장 느린 서비스 하나의 시간으로 줄어들어요. 순차 호출 대비 응답 속도가 수 배 빨라져요.',
       expectedOutput:
         '실행 시:\n' +
-        '[실행] gather — 모든 작업 동시 시작\n' +
-        "[실행] work('A') 시작 — 1초 대기\n" +
-        "[실행] work('B') 시작 — 2초 대기\n" +
+        '[실행] gather - 모든 작업 동시 시작\n' +
+        "[실행] work('A') 시작 - 1초 대기\n" +
+        "[실행] work('B') 시작 - 2초 대기\n" +
         "[완료] work('A') 종료\n" +
         "[완료] work('B') 종료\n" +
         "[결과] 모인 결과: ['A', 'B']",
@@ -148,7 +148,7 @@ async def main():
   async with asyncio.TaskGroup() as tg:
     t1 = tg.create_task(task(1))
     t2 = tg.create_task(task(2))
-    print("[실행] TaskGroup — 두 작업 동시 시작")
+    print("[실행] TaskGroup - 두 작업 동시 시작")
   print(f"[결과] t1={t1.result()}, t2={t2.result()}")
 
 asyncio.run(main())`,
@@ -168,7 +168,7 @@ asyncio.run(main())`,
         '실무에서는 여러 마이크로서비스를 동시에 호출할 때 TaskGroup을 쓰면, 하나의 서비스가 실패했을 때 나머지도 깔끔하게 취소돼서 자원 낭비와 부분 실패 상태를 막을 수 있어요.',
       expectedOutput:
         '실행 시:\n' +
-        '[실행] TaskGroup — 두 작업 동시 시작\n' +
+        '[실행] TaskGroup - 두 작업 동시 시작\n' +
         '[실행] task(1) 시작\n' +
         '[실행] task(2) 시작\n' +
         '[완료] task(1) 종료 → 결과: 2\n' +
@@ -198,7 +198,7 @@ async def consumer(q):
   while True:
     item = await q.get()
     if item is None:
-      print("[소비] 종료 신호 감지 — 중단")
+      print("[소비] 종료 신호 감지 - 중단")
       break
     print(f"[소비] 아이템 {item} 처리 완료")
 
@@ -234,7 +234,7 @@ asyncio.run(main())`,
         '[생산] 아이템 2 생성\n' +
         '[소비] 아이템 2 처리 완료\n' +
         '[생산] 종료 신호(None) 전송\n' +
-        '[소비] 종료 신호 감지 — 중단',
+        '[소비] 종료 신호 감지 - 중단',
       realWorldUsage:
         '실제 로그 수집 시스템에서 여러 서버가 생성하는 로그를 Queue로 받아서, 별도 소비자가 데이터베이스에 배치로 저장해요. 생산 속도가 갑자기 폭증해도 큐가 버퍼 역할을 해서 시스템이 안정적으로 유지돼요.',
       pitfall: 'put과 get에 await를 빠뜨리면 코루틴이 아닌 일반 호출로 처리돼서 교착 상태(deadlock)가 발생할 수 있어요.',
@@ -260,7 +260,7 @@ async def consumer(q):
 
 async def main():
   q = asyncio.Queue(maxsize=2)
-  print(f"[실행] Queue(maxsize=2) — 생산자-소비자 시작")
+  print(f"[실행] Queue(maxsize=2) - 생산자-소비자 시작")
   await asyncio.gather(producer(q), consumer(q))
 
 asyncio.run(main())`,
@@ -281,7 +281,7 @@ asyncio.run(main())`,
         'maxsize로 배압을 걸어서 소비자의 처리 속도에 맞춰 생산 속도를 자동으로 조절해요.',
       expectedOutput:
         '실행 시:\n' +
-        '[실행] Queue(maxsize=2) — 생산자-소비자 시작\n' +
+        '[실행] Queue(maxsize=2) - 생산자-소비자 시작\n' +
         '[생산] 넣음: 0\n' +
         '[생산] 넣음: 1\n' +
         '[소비] 꺼냄: 0\n' +
@@ -306,9 +306,9 @@ asyncio.run(main())`,
 
 async def add(balance, lock):
   async with lock:
-    print(f"[진입] 임계 구역 — 현재 잔액: {balance[0]}")
+    print(f"[진입] 임계 구역 - 현재 잔액: {balance[0]}")
     balance[0] += 1
-    print(f"[종료] 임계 구역 — 갱신 잔액: {balance[0]}")
+    print(f"[종료] 임계 구역 - 갱신 잔액: {balance[0]}")
   return balance[0]
 
 async def main():
@@ -336,12 +336,12 @@ asyncio.run(main())`,
       expectedOutput:
         '실행 시:\n' +
         '[실행] Lock 동시성 보호 시작\n' +
-        '[진입] 임계 구역 — 현재 잔액: 0\n' +
-        '[종료] 임계 구역 — 갱신 잔액: 1\n' +
-        '[진입] 임계 구역 — 현재 잔액: 1\n' +
-        '[종료] 임계 구역 — 갱신 잔액: 2\n' +
-        '[진입] 임계 구역 — 현재 잔액: 2\n' +
-        '[종료] 임계 구역 — 갱신 잔액: 3\n' +
+        '[진입] 임계 구역 - 현재 잔액: 0\n' +
+        '[종료] 임계 구역 - 갱신 잔액: 1\n' +
+        '[진입] 임계 구역 - 현재 잔액: 1\n' +
+        '[종료] 임계 구역 - 갱신 잔액: 2\n' +
+        '[진입] 임계 구역 - 현재 잔액: 2\n' +
+        '[종료] 임계 구역 - 갱신 잔액: 3\n' +
         '[결과] 최종 잔액: 3',
       realWorldUsage:
         '실제 티켓 예매 시스템에서 "마지막 1석"을 여러 사용자가 동시에 예매하려 할 때, Lock으로 임계 구역을 보호해서 정확히 한 명만 성공하게 처리해요.',
@@ -358,11 +358,11 @@ asyncio.run(main())`,
 async def waiter(event):
   print("[대기] 신호 기다리는 중...")
   await event.wait()
-  print("[출발] 신호 받음 — 작업 시작!")
+  print("[출발] 신호 받음 - 작업 시작!")
 
 async def main():
   event = asyncio.Event()
-  print("[실행] Event 생성 — 1초 후 set() 호출 예정")
+  print("[실행] Event 생성 - 1초 후 set() 호출 예정")
   w = asyncio.create_task(waiter(event))
   await asyncio.sleep(1)
   print("[신호] event.set() 호출")
@@ -387,10 +387,10 @@ asyncio.run(main())`,
         '실무에서 서버 시작 시 "DB 연결이 완료되면 HTTP 서버를 시작해라" 또는 "설정 파일 로드가 끝나면 요청 처리를 시작해라" 같은 의존 관계가 있는 초기화 순서를 Event로 제어해요.',
       expectedOutput:
         '실행 시:\n' +
-        '[실행] Event 생성 — 1초 후 set() 호출 예정\n' +
+        '[실행] Event 생성 - 1초 후 set() 호출 예정\n' +
         '[대기] 신호 기다리는 중...\n' +
         '[신호] event.set() 호출\n' +
-        '[출발] 신호 받음 — 작업 시작!',
+        '[출발] 신호 받음 - 작업 시작!',
       realWorldUsage:
         '실제 게임 서버에서 "모든 플레이어가 로딩 완료되면 게임을 시작한다"를 구현할 때, 각 플레이어의 로딩 완료 이벤트를 기다리는 패턴으로 써요.',
       pitfall: 'set()을 호출하지 않으면 wait()에서 영원히 멈춰 있어요. 타임아웃 기능이 없으니, 반드시 set()을 호출할 코드 경로를 확인해야 해요.',
@@ -404,15 +404,15 @@ asyncio.run(main())`,
     code: `import asyncio
 
 async def slow():
-  print("[시작] slow() — 0.5초 대기 진입")
+  print("[시작] slow() - 0.5초 대기 진입")
   await asyncio.sleep(0.5)
-  print("[완료] slow() — 대기 종료")
+  print("[완료] slow() - 대기 종료")
 
 async def fast():
-  print("[실행] fast() — 즉시 실행")
+  print("[실행] fast() - 즉시 실행")
 
 async def main():
-  print("[실행] gather — slow + fast 동시 시작")
+  print("[실행] gather - slow + fast 동시 시작")
   await asyncio.gather(slow(), fast())
 
 asyncio.run(main())`,
@@ -431,10 +431,10 @@ asyncio.run(main())`,
         '실무에서 API 서버가 외부 결제 시스템의 응답을 기다리는 동안, 다른 사용자의 요청을 처리할 수 있는 건 모두 asyncio.sleep과 같은 양보 지점 덕분이에요.',
       expectedOutput:
         '실행 시:\n' +
-        '[실행] gather — slow + fast 동시 시작\n' +
-        '[시작] slow() — 0.5초 대기 진입\n' +
-        '[실행] fast() — 즉시 실행\n' +
-        '[완료] slow() — 대기 종료',
+        '[실행] gather - slow + fast 동시 시작\n' +
+        '[시작] slow() - 0.5초 대기 진입\n' +
+        '[실행] fast() - 즉시 실행\n' +
+        '[완료] slow() - 대기 종료',
       realWorldUsage:
         '실제 실시간 채팅 서버에서 한 사용자의 메시지 저장을 기다리는 동안(sleep), 다른 사용자의 새로운 메시지를 받아서 처리하는 식으로 CPU를 놀리지 않고 계속 활용해요.',
       pitfall: 'time.sleep()을 쓰면 CPU를 놓지 않고 진짜로 멈춰버려서, 다른 모든 코루틴도 함께 멈춰요. 비동기 함수 안에서는 반드시 asyncio.sleep()을 써야 해요.',
@@ -494,17 +494,17 @@ asyncio.run(main())`,
     code: `import asyncio
 
 async def slow():
-  print("[실행] slow() — 긴 작업 시작 (10초)")
+  print("[실행] slow() - 긴 작업 시작 (10초)")
   await asyncio.sleep(10)
   return '완료'
 
 async def main():
-  print("[실행] wait_for — 타임아웃 0.1초 설정")
+  print("[실행] wait_for - 타임아웃 0.1초 설정")
   try:
     result = await asyncio.wait_for(slow(), timeout=0.1)
     print(f"[결과] {result}")
   except asyncio.TimeoutError:
-    print("[타임아웃] 0.1초 초과 — 작업 취소됨")
+    print("[타임아웃] 0.1초 초과 - 작업 취소됨")
 
 asyncio.run(main())`,
     explain: {
@@ -523,9 +523,9 @@ asyncio.run(main())`,
         '실무에서 모든 외부 API 호출에는 반드시 타임아웃을 설정해야 해요. 안 그러면 하나의 느린 API가 전체 서비스의 응답 지연을 유발하는 폭포수 장애로 이어져요.',
       expectedOutput:
         '실행 시:\n' +
-        '[실행] wait_for — 타임아웃 0.1초 설정\n' +
-        '[실행] slow() — 긴 작업 시작 (10초)\n' +
-        '[타임아웃] 0.1초 초과 — 작업 취소됨',
+        '[실행] wait_for - 타임아웃 0.1초 설정\n' +
+        '[실행] slow() - 긴 작업 시작 (10초)\n' +
+        '[타임아웃] 0.1초 초과 - 작업 취소됨',
       realWorldUsage:
         '실제 결제 게이트웨이 연동에서 PG사 API 호출에 5초 타임아웃을 걸어서, PG사 서버가 느려져도 사용자에게 "결제 진행 중" 상태를 빠르게 알려주고 재시도하게 할 수 있어요.',
       pitfall: '타임아웃을 0에 가깝게 설정하면 정상적인 작업도 취소될 수 있어요. 서비스 상황에 맞는 적절한 값을 설정해야 해요.',
@@ -540,13 +540,13 @@ asyncio.run(main())`,
 import time
 
 def blocking():
-  print("[실행] blocking() — 일반 동기 함수 진입 (2초 작업)")
+  print("[실행] blocking() - 일반 동기 함수 진입 (2초 작업)")
   time.sleep(2)
-  print("[완료] blocking() — 작업 종료")
+  print("[완료] blocking() - 작업 종료")
   return '완료'
 
 async def main():
-  print("[실행] main() — to_thread로 블로킹 함수를 별도 스레드로 위임")
+  print("[실행] main() - to_thread로 블로킹 함수를 별도 스레드로 위임")
   result = await asyncio.to_thread(blocking)
   print(f"[결과] 반환값: {result}")
 
@@ -567,9 +567,9 @@ asyncio.run(main())`,
         'to_thread로 감싸면 이벤트 루프를 막지 않고 안전하게 호출할 수 있어요.',
       expectedOutput:
         '실행 시:\n' +
-        '[실행] main() — to_thread로 블로킹 함수를 별도 스레드로 위임\n' +
-        '[실행] blocking() — 일반 동기 함수 진입 (2초 작업)\n' +
-        '[완료] blocking() — 작업 종료\n' +
+        '[실행] main() - to_thread로 블로킹 함수를 별도 스레드로 위임\n' +
+        '[실행] blocking() - 일반 동기 함수 진입 (2초 작업)\n' +
+        '[완료] blocking() - 작업 종료\n' +
         '[결과] 반환값: 완료',
       realWorldUsage:
         '실제 FastAPI 서버에서 오래된 동기 PDF 생성 라이브러리를 써야 할 때, to_thread로 감싸서 PDF 생성 중에도 서버가 다른 요청을 계속 처리할 수 있게 해요.',
@@ -585,11 +585,11 @@ asyncio.run(main())`,
 from threading import Thread
 
 def download(name):
-  print(f"[실행] download({name}) — 시작")
+  print(f"[실행] download({name}) - 시작")
   time.sleep(1)
-  print(f"[완료] download({name}) — 종료")
+  print(f"[완료] download({name}) - 종료")
 
-print("[시작] Threading — 두 개의 다운로드 동시 실행")
+print("[시작] Threading - 두 개의 다운로드 동시 실행")
 t1 = Thread(target=download, args=('파일A',))
 t2 = Thread(target=download, args=('파일B',))
 t1.start()
@@ -614,11 +614,11 @@ print("[결과] 모든 다운로드 완료")`,
         '실무에서 대량의 파일 압축 해제나 여러 웹페이지 동시 크롤링처럼 I/O 대기가 많은 작업을 Threading으로 병렬화해 전체 소요 시간을 줄여요.',
       expectedOutput:
         '실행 시:\n' +
-        '[시작] Threading — 두 개의 다운로드 동시 실행\n' +
-        '[실행] download(파일A) — 시작\n' +
-        '[실행] download(파일B) — 시작\n' +
-        '[완료] download(파일A) — 종료\n' +
-        '[완료] download(파일B) — 종료\n' +
+        '[시작] Threading - 두 개의 다운로드 동시 실행\n' +
+        '[실행] download(파일A) - 시작\n' +
+        '[실행] download(파일B) - 시작\n' +
+        '[완료] download(파일A) - 종료\n' +
+        '[완료] download(파일B) - 종료\n' +
         '[결과] 모든 다운로드 완료',
       realWorldUsage:
         '실제 데이터 수집기에서 100개의 웹 페이지를 크롤링할 때 ThreadPool로 10개씩 동시에 요청해서, 순차 호출 대비 10배 이상 빠르게 데이터를 수집해요.',
@@ -637,7 +637,7 @@ def square(n):
   print(f"[결과] square({n}) = {result}")
 
 if __name__ == '__main__':
-  print("[실행] Multiprocessing — CPU 코어 병렬 활용")
+  print("[실행] Multiprocessing - CPU 코어 병렬 활용")
   ps = []
   for n in range(4):
     p = Process(target=square, args=(n,))
@@ -663,7 +663,7 @@ if __name__ == '__main__':
         '실무에서 대규모 데이터 전처리나 모델 학습 시 병목인 CPU 작업을 여러 프로세스로 분산해서, 8코어 CPU면 이론적으로 8배까지 속도를 높일 수 있어요.',
       expectedOutput:
         '실행 시:\n' +
-        '[실행] Multiprocessing — CPU 코어 병렬 활용\n' +
+        '[실행] Multiprocessing - CPU 코어 병렬 활용\n' +
         '[결과] square(0) = 0\n' +
         '[결과] square(1) = 1\n' +
         '[결과] square(2) = 4\n' +
@@ -687,7 +687,7 @@ def double(n):
   return result
 
 if __name__ == '__main__':
-  print("[실행] Pool.map — 2개 프로세서로 자동 분배")
+  print("[실행] Pool.map - 2개 프로세서로 자동 분배")
   with Pool(processes=2) as pool:
     result = pool.map(double, range(5))
   print(f"[결과] 최종 결과: {result}")`,
@@ -708,7 +708,7 @@ if __name__ == '__main__':
         '실무에서 100만 개의 이미지에 필터를 적용할 때, Pool.map으로 8코어 CPU에서 8개 프로세스로 분산 처리하면 실행 시간이 거의 1/8로 단축돼요.',
       expectedOutput:
         '실행 시:\n' +
-        '[실행] Pool.map — 2개 프로세서로 자동 분배\n' +
+        '[실행] Pool.map - 2개 프로세서로 자동 분배\n' +
         '[실행] double(0) = 0\n' +
         '[실행] double(1) = 2\n' +
         '[실행] double(2) = 4\n' +
@@ -729,11 +729,11 @@ if __name__ == '__main__':
 
 async def job(n):
   await asyncio.sleep(n * 0.5)
-  print(f"[완료] job({n}) — {n}초 대기 후 종료")
+  print(f"[완료] job({n}) - {n}초 대기 후 종료")
   return n
 
 async def main():
-  print("[실행] as_completed — 끝나는 순서대로 결과 수집")
+  print("[실행] as_completed - 끝나는 순서대로 결과 수집")
   tasks = [asyncio.create_task(job(i)) for i in range(3)]
   for t in asyncio.as_completed(tasks):
     r = await t
@@ -756,12 +756,12 @@ asyncio.run(main())`,
         '실무에서 검색 엔진에 "이미지 검색, 텍스트 검색, 동영상 검색"을 동시에 요청하고, 가장 먼저 나온 결과부터 사용자에게 노출할 때 as_completed를 써요.',
       expectedOutput:
         '실행 시:\n' +
-        '[실행] as_completed — 끝나는 순서대로 결과 수집\n' +
-        '[완료] job(0) — 0초 대기 후 종료\n' +
+        '[실행] as_completed - 끝나는 순서대로 결과 수집\n' +
+        '[완료] job(0) - 0초 대기 후 종료\n' +
         '[수집] 결과: 0\n' +
-        '[완료] job(1) — 1초 대기 후 종료\n' +
+        '[완료] job(1) - 1초 대기 후 종료\n' +
         '[수집] 결과: 1\n' +
-        '[완료] job(2) — 2초 대기 후 종료\n' +
+        '[완료] job(2) - 2초 대기 후 종료\n' +
         '[수집] 결과: 2',
       realWorldUsage:
         '실제 통합 검색 시스템에서 "캐시 서버, 메인 DB, 외부 검색 엔진"에 동시에 쿼리하고, 캐시 결과를 가장 먼저 보여주는 식으로 사용자 체감 속도를 극대화해요.',
@@ -830,7 +830,7 @@ asyncio.run(main())`,
 async def step(name):
   print(f"[시작] step({name})")
   await asyncio.sleep(0)
-  print(f"[이어] step({name}) — 양보 후 재개")
+  print(f"[이어] step({name}) - 양보 후 재개")
 
 async def main():
   print("[실행] sleep(0)으로 순서 양보")
@@ -855,8 +855,8 @@ asyncio.run(main())`,
         '[실행] sleep(0)으로 순서 양보\n' +
         '[시작] step(A)\n' +
         '[시작] step(B)\n' +
-        '[이어] step(A) — 양보 후 재개\n' +
-        '[이어] step(B) — 양보 후 재개',
+        '[이어] step(A) - 양보 후 재개\n' +
+        '[이어] step(B) - 양보 후 재개',
       realWorldUsage:
         '실제 대규모 데이터를 비동기로 청크 단위 처리할 때, 각 청크 처리 사이에 sleep(0)을 넣어서 HTTP 요청 처리 같은 I/O 작업이 중간에 끼어들 수 있게 해줘요.',
       pitfall: '양보 지점이 전혀 없으면 하나의 코루틴이 끝날 때까지 다른 코루틴이 전혀 실행되지 못하는 기아 상태(starvation)가 발생해요.',
@@ -870,7 +870,7 @@ asyncio.run(main())`,
     code: `import asyncio
 
 async def main():
-  print("[실행] Future 생성 — 빈 결과 자리")
+  print("[실행] Future 생성 - 빈 결과 자리")
   fut = asyncio.Future()
   fut.set_result('값')
   result = await fut
@@ -893,7 +893,7 @@ asyncio.run(main())`,
         '콜백에서 set_result()를 호출하고 비동기 코드에서는 await로 받는 방식으로 연결해야 해요.',
       expectedOutput:
         '실행 시:\n' +
-        '[실행] Future 생성 — 빈 결과 자리\n' +
+        '[실행] Future 생성 - 빈 결과 자리\n' +
         '[결과] Future에서 꺼낸 값: 값',
       realWorldUsage:
         '실제 메시지 큐 라이브러리를 비동기로 감쌀 때, on_message 콜백에서 Future의 set_result()를 호출하고, 소비자는 await future로 기다리는 패턴으로 동기-비동기 다리를 놓아요.',
@@ -909,13 +909,13 @@ asyncio.run(main())`,
 
 async def fetch(i, sem):
   async with sem:
-    print(f"[진입] fetch({i}) — 동시 실행 중")
+    print(f"[진입] fetch({i}) - 동시 실행 중")
     await asyncio.sleep(0.1)
-  print(f"[종료] fetch({i}) — 완료, 세마포어 반납")
+  print(f"[종료] fetch({i}) - 완료, 세마포어 반납")
 
 async def main():
   sem = asyncio.Semaphore(2)
-  print(f"[실행] Semaphore(2) — 최대 2개 동시 실행")
+  print(f"[실행] Semaphore(2) - 최대 2개 동시 실행")
   await asyncio.gather(*(fetch(i, sem) for i in range(6)))
 
 asyncio.run(main())`,
@@ -936,19 +936,19 @@ asyncio.run(main())`,
         '실무에서 외부 API가 초당 10건까지만 허용할 때, Semaphore(10)으로 제한을 걸어서 rate limit 초과로 차단당하는 것을 막을 수 있어요.',
       expectedOutput:
         '실행 시:\n' +
-        '[실행] Semaphore(2) — 최대 2개 동시 실행\n' +
-        '[진입] fetch(0) — 동시 실행 중\n' +
-        '[진입] fetch(1) — 동시 실행 중\n' +
-        '[종료] fetch(0) — 완료, 세마포어 반납\n' +
-        '[종료] fetch(1) — 완료, 세마포어 반납\n' +
-        '[진입] fetch(2) — 동시 실행 중\n' +
-        '[진입] fetch(3) — 동시 실행 중\n' +
-        '[종료] fetch(2) — 완료, 세마포어 반납\n' +
-        '[종료] fetch(3) — 완료, 세마포어 반납\n' +
-        '[진입] fetch(4) — 동시 실행 중\n' +
-        '[진입] fetch(5) — 동시 실행 중\n' +
-        '[종료] fetch(4) — 완료, 세마포어 반납\n' +
-        '[종료] fetch(5) — 완료, 세마포어 반납',
+        '[실행] Semaphore(2) - 최대 2개 동시 실행\n' +
+        '[진입] fetch(0) - 동시 실행 중\n' +
+        '[진입] fetch(1) - 동시 실행 중\n' +
+        '[종료] fetch(0) - 완료, 세마포어 반납\n' +
+        '[종료] fetch(1) - 완료, 세마포어 반납\n' +
+        '[진입] fetch(2) - 동시 실행 중\n' +
+        '[진입] fetch(3) - 동시 실행 중\n' +
+        '[종료] fetch(2) - 완료, 세마포어 반납\n' +
+        '[종료] fetch(3) - 완료, 세마포어 반납\n' +
+        '[진입] fetch(4) - 동시 실행 중\n' +
+        '[진입] fetch(5) - 동시 실행 중\n' +
+        '[종료] fetch(4) - 완료, 세마포어 반납\n' +
+        '[종료] fetch(5) - 완료, 세마포어 반납',
       realWorldUsage:
         '실제 크롤링 시스템에서 대상 사이트의 robots.txt와 초당 요청 제한을 지키기 위해 Semaphore로 동시 요청 수를 제어해요.',
       pitfall: '세마포어 값을 너무 높게 설정하면 제한 효과가 사라지고, 너무 낮게 하면 작업 처리량이 불필요하게 느려져요.',

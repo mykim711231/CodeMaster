@@ -20,7 +20,7 @@ public class PaymentService {
 
   @Retry(name = "paymentRetry")
   public String pay(String orderId) {
-    System.out.println("[실행] pay 호출 — orderId: " + orderId);
+    System.out.println("[실행] pay 호출 - orderId: " + orderId);
     return paymentClient.charge(orderId);
   }
 }`,
@@ -41,7 +41,7 @@ public class PaymentService {
         '잠깐의 네트워크 흔들림이나 외부 서비스의 순간적인 부하 때문에 ' +
         '사용자에게 실패를 보여주지 않고, 자동 재시도로 성공률을 높이려고요.',
       expectedOutput:
-        '[실행] pay 호출 — orderId: 1001\n' +
+        '[실행] pay 호출 - orderId: 1001\n' +
         '(첫 호출 실패 → 500ms 후 재시도 → 성공)\n' +
         '"payment_success"',
       realWorldUsage:
@@ -112,12 +112,12 @@ public class OrderService {
 
   @CircuitBreaker(name = "orderCb", fallbackMethod = "cachedOrder")
   public Order getOrder(Long id) {
-    System.out.println("[실행] getOrder 호출 — id: " + id);
+    System.out.println("[실행] getOrder 호출 - id: " + id);
     return orderClient.fetch(id);
   }
 
   public Order cachedOrder(Long id, Throwable t) {
-    System.out.println("[폴백] 캐시 조회 — id: " + id + ", cause: " + t.getMessage());
+    System.out.println("[폴백] 캐시 조회 - id: " + id + ", cause: " + t.getMessage());
     return orderCache.get(id);
   }
 }`,
@@ -138,9 +138,9 @@ public class OrderService {
         '외부 서비스가 완전히 죽었을 때, 계속 요청을 보내서 내 서비스까지 쓰레드가 소진되는 연쇄 장애를 막고, ' +
         '캐시 데이터라도 반환해 부분적인 서비스를 유지하려고요.',
       expectedOutput:
-        '[실행] getOrder 호출 — id: 5001\n' +
+        '[실행] getOrder 호출 - id: 5001\n' +
         '(orderClient.fetch 실패 → 회로 OPEN)\n' +
-        '[폴백] 캐시 조회 — id: 5001, cause: ConnectException: Connection refused',
+        '[폴백] 캐시 조회 - id: 5001, cause: ConnectException: Connection refused',
       realWorldUsage:
         '실제 대규모 쇼핑몰에서 "상품 상세" API가 상품 서비스 장애로 응답 불가일 때, ' +
         'CircuitBreaker가 OPEN되면 CDN 캐시의 상품 정보로 폴백해 빈 화면 대신 최소한의 정보라도 보여줘요.',
@@ -209,7 +209,7 @@ public class ReportService {
 
   @Bulkhead(name = "reportBh")
   public Report generate(String region) {
-    System.out.println("[실행] generate — region: " + region);
+    System.out.println("[실행] generate - region: " + region);
     return reportBuilder.build(region);
   }
 }`,
@@ -230,7 +230,7 @@ public class ReportService {
         '느린 작업 하나가 스레드 풀 전체를 점유해 다른 API가 응답 불능이 되는 것을 막으려고요. ' +
         'CPU·메모리가 여유 있어도 스레드를 특정 작업이 독점하면 서비스 전체가 멈춘 것처럼 보여요.',
       expectedOutput:
-        '[실행] generate — region: asia\n' +
+        '[실행] generate - region: asia\n' +
         '(동시 5개까지만 실행, 6번째는 제한초과로 예외 발생 or 대기)',
       realWorldUsage:
         '실제 엑셀 다운로드 API에 Bulkhead(최대 5)를 걸어두면, ' +
@@ -261,7 +261,7 @@ public class ExportService {
 
   @Bulkhead(name = "exportBh", type = Bulkhead.Type.THREADPOOL)
   public CompletableFuture<File> export(String range) {
-    System.out.println("[실행] export — range: " + range);
+    System.out.println("[실행] export - range: " + range);
     File result = exporter.run(range);
     return CompletableFuture.completedFuture(result);
   }
@@ -283,7 +283,7 @@ public class ExportService {
         '오래 걸리는 작업이 HTTP 요청을 처리하는 주요 스레드 풀을 붙잡지 않게 ' +
         '별도 풀로 완전히 격리해, 무거운 작업 중에도 나머지 API가 정상 응답하게 하려고요.',
       expectedOutput:
-        '[실행] export — range: 2026-Q2\n' +
+        '[실행] export - range: 2026-Q2\n' +
         '(별도 스레드 풀에서 실행, 호출 스레드는 즉시 반환. 결과는 CompletableFuture를 통해 비동기 전달)',
       realWorldUsage:
         '실제 주간 리포트 이메일 발송 시스템에서 Bulkhead.THREADPOOL로 export 풀을 격리해두면, ' +
@@ -312,12 +312,12 @@ public class SignupService {
 
   @RateLimiter(name = "signupRl", fallbackMethod = "busy")
   public String signup(String email) {
-    System.out.println("[실행] signup — email: " + email);
+    System.out.println("[실행] signup - email: " + email);
     return userService.create(email);
   }
 
   public String busy(String email, Throwable t) {
-    System.out.println("[폴백] 요청 초과 — email: " + email);
+    System.out.println("[폴백] 요청 초과 - email: " + email);
     return "잠시 후 다시 가입해 주세요";
   }
 }`,
@@ -338,9 +338,9 @@ public class SignupService {
         '회원가입 API에 초당 5건 제한을 걸어, 악성 봇이 1초에 1000개 계정을 생성하는 걸 막고 ' +
         'SMS 발송 API의 과도한 호출로 인증 비용이 폭증하는 걸 방지하려고요.',
       expectedOutput:
-        '[실행] signup — email: alice@test.com\n' +
+        '[실행] signup - email: alice@test.com\n' +
         '(초당 5건 제한 내: 정상 처리)\n' +
-        '[폴백] 요청 초과 — email: bob@test.com\n' +
+        '[폴백] 요청 초과 - email: bob@test.com\n' +
         '(제한 초과: "잠시 후 다시 가입해 주세요" 반환)',
       realWorldUsage:
         '실제 SMS 인증 API에 RateLimiter(초당 10건)를 걸면, 한 번에 1000건 문자 발송을 시도하는 공격을 받아도 ' +
@@ -371,7 +371,7 @@ public class SearchService {
 
   @TimeLimiter(name = "searchTl")
   public CompletableFuture<List<Item>> search(String q) {
-    System.out.println("[실행] search — query: " + q);
+    System.out.println("[실행] search - query: " + q);
     return CompletableFuture.supplyAsync(() -> searchClient.query(q));
   }
 }`,
@@ -392,7 +392,7 @@ public class SearchService {
         '외부 검색 엔진이 몇 초 동안 응답이 없을 때 무한정 기다리는 걸 끊어내서, ' +
         '호출 스레드가 계속 점유되는 걸 막으려고요.',
       expectedOutput:
-        '[실행] search — query: Spring Boot\n' +
+        '[실행] search - query: Spring Boot\n' +
         '(searchClient 응답이 2초 이내 도착 → 정상 CompletableFuture 반환)\n' +
         '(2초 초과 → TimeoutException 발생)',
       realWorldUsage:
@@ -426,12 +426,12 @@ public class ProductClient {
   @CircuitBreaker(name = "pCb", fallbackMethod = "fallback")
   @Bulkhead(name = "pBh")
   public String call(String id) {
-    System.out.println("[실행] call — id: " + id);
+    System.out.println("[실행] call - id: " + id);
     return productService.invoke(id);
   }
 
   public String fallback(String id, Throwable t) {
-    System.out.println("[폴백] 모두 실패 — id: " + id + ", cause: " + t.getMessage());
+    System.out.println("[폴백] 모두 실패 - id: " + id + ", cause: " + t.getMessage());
     return "cached:" + id;
   }
 }`,
@@ -452,10 +452,10 @@ public class ProductClient {
         '네트워크 장애(Retry), 지속 장애(CircuitBreaker), 자원 고갈(Bulkhead)이라는 ' +
         '서로 다른 유형의 위협을 한 번의 호출에 모두 대비하려고요.',
       expectedOutput:
-        '[실행] call — id: P001\n' +
+        '[실행] call - id: P001\n' +
         '(1차: productService.invoke 실패 → Retry 재시도)\n' +
         '(2차: 재시도도 실패 → CircuitBreaker 폴백)\n' +
-        '[폴백] 모두 실패 — id: P001, cause: SocketTimeoutException',
+        '[폴백] 모두 실패 - id: P001, cause: SocketTimeoutException',
       realWorldUsage:
         '실제 은행 API를 호출하는 서비스에서 Retry(3회, 네트워크 대비) + CircuitBreaker(10회 중 50% 실패 시 OPEN, 서비스 장애 대비) + Bulkhead(동시 10건 제한, 스레드 소진 대비) 조합이 표준이에요.',
       pitfall:
@@ -618,7 +618,7 @@ public class OrderFetcher {
   public Order fetch(String serviceId, Long id) {
     ServiceInstance inst = discoveryClient.getInstances(serviceId).get(0);
     String url = inst.getUri().toString() + "/orders/" + id;
-    System.out.println("[실행] fetch — service: " + serviceId + ", url: " + url);
+    System.out.println("[실행] fetch - service: " + serviceId + ", url: " + url);
     return restTemplate.getForObject(url, Order.class);
   }
 }`,
@@ -639,7 +639,7 @@ public class OrderFetcher {
         '서비스의 물리적 위치(IP:Port)를 모르는 상태에서, ' +
         '논리적 이름만으로 실제 호출 주소를 런타임에 동적으로 찾으려고요.',
       expectedOutput:
-        '[실행] fetch — service: order-service, url: http://192.168.1.10:8080/orders/1001\n' +
+        '[실행] fetch - service: order-service, url: http://192.168.1.10:8080/orders/1001\n' +
         '(Order 객체 반환 성공)',
       realWorldUsage:
         '실제 MSA 환경에서 주문 서비스가 배송 서비스를 호출할 때 DiscoveryClient로 인스턴스를 찾고, ' +
@@ -779,7 +779,7 @@ public class ConfigServerApplication {
   {
     id: 'resil-saga-choreography',
     lang: 'java',
-    title: 'Saga (이벤트 기반 — Choreography)',
+    title: 'Saga (이벤트 기반 - Choreography)',
     file: 'StockListener.java',
     code: `import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -798,10 +798,10 @@ public class StockListener {
 
   @KafkaListener(topics = "order-created", groupId = "stock")
   public void onOrderCreated(OrderCreatedEvent evt) {
-    System.out.println("[이벤트] order-created 수신 — orderId: " + evt.getOrderId());
+    System.out.println("[이벤트] order-created 수신 - orderId: " + evt.getOrderId());
     stockService.reserve(evt.getOrderId(), evt.getItems());
     kafkaTemplate.send("stock-reserved", evt.getOrderId());
-    System.out.println("[이벤트] stock-reserved 발행 — orderId: " + evt.getOrderId());
+    System.out.println("[이벤트] stock-reserved 발행 - orderId: " + evt.getOrderId());
   }
 }`,
     explain: {
@@ -821,9 +821,9 @@ public class StockListener {
         '중앙 지휘자 서비스에 모든 Saga 로직이 집중되는 병목을 방지하고, ' +
         '서비스들이 이벤트라는 계약만 공유한 채 느슨하게 결합되게 하려고요.',
       expectedOutput:
-        '[이벤트] order-created 수신 — orderId: 5001\n' +
+        '[이벤트] order-created 수신 - orderId: 5001\n' +
         '(stockService.reserve 실행)\n' +
-        '[이벤트] stock-reserved 발행 — orderId: 5001',
+        '[이벤트] stock-reserved 발행 - orderId: 5001',
       realWorldUsage:
         '실제 Uber의 주문 생성 Saga에서 주문 생성 → 결제 → 매칭 → 운행 완료까지의 흐름을 ' +
         'Choreography 방식의 이벤트 체인으로 구현하고, 각 단계 실패 시 보상 이벤트로 롤백해요.',
@@ -835,7 +835,7 @@ public class StockListener {
   {
     id: 'resil-saga-orchestrator',
     lang: 'java',
-    title: 'Saga (지휘자 — Orchestrator)',
+    title: 'Saga (지휘자 - Orchestrator)',
     file: 'OrderSaga.java',
     code: `import org.springframework.stereotype.Component;
 
@@ -853,15 +853,15 @@ public class OrderSaga {
   }
 
   public void execute(Order order) {
-    System.out.println("[실행] Saga 시작 — orderId: " + order.getId());
+    System.out.println("[실행] Saga 시작 - orderId: " + order.getId());
     paymentClient.charge(order.getId());
     inventoryClient.reserve(order.getItems());
     shippingClient.schedule(order.getId());
-    System.out.println("[완료] Saga 성공 — orderId: " + order.getId());
+    System.out.println("[완료] Saga 성공 - orderId: " + order.getId());
   }
 
   public void compensate(Order order) {
-    System.out.println("[보상] Saga 롤백 — orderId: " + order.getId());
+    System.out.println("[보상] Saga 롤백 - orderId: " + order.getId());
     shippingClient.cancel(order.getId());
     inventoryClient.release(order.getItems());
     paymentClient.refund(order.getId());
@@ -884,11 +884,11 @@ public class OrderSaga {
         '복잡한 비즈니스 흐름의 단계 순서와 보상 로직을 한 곳에서 명시적으로 통제해, ' +
         '분산되어 있으면 알기 어려운 전체 흐름을 코드 한 곳에서 파악하려고요.',
       expectedOutput:
-        '[실행] Saga 시작 — orderId: 5001\n' +
+        '[실행] Saga 시작 - orderId: 5001\n' +
         '(charge 성공 → reserve 성공 → schedule 성공)\n' +
-        '[완료] Saga 성공 — orderId: 5001\n' +
+        '[완료] Saga 성공 - orderId: 5001\n' +
         '// 만약 reserve에서 실패:\n' +
-        '[보상] Saga 롤백 — orderId: 5001\n' +
+        '[보상] Saga 롤백 - orderId: 5001\n' +
         '(cancel → release → refund 순으로 역실행)',
       realWorldUsage:
         '실제 여행 예약 시스템에서 "호텔 예약 → 렌터카 예약 → 결제" Saga를 Orchestrator로 구현하고, ' +
@@ -920,10 +920,10 @@ public class OrderCompensateListener {
 
   @KafkaListener(topics = "payment-failed", groupId = "order")
   public void onPaymentFailed(Long orderId) {
-    System.out.println("[보상] payment-failed 수신 — orderId: " + orderId);
+    System.out.println("[보상] payment-failed 수신 - orderId: " + orderId);
     orderService.cancel(orderId);
     kafkaTemplate.send("order-cancelled", orderId);
-    System.out.println("[이벤트] order-cancelled 발행 — orderId: " + orderId);
+    System.out.println("[이벤트] order-cancelled 발행 - orderId: " + orderId);
   }
 }`,
     explain: {
@@ -943,9 +943,9 @@ public class OrderCompensateListener {
         '분산 환경에서 앞 단계가 실패했을 때 뒷 단계의 데이터를 정리해 ' +
         '전체 시스템을 일관된 상태로 되돌리려고요.',
       expectedOutput:
-        '[보상] payment-failed 수신 — orderId: 5001\n' +
+        '[보상] payment-failed 수신 - orderId: 5001\n' +
         '(orderService.cancel 실행 → 주문 상태 CANCELED로 변경)\n' +
-        '[이벤트] order-cancelled 발행 — orderId: 5001',
+        '[이벤트] order-cancelled 발행 - orderId: 5001',
       realWorldUsage:
         '실제 이커머스 Saga에서 결제 실패 후 payment-failed → order-cancelled → stock-released → coupon-restored 순서로 ' +
         '각 보상 이벤트가 연쇄 발행되며, 결제 한 건 실패가 전체 Saga를 안전하게 롤백시켜요.',

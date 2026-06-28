@@ -149,7 +149,7 @@ public class OrderService {
   private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
   public void placeOrder(Long orderId) {
-    System.out.println("[실행] placeOrder 호출 — orderId: " + orderId);
+    System.out.println("[실행] placeOrder 호출 - orderId: " + orderId);
     log.info("주문 생성 orderId={}", orderId);
     try {
       doCharge(orderId);
@@ -179,7 +179,7 @@ public class OrderService {
         '로그 구현체(Logback, Log4j2)와 코드를 분리해 언제든 교체할 수 있게 하고, ' +
         '{} 자리표시자로 문자열 결합 비용을 없애 성능을 최적화하려고요.',
       expectedOutput:
-        '[실행] placeOrder 호출 — orderId: 1001\n' +
+        '[실행] placeOrder 호출 - orderId: 1001\n' +
         'INFO  OrderService - 주문 생성 orderId=1001\n' +
         'ERROR OrderService - 결제 실패 orderId=1001\n' +
         'java.lang.RuntimeException: PG timeout\n' +
@@ -203,7 +203,7 @@ public class OrderService {
 public class PaymentService {
 
   public void charge(Long orderId, int amount) {
-    System.out.println("[실행] charge 호출 — orderId: " + orderId + ", amount: " + amount);
+    System.out.println("[실행] charge 호출 - orderId: " + orderId + ", amount: " + amount);
     log.debug("결제 시작 orderId={} amount={}", orderId, amount);
     log.info("결제 완료 orderId={}", orderId);
   }
@@ -225,7 +225,7 @@ public class PaymentService {
         'Logger 선언 보일러플레이트 코드를 없애서 생산성을 높이고, ' +
         '코드 리뷰 시 핵심 비즈니스 로직에 집중할 수 있게 하려고요.',
       expectedOutput:
-        '[실행] charge 호출 — orderId: 1002, amount: 50000\n' +
+        '[실행] charge 호출 - orderId: 1002, amount: 50000\n' +
         'DEBUG PaymentService - 결제 시작 orderId=1002 amount=50000\n' +
         'INFO  PaymentService - 결제 완료 orderId=1002',
       realWorldUsage:
@@ -247,7 +247,7 @@ public class PaymentService {
 public class UserService {
 
   public void login(String userId) {
-    System.out.println("[실행] login 호출 — userId: " + userId);
+    System.out.println("[실행] login 호출 - userId: " + userId);
     log.trace("login 진입 userId={}", userId);
     log.debug("조회 쿼리 실행 userId={}", userId);
     log.info("로그인 성공 userId={}", userId);
@@ -272,7 +272,7 @@ public class UserService {
         '문제 발생 시에만 DEBUG 이하를 동적으로 켜서 상세 원인을 추적하려고요.',
       expectedOutput:
         '(INFO 이상만 출력하도록 설정된 경우):\n' +
-        '[실행] login 호출 — userId: user001\n' +
+        '[실행] login 호출 - userId: user001\n' +
         'INFO  UserService - 로그인 성공 userId=user001\n' +
         'WARN  UserService - 비밀번호 3회 실패 userId=user001\n' +
         'ERROR UserService - 인증 서비스 응답 없음 userId=user001',
@@ -543,12 +543,12 @@ public class OrderClient {
   private final RestClient restClient;
 
   public OrderClient(RestClient.Builder builder) {
-    System.out.println("[생성] OrderClient 빈 생성 — baseUrl: http://payment/api");
+    System.out.println("[생성] OrderClient 빈 생성 - baseUrl: http://payment/api");
     this.restClient = builder.baseUrl("http://payment/api").build();
   }
 
   public void pay(Long orderId) {
-    System.out.println("[실행] pay 호출 — orderId: " + orderId);
+    System.out.println("[실행] pay 호출 - orderId: " + orderId);
     restClient.post()
       .uri("/charge/" + orderId)
       .retrieve()
@@ -572,8 +572,8 @@ public class OrderClient {
         '분산 추적 헤더를 매 서비스, 매 호출마다 수동으로 복사하는 번거로움을 없애고, ' +
         '실수로 헤더를 빼먹어 추적이 끊기는 상황을 원천 차단하려고요.',
       expectedOutput:
-        '[생성] OrderClient 빈 생성 — baseUrl: http://payment/api\n' +
-        '[실행] pay 호출 — orderId: 1001\n' +
+        '[생성] OrderClient 빈 생성 - baseUrl: http://payment/api\n' +
+        '[실행] pay 호출 - orderId: 1001\n' +
         'POST http://payment/api/charge/1001 (헤더에 b3: a1b2c3d4... 자동 포함)',
       realWorldUsage:
         '실제 스프링 클라우드 환경에서 Order Service → Payment Service → Notification Service 순서로 호출이 연쇄될 때, ' +
@@ -685,7 +685,7 @@ public class PaymentService {
     try {
       doRemoteCharge(orderId);
     } catch (Exception e) {
-      System.out.println("[에러] 결제 실패 — orderId: " + orderId);
+      System.out.println("[에러] 결제 실패 - orderId: " + orderId);
       log.error("결제 실패 orderId={}", orderId, e);
       Sentry.withScope(scope -> {
         scope.setTag("orderId", String.valueOf(orderId));
@@ -716,7 +716,7 @@ public class PaymentService {
         '에러 메시지 한 줄만으로는 원인 파악이 어려울 때, ' +
         '에러 발생 당시의 주문 번호·사용자 ID·재시도 횟수 같은 문맥 정보를 함께 보내려고요.',
       expectedOutput:
-        '[에러] 결제 실패 — orderId: 1003\n' +
+        '[에러] 결제 실패 - orderId: 1003\n' +
         'ERROR PaymentService - 결제 실패 orderId=1003\n' +
         'java.lang.RuntimeException: PG server unavailable\n' +
         '(Sentry 대시보드에 orderId=1003 태그와 함께 이벤트 등록됨)',
@@ -739,7 +739,7 @@ public class PaymentService {
 public class OrderService {
 
   public void placeOrder(Long orderId, String userId, int amount) {
-    System.out.println("[실행] placeOrder — orderId: " + orderId + ", userId: " + userId + ", amount: " + amount);
+    System.out.println("[실행] placeOrder - orderId: " + orderId + ", userId: " + userId + ", amount: " + amount);
     log.info("event=order_placed order_id={} user_id={} amount={}",
         orderId, userId, amount);
 
@@ -765,7 +765,7 @@ public class OrderService {
         '로그 검색 시 "event=order_placed amount>100000" 같은 구조화된 쿼리로 ' +
         '비정형 텍스트 검색보다 훨씬 빠르게 원하는 로그만 골라내려고요.',
       expectedOutput:
-        '[실행] placeOrder — orderId: 2001, userId: userA, amount: 2000000\n' +
+        '[실행] placeOrder - orderId: 2001, userId: userA, amount: 2000000\n' +
         'INFO  OrderService - event=order_placed order_id=2001 user_id=userA amount=2000000\n' +
         'WARN  OrderService - event=large_order amount=2000000 order_id=2001',
       realWorldUsage:
@@ -848,7 +848,7 @@ public class OrderMetrics {
 
   public void onOrderPlaced() {
     ordersPlaced.increment();
-    System.out.println("[실행] 주문 카운터 증가 — 현재 근사값: " + ordersPlaced.count());
+    System.out.println("[실행] 주문 카운터 증가 - 현재 근사값: " + ordersPlaced.count());
   }
 }`,
     explain: {
@@ -869,7 +869,7 @@ public class OrderMetrics {
         '모니터링 시스템에서 주문량·결제율을 실시간으로 추적하고 이상 급감 시 알람을 받으려고요.',
       expectedOutput:
         '[등록] 커스텀 메트릭 codemaster.orders.placed 등록\n' +
-        '[실행] 주문 카운터 증가 — 현재 근사값: 3.0\n' +
+        '[실행] 주문 카운터 증가 - 현재 근사값: 3.0\n' +
         'GET /actuator/metrics/codemaster.orders.placed → {"measurements":[{"statistic":"COUNT","value":3.0}]}',
       realWorldUsage:
         '실제 서비스에서 주문 카운터를 Prometheus+Grafana로 시각화하면, ' +

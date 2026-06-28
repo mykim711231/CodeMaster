@@ -23,9 +23,9 @@ public class UserController {
 
   @PostMapping
   public ResponseEntity<UserResponse> create(@RequestBody UserRequest req) {
-    System.out.println("[실행] POST /api/users — name: " + req.name());
+    System.out.println("[실행] POST /api/users - name: " + req.name());
     UserResponse response = userService.create(req);
-    System.out.println("[결과] 사용자 생성 완료 — id: " + response.id());
+    System.out.println("[결과] 사용자 생성 완료 - id: " + response.id());
     return ResponseEntity.ok(response);
   }
 }`,
@@ -44,8 +44,8 @@ public class UserController {
       ],
       expectedOutput:
         'POST /api/users {"name":"kim", "email":"kim@test.com"}:\n' +
-        '[실행] POST /api/users — name: kim\n' +
-        '[결과] 사용자 생성 완료 — id: 1',
+        '[실행] POST /api/users - name: kim\n' +
+        '[결과] 사용자 생성 완료 - id: 1',
       realWorldUsage:
         '실제 프로젝트에서 모든 API의 진입점이 컨트롤러예요. 모바일 앱·웹 프론트엔드·외부 연동 시스템이 보내는 HTTP 요청이 가장 먼저 도착하는 곳이에요. 컨트롤러가 요청 데이터의 유효성을 먼저 검증하고(@Valid), 인증 정보를 확인한 뒤(@PreAuthorize) 서비스 계층에 넘기는 식으로 구성돼요.',
       why: 'HTTP 요청/응답 처리라는 외부 통신 책임을 분리해서, 비즈니스 로직이 HTTP에 오염되지 않게 하려고요.',
@@ -70,10 +70,10 @@ public class UserService {
 
   @Transactional
   public UserResponse create(UserRequest req) {
-    System.out.println("[실행] UserService.create() — name: " + req.name());
+    System.out.println("[실행] UserService.create() - name: " + req.name());
     User user = User.create(req.name(), req.email());
     User saved = userRepository.save(user);
-    System.out.println("[결과] DB 저장 완료 — id: " + saved.getId());
+    System.out.println("[결과] DB 저장 완료 - id: " + saved.getId());
     return UserResponse.from(saved);
   }
 }`,
@@ -92,8 +92,8 @@ public class UserService {
       ],
       expectedOutput:
         'UserService.create() 호출 시:\n' +
-        '[실행] UserService.create() — name: kim\n' +
-        '[결과] DB 저장 완료 — id: 1',
+        '[실행] UserService.create() - name: kim\n' +
+        '[결과] DB 저장 완료 - id: 1',
       realWorldUsage:
         '실제 프로젝트에서 서비스 계층은 가장 두꺼운 계층이에요. 회원가입·주문·결제·배송 같은 모든 비즈니스 유스케이스가 이 계층에 구현돼요. 서비스 하나가 다른 서비스를 호출하는 식으로 복잡한 비즈니스 흐름을 조립하고, @Transactional로 데이터 정합성을 보장해요. 테스트도 이 계층에 가장 많이 작성돼요.',
       why: '비즈니스 규칙을 한 곳에 모아서 재사용과 테스트를 쉽게 하고, 트랜잭션으로 데이터 정합성을 보장하려고요.',
@@ -121,7 +121,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
       concept:
         '리포지토리(Repository)는 창고 관리자와 같은 역할이에요. 데이터를 넣고, 빼고, 찾는 일만 담당하고, 비즈니스 로직에는 관여하지 않아요. ' +
         'JpaRepository를 extends하면 save(), findById(), deleteById() 같은 기본 CRUD 메서드가 자동으로 제공돼요. ' +
-        '가장 강력한 점은 메서드 이름만으로 쿼리를 자동 생성해준다는 거예요 — findByEmail은 "email로 찾아줘"라는 의미 그대로 SELECT 쿼리가 생성돼요. ' +
+        '가장 강력한 점은 메서드 이름만으로 쿼리를 자동 생성해준다는 거예요 - findByEmail은 "email로 찾아줘"라는 의미 그대로 SELECT 쿼리가 생성돼요. ' +
         '리포지토리는 인터페이스만 정의하면 실제 구현체는 스프링이 런타임에 자동 생성해줘서, 개발자는 SQL 대신 자바 메서드로 데이터 접근을 표현할 수 있어요.',
       terms: [
         { t: 'JpaRepository<User, Long>', d: 'User 엔티티와 Long 타입 ID에 대한 기본 CRUD를 제공하는 스프링 데이터 인터페이스예요.' },
@@ -207,7 +207,7 @@ interface SaveUserPort {
         '포트(Port)는 헥사고날 아키텍처에서 도메인(성)과 외부 세계를 연결하는 성문이에요. ' +
         'LoadUserPort는 "사용자를 조회하겠다"는 약속만 정의하고, 실제로 JPA로 할지 REST API로 할지는 이 인터페이스를 구현하는 어댑터가 결정해요. ' +
         '도메인 안에서는 LoadUserPort 인터페이스만 보고 코드를 작성해서, "데이터가 어떻게 저장되는지"에 대한 의존성을 완전히 제거해요. ' +
-        '포트를 조회용(LoadUserPort)과 저장용(SaveUserPort)으로 나누는 건 ISP(인터페이스 분리 원칙)를 적용한 거예요 — 클라이언트는 자신이 사용하지 않는 메서드에 의존하지 않아야 해요.',
+        '포트를 조회용(LoadUserPort)과 저장용(SaveUserPort)으로 나누는 건 ISP(인터페이스 분리 원칙)를 적용한 거예요 - 클라이언트는 자신이 사용하지 않는 메서드에 의존하지 않아야 해요.',
       terms: [
         { t: 'LoadUserPort', d: '사용자 조회를 위한 아웃바운드 포트예요. 도메인이 외부 저장소에 "데이터를 달라"고 요청할 때 쓰는 약속이에요.' },
         { t: 'SaveUserPort', d: '사용자 저장을 위한 아웃바운드 포트예요. 도메인이 외부 저장소에 "데이터를 저장해줘"라고 요청할 때 쓰는 약속이에요.' },
@@ -245,15 +245,15 @@ public class JpaUserAdapter implements LoadUserPort, SaveUserPort {
 
   @Override
   public Optional<User> findById(Long id) {
-    System.out.println("[실행] JPA 어댑터 — findById: " + id);
+    System.out.println("[실행] JPA 어댑터 - findById: " + id);
     Optional<User> user = repo.findById(id).map(UserJpaEntity::toDomain);
-    System.out.println("[결과] 조회 완료 — " + (user.isPresent() ? "찾음" : "없음"));
+    System.out.println("[결과] 조회 완료 - " + (user.isPresent() ? "찾음" : "없음"));
     return user;
   }
 
   @Override
   public List<User> findAllActive() {
-    System.out.println("[실행] JPA 어댑터 — findAllActive");
+    System.out.println("[실행] JPA 어댑터 - findAllActive");
     return repo.findAll().stream()
         .map(UserJpaEntity::toDomain)
         .toList();
@@ -261,23 +261,23 @@ public class JpaUserAdapter implements LoadUserPort, SaveUserPort {
 
   @Override
   public Long save(User user) {
-    System.out.println("[실행] JPA 어댑터 — save: " + user.getName());
+    System.out.println("[실행] JPA 어댑터 - save: " + user.getName());
     UserJpaEntity entity = UserJpaEntity.from(user);
     Long id = repo.save(entity).getId();
-    System.out.println("[결과] 저장 완료 — id: " + id);
+    System.out.println("[결과] 저장 완료 - id: " + id);
     return id;
   }
 
   @Override
   public void update(User user) {
-    System.out.println("[실행] JPA 어댑터 — update: " + user.getId());
+    System.out.println("[실행] JPA 어댑터 - update: " + user.getId());
     repo.save(UserJpaEntity.from(user));
   }
 }`,
     explain: {
       concept:
         '어댑터(Adapter)는 포트라는 성문을 실제로 통과하는 다리예요. JpaUserAdapter는 LoadUserPort와 SaveUserPort를 구현해서, 포트가 정의한 약속을 JPA라는 기술로 실제 수행해요. ' +
-        '도메인 객체(User)와 JPA 엔티티(UserJpaEntity) 사이의 변환(toDomain/from)은 어댑터의 책임이에요 — 도메인은 JPA의 @Entity 같은 어노테이션을 전혀 몰라요. ' +
+        '도메인 객체(User)와 JPA 엔티티(UserJpaEntity) 사이의 변환(toDomain/from)은 어댑터의 책임이에요 - 도메인은 JPA의 @Entity 같은 어노테이션을 전혀 몰라요. ' +
         '포팅하려면 LoadUserPort의 모든 추상 메서드를 빠짐없이 @Override 해야 컴파일이 통과해요. 하나라도 누락되면 컴파일 에러로 즉시 알려줘요. ' +
         '@Component로 스프링 빈에 등록해서, 생성자 주입으로 UserJpaRepository를 받아 실제 DB 작업을 수행해요.',
       terms: [
@@ -289,11 +289,11 @@ public class JpaUserAdapter implements LoadUserPort, SaveUserPort {
       ],
       expectedOutput:
         'findById(1L) 호출 시:\n' +
-        '[실행] JPA 어댑터 — findById: 1\n' +
-        '[결과] 조회 완료 — 찾음\n' +
+        '[실행] JPA 어댑터 - findById: 1\n' +
+        '[결과] 조회 완료 - 찾음\n' +
         'save(user) 호출 시:\n' +
-        '[실행] JPA 어댑터 — save: kim\n' +
-        '[결과] 저장 완료 — id: 1',
+        '[실행] JPA 어댑터 - save: kim\n' +
+        '[결과] 저장 완료 - id: 1',
       realWorldUsage:
         '실제 프로젝트에서 PostgreSQL에서 MongoDB로 DB 마이그레이션할 때, JpaUserAdapter만 MongoUserAdapter로 교체하고 모든 서비스·도메인 코드는 그대로 사용할 수 있어요. 어댑터 교체만으로 DB가 바뀌고, 나머지 코드는 포트 인터페이스만 바라보므로 전혀 영향을 받지 않아요.',
       why: '포트 인터페이스와 기술 구현체를 분리해서, 기술 변경 시 교체가 쉽고 테스트에서 가짜(Mock) 어댑터로 빠르게 대체하려고요.',
@@ -319,11 +319,11 @@ public class RegisterUserUseCase {
   }
 
   public Long execute(String name, String email, String rawPassword) {
-    System.out.println("[실행] RegisterUserUseCase — name: " + name);
+    System.out.println("[실행] RegisterUserUseCase - name: " + name);
     String hashed = encoder.encode(rawPassword);
     User user = User.create(name, email, hashed);
     Long id = saveUserPort.save(user);
-    System.out.println("[결과] 회원가입 완료 — id: " + id);
+    System.out.println("[결과] 회원가입 완료 - id: " + id);
     return id;
   }
 }`,
@@ -342,8 +342,8 @@ public class RegisterUserUseCase {
       ],
       expectedOutput:
         'execute("kim", "kim@test.com", "pass123") 호출 시:\n' +
-        '[실행] RegisterUserUseCase — name: kim\n' +
-        '[결과] 회원가입 완료 — id: 1',
+        '[실행] RegisterUserUseCase - name: kim\n' +
+        '[결과] 회원가입 완료 - id: 1',
       realWorldUsage:
         '실제 프로젝트에서 마이크로서비스의 각 API 엔드포인트가 하나의 유스케이스 클래스로 구현돼요. POST /users → RegisterUserUseCase, PATCH /users/{id}/email → ChangeEmailUseCase, DELETE /users/{id} → WithdrawUserUseCase. 각 유스케이스는 독립적이라 병렬 개발이 쉽고, 테스트도 유스케이스 하나만 Mocking하면 완료돼요.',
       why: '하나의 유스케이스가 하나의 비즈니스 흐름만 담당하게 해서, 코드 응집도는 높이고 변경 영향 범위는 최소화하려고요.',
@@ -359,13 +359,13 @@ public class RegisterUserUseCase {
 
 public record Email(String value) {
   public Email {
-    System.out.println("[검증] Email 생성 — value: " + value);
+    System.out.println("[검증] Email 생성 - value: " + value);
     Objects.requireNonNull(value, "이메일은 필수예요");
     if (!value.contains('@')) {
       throw new IllegalArgumentException("잘못된 이메일 형식이에요: " + value);
     }
     value = value.toLowerCase().trim();
-    System.out.println("[결과] Email 정규화 — " + value);
+    System.out.println("[결과] Email 정규화 - " + value);
   }
 
   public String domain() {
@@ -376,7 +376,7 @@ public record Email(String value) {
       concept:
         '값 객체(Value Object)는 "값 그 자체"가 신원인 불변 객체예요. 주민등록증처럼, 값이 같으면 같은 객체로 취급해요. ' +
         'record의 compact constructor(중괄호만 있는 생성자)에서 값의 유효성을 검증하고 정규화(소문자 변환·공백 제거)를 수행해요. ' +
-        '가장 큰 특징은 "잘못된 값이 아예 태어날 수 없다"는 점이에요 — new Email("not-an-email")은 생성 단계에서 즉시 예외가 발생해요. ' +
+        '가장 큰 특징은 "잘못된 값이 아예 태어날 수 없다"는 점이에요 - new Email("not-an-email")은 생성 단계에서 즉시 예외가 발생해요. ' +
         '이렇게 도메인 경계에서 값의 무결성을 보장하면, 나머지 코드에서는 Email이 항상 유효하다고 신뢰하고 쓸 수 있어요.',
       terms: [
         { t: 'record Email(String value)', d: '값 객체를 record로 정의해요. 필드는 자동 final이고 equals/hashCode가 값 기준으로 생성돼요.' },
@@ -387,10 +387,10 @@ public record Email(String value) {
       ],
       expectedOutput:
         'new Email("KIM@Test.com  ") 호출 시:\n' +
-        '[검증] Email 생성 — value: KIM@Test.com  \n' +
-        '[결과] Email 정규화 — kim@test.com\n\n' +
+        '[검증] Email 생성 - value: KIM@Test.com  \n' +
+        '[결과] Email 정규화 - kim@test.com\n\n' +
         'new Email("not-valid") 호출 시:\n' +
-        '[검증] Email 생성 — value: not-valid\n' +
+        '[검증] Email 생성 - value: not-valid\n' +
         '→ IllegalArgumentException: 잘못된 이메일 형식이에요: not-valid',
       realWorldUsage:
         '실제 프로젝트에서 Email, Money, PhoneNumber, Address 같은 도메인 개념을 모두 값 객체로 만들어요. new Email(invalidString)이 생성자에서 바로 터지기 때문에, 잘못된 이메일이 서비스 레이어까지 도달하는 일이 절대 없어요. 결제 금액을 나타내는 Money 값 객체는 통화 단위와 금액을 함께 담아서, "100원 + 5달러" 같은 실수를 컴파일 타임에 막아줘요.',
@@ -412,16 +412,16 @@ public class Order {
   private OrderStatus status = OrderStatus.DRAFT;
 
   public void addLine(ProductId productId, int qty, Money price) {
-    System.out.println("[실행] 주문 라인 추가 — product: " + productId + ", qty: " + qty);
+    System.out.println("[실행] 주문 라인 추가 - product: " + productId + ", qty: " + qty);
     if (status != OrderStatus.DRAFT) {
       throw new IllegalStateException("확정된 주문은 수정할 수 없어요");
     }
     lines.add(new OrderLine(productId, qty, price));
-    System.out.println("[결과] 라인 추가 완료 — 총 라인 수: " + lines.size());
+    System.out.println("[결과] 라인 추가 완료 - 총 라인 수: " + lines.size());
   }
 
   public void confirm() {
-    System.out.println("[실행] 주문 확정 — 현재 라인: " + lines.size());
+    System.out.println("[실행] 주문 확정 - 현재 라인: " + lines.size());
     if (lines.isEmpty()) {
       throw new IllegalStateException("주문이 비었어요");
     }
@@ -444,10 +444,10 @@ public class Order {
       ],
       expectedOutput:
         'addLine(pid, 2, price) 호출 시 (DRAFT 상태):\n' +
-        '[실행] 주문 라인 추가 — product: pid-1, qty: 2\n' +
-        '[결과] 라인 추가 완료 — 총 라인 수: 1\n' +
+        '[실행] 주문 라인 추가 - product: pid-1, qty: 2\n' +
+        '[결과] 라인 추가 완료 - 총 라인 수: 1\n' +
         'confirm() 호출 시:\n' +
-        '[실행] 주문 확정 — 현재 라인: 1\n' +
+        '[실행] 주문 확정 - 현재 라인: 1\n' +
         '[결과] 주문 확정 완료',
       realWorldUsage:
         '실제 전자상거래 프로젝트에서 Order 애그리거트가 대표적인 예예요. Order는 OrderLine, ShippingInfo, PaymentInfo를 자식으로 거느리고, 모든 변경은 Order.addLine(), Order.confirm(), Order.cancel()을 통해서만 일어나요. "배송 중인 주문은 취소할 수 없다" 같은 규칙도 Order 안에서 한 번에 강제할 수 있어요.',
@@ -470,7 +470,7 @@ public class DiscountCalculator {
   }
 
   public Money apply(Order order, List<Coupon> coupons) {
-    System.out.println("[실행] 할인 계산 시작 — 쿠폰 수: " + coupons.size());
+    System.out.println("[실행] 할인 계산 시작 - 쿠폰 수: " + coupons.size());
     Money total = order.subtotal();
     for (Coupon c : coupons) {
       total = policy.discount(total, c);
@@ -493,7 +493,7 @@ public class DiscountCalculator {
       ],
       expectedOutput:
         'apply(order, [coupon1, coupon2]) 호출 시:\n' +
-        '[실행] 할인 계산 시작 — 쿠폰 수: 2\n' +
+        '[실행] 할인 계산 시작 - 쿠폰 수: 2\n' +
         '[결과] 할인 후 금액: 8500원',
       realWorldUsage:
         '실제 프로젝트에서 할인·배송비·마일리지 적립 같은 정책이 도메인 서비스로 구현돼요. 특히 여러 애그리거트가 얽힌 로직(주문과 쿠폰, 회원 등급을 동시에 고려하는 할인 계산)은 어느 한 애그리거트에 넣기 어려워서 도메인 서비스가 최적의 선택이에요.',
@@ -515,7 +515,7 @@ public interface OrderRepository {
   List<Order> findByCustomer(CustomerId customerId);
 
   default Order getById(OrderId id) {
-    System.out.println("[실행] OrderRepository.getById — id: " + id);
+    System.out.println("[실행] OrderRepository.getById - id: " + id);
     Order order = findById(id)
         .orElseThrow(() -> new OrderNotFoundException(id));
     System.out.println("[결과] 주문 조회 완료");
@@ -525,8 +525,8 @@ public interface OrderRepository {
     explain: {
       concept:
         'DDD의 리포지토리(Repository)는 도메인이 아는 유일한 창고 접근 방식이에요. ' +
-        'JpaRepository와 달리, 이 리포지토리 인터페이스는 JPA나 SQL에 대한 어떤 힌트도 없어요 — 그냥 "저장하고 찾는다"는 약속만 있을 뿐이에요. ' +
-        '애그리거트 루트(Order) 단위로 저장·조회하는 게 핵심이에요. OrderLine을 따로 저장하는 메서드는 없어요 — 애그리거트가 항상 통째로 저장돼야 해요. ' +
+        'JpaRepository와 달리, 이 리포지토리 인터페이스는 JPA나 SQL에 대한 어떤 힌트도 없어요 - 그냥 "저장하고 찾는다"는 약속만 있을 뿐이에요. ' +
+        '애그리거트 루트(Order) 단위로 저장·조회하는 게 핵심이에요. OrderLine을 따로 저장하는 메서드는 없어요 - 애그리거트가 항상 통째로 저장돼야 해요. ' +
         'default 메서드로 getById() 같은 편의 메서드를 인터페이스에 바로 정의할 수 있어요. findById() 결과가 없으면 예외를 던지는 공통 패턴을 캡슐화했어요.',
       terms: [
         { t: 'OrderRepository (인터페이스)', d: '도메인 모델에 정의된 순수한 저장소 약속이에요. 어떤 기술(JPA, Mongo)에도 의존하지 않아요.' },
@@ -536,10 +536,10 @@ public interface OrderRepository {
         { t: 'OrderNotFoundException', d: '도메인에 특화된 커스텀 예외예요. 기술 예외(JPA EntityNotFoundException)를 도메인 예외로 감싸요.' },
       ],
       expectedOutput:
-        'getById(orderId) — 존재하는 경우:\n' +
-        '[실행] OrderRepository.getById — id: OrderId[123]\n' +
+        'getById(orderId) - 존재하는 경우:\n' +
+        '[실행] OrderRepository.getById - id: OrderId[123]\n' +
         '[결과] 주문 조회 완료\n\n' +
-        'getById(orderId) — 없는 경우:\n' +
+        'getById(orderId) - 없는 경우:\n' +
         '→ OrderNotFoundException: 주문을 찾을 수 없어요: OrderId[999]',
       realWorldUsage:
         '실제 프로젝트에서 도메인 리포지토리 인터페이스는 domain/ 패키지에, JPA 구현체는 adapter/out/persistence/ 패키지에 위치해요. 도메인 패키지에는 JPA 관련 import가 하나도 없어서, 도메인을 다른 프로젝트에서 재사용하거나 DB 기술을 교체할 때 완벽한 격리가 보장돼요.',
@@ -561,7 +561,7 @@ public record OrderConfirmed(
     Instant occurredAt
 ) {
   public static OrderConfirmed of(Order order) {
-    System.out.println("[이벤트] OrderConfirmed 생성 — orderId: " + order.getId());
+    System.out.println("[이벤트] OrderConfirmed 생성 - orderId: " + order.getId());
     return new OrderConfirmed(
         order.getId(),
         order.getCustomerId(),
@@ -573,8 +573,8 @@ public record OrderConfirmed(
     explain: {
       concept:
         '도메인 이벤트(Domain Event)는 "주문이 확정됐다" 같은 과거에 발생한 사건을 기록하는 불변 알림장이에요. ' +
-        '이벤트는 항상 과거형(OrderConfirmed, UserRegistered)으로 이름 지어요 — 이미 일어난 일이니까요. ' +
-        '이벤트를 발행하는 쪽(Order.confirm)은 누가 이벤트를 받을지 전혀 몰라요 — 이메일 발송·포인트 적립·통계 업데이트 같은 부수 효과가 이벤트 구독자에게 완전히 분리돼요. ' +
+        '이벤트는 항상 과거형(OrderConfirmed, UserRegistered)으로 이름 지어요 - 이미 일어난 일이니까요. ' +
+        '이벤트를 발행하는 쪽(Order.confirm)은 누가 이벤트를 받을지 전혀 몰라요 - 이메일 발송·포인트 적립·통계 업데이트 같은 부수 효과가 이벤트 구독자에게 완전히 분리돼요. ' +
         'occurredAt 같은 메타데이터는 이벤트가 언제 발생했는지 기록해서, 감사(audit)와 추적(tracing)을 가능하게 해줘요.',
       terms: [
         { t: 'record OrderConfirmed', d: '불변 이벤트 객체를 record로 정의해요. 이벤트는 절대 수정되지 않아요.' },
@@ -585,10 +585,10 @@ public record OrderConfirmed(
       ],
       expectedOutput:
         'OrderConfirmed.of(order) 호출 시:\n' +
-        '[이벤트] OrderConfirmed 생성 — orderId: OrderId[123]\n' +
+        '[이벤트] OrderConfirmed 생성 - orderId: OrderId[123]\n' +
         '→ OrderConfirmed[orderId=123, customerId=456, totalAmount=10000원, occurredAt=2025-06-29T...]',
       realWorldUsage:
-        '실제 프로젝트에서 주문 확정 이벤트가 발생하면, 이메일 서비스가 구독해서 구매 확인 메일을 보내고, 포인트 서비스가 구독해서 마일리지를 적립하고, 통계 서비스가 구독해서 실시간 매출 대시보드를 업데이트해요. 주문 서비스 코드는 이메일·포인트·통계에 대해 단 한 줄도 몰라요 — 완전한 느슨한 결합이에요.',
+        '실제 프로젝트에서 주문 확정 이벤트가 발생하면, 이메일 서비스가 구독해서 구매 확인 메일을 보내고, 포인트 서비스가 구독해서 마일리지를 적립하고, 통계 서비스가 구독해서 실시간 매출 대시보드를 업데이트해요. 주문 서비스 코드는 이메일·포인트·통계에 대해 단 한 줄도 몰라요 - 완전한 느슨한 결합이에요.',
       why: '핵심 비즈니스 로직(주문 확정)과 부수 효과(메일·알림·통계)를 분리해서, 시스템 간 결합도를 낮추고 확장성을 높이려고요.',
       pitfall: '이벤트 이름을 현재형(ConfirmOrder)이나 명령형으로 지으면, 이벤트인지 명령(Command)인지 혼동돼요. 이벤트는 항상 과거형이에요.',
     },
@@ -614,14 +614,14 @@ public class UserQueryService {
 
   @Transactional(readOnly = true)
   public List<UserSummary> search(String keyword, Pageable pageable) {
-    System.out.println("[실행] 사용자 검색 (읽기) — keyword: " + keyword);
+    System.out.println("[실행] 사용자 검색 (읽기) - keyword: " + keyword);
     List<UserSummary> results = repo.searchSummaries(keyword, pageable);
     System.out.println("[결과] 검색 결과: " + results.size() + "건");
     return results;
   }
 
   public UserDetail detail(Long id) {
-    System.out.println("[실행] 사용자 상세 (읽기) — id: " + id);
+    System.out.println("[실행] 사용자 상세 (읽기) - id: " + id);
     return repo.findDetail(id);
   }
 }`,
@@ -640,10 +640,10 @@ public class UserQueryService {
       ],
       expectedOutput:
         'search("kim", pageable) 호출 시:\n' +
-        '[실행] 사용자 검색 (읽기) — keyword: kim\n' +
+        '[실행] 사용자 검색 (읽기) - keyword: kim\n' +
         '[결과] 검색 결과: 5건\n' +
         'detail(1L) 호출 시:\n' +
-        '[실행] 사용자 상세 (읽기) — id: 1',
+        '[실행] 사용자 상세 (읽기) - id: 1',
       realWorldUsage:
         '실제 대규모 프로젝트에서 읽기와 쓰기가 아예 다른 DB를 바라보는 경우도 있어요. 쓰기는 정규화된 PostgreSQL, 읽기는 비정규화된 Elasticsearch를 쓰는 식이에요. 쓰기 쪽에서 도메인 이벤트를 발행하면, 읽기 쪽이 그 이벤트를 구독해서 자신의 읽기 전용 DB를 업데이트해요. 이렇게 하면 복잡한 JOIN 쿼리 없이도 검색이 초고속으로 동작해요.',
       why: '읽기와 쓰기의 요구사항이 근본적으로 다르기 때문에, 각각에 최적화된 모델과 DB 전략을 독립적으로 선택하려고요.',
@@ -670,11 +670,11 @@ public class UserCommandService {
 
   @Transactional
   public Long register(RegisterUserCommand cmd) {
-    System.out.println("[실행] 사용자 등록 (쓰기) — name: " + cmd.name());
+    System.out.println("[실행] 사용자 등록 (쓰기) - name: " + cmd.name());
     User user = User.register(cmd);
     User saved = repo.save(user);
     publisher.publish(UserRegistered.of(saved));
-    System.out.println("[결과] 등록 완료 + 이벤트 발행 — id: " + saved.getId());
+    System.out.println("[결과] 등록 완료 + 이벤트 발행 - id: " + saved.getId());
     return saved.getId();
   }
 }`,
@@ -682,7 +682,7 @@ public class UserCommandService {
       concept:
         '쓰기 모델(Command Service)은 도메인 규칙을 엄격하게 지키는 보좌관이에요. ' +
         'RegisterUserCommand라는 명령(Command) DTO를 받아서, User.register()로 도메인 객체를 생성하고, 저장 후 UserRegistered 이벤트를 발행해서 읽기 쪽에 변경을 알려줘요. ' +
-        '쓰기 모델은 데이터 정합성이 가장 중요해서, @Transactional로 모든 작업을 하나의 원자적 단위로 묶어요 — 이벤트 발행도 트랜잭션 안에서 이뤄져서, 저장 실패 시 이벤트도 발행되지 않아요. ' +
+        '쓰기 모델은 데이터 정합성이 가장 중요해서, @Transactional로 모든 작업을 하나의 원자적 단위로 묶어요 - 이벤트 발행도 트랜잭션 안에서 이뤄져서, 저장 실패 시 이벤트도 발행되지 않아요. ' +
         'Command는 "무엇을 해줘"라는 요청을 담은 DTO로, Request DTO와 비슷하지만 명령 의도를 명시적으로 표현해요.',
       terms: [
         { t: 'RegisterUserCommand', d: '사용자 등록을 위한 명령 DTO예요. Command는 "해줘"라는 의도를 담은 객체예요.' },
@@ -693,8 +693,8 @@ public class UserCommandService {
       ],
       expectedOutput:
         'register(cmd) 호출 시:\n' +
-        '[실행] 사용자 등록 (쓰기) — name: kim\n' +
-        '[결과] 등록 완료 + 이벤트 발행 — id: 1',
+        '[실행] 사용자 등록 (쓰기) - name: kim\n' +
+        '[결과] 등록 완료 + 이벤트 발행 - id: 1',
       realWorldUsage:
         '실제 프로젝트에서 회원가입 API가 UserCommandService.register()를 호출해요. 쓰기 쪽은 엄격한 도메인 규칙(중복 이메일 검사, 비밀번호 복잡도, 이름 길이 제한)을 모두 검증하고 저장한 뒤, UserRegistered 이벤트를 발행해요. 읽기 쪽이 이 이벤트를 받아서 Elasticsearch 인덱스를 업데이트하고, 검색 API는 읽기 전용 Elasticsearch를 조회해서 10ms 안에 응답해요.',
       why: '쓰기에는 도메인 규칙·검증·트랜잭션을 집중하고, 읽기에는 성능 최적화를 집중해서 상충하는 요구사항을 분리하려고요.',
@@ -719,7 +719,7 @@ public class UserSummaryProjection {
 
   @EventListener
   public void on(UserRegistered event) {
-    System.out.println("[투영] UserRegistered 수신 — userId: " + event.userId());
+    System.out.println("[투영] UserRegistered 수신 - userId: " + event.userId());
     UserSummary summary = new UserSummary(event.userId(), event.name(), event.email());
     repo.save(summary);
     System.out.println("[결과] 읽기 모델 갱신 완료");
@@ -727,7 +727,7 @@ public class UserSummaryProjection {
 
   @EventListener
   public void on(UserRenamed event) {
-    System.out.println("[투영] UserRenamed 수신 — userId: " + event.userId());
+    System.out.println("[투영] UserRenamed 수신 - userId: " + event.userId());
     repo.updateName(event.userId(), event.name());
   }
 }`,
@@ -746,10 +746,10 @@ public class UserSummaryProjection {
       ],
       expectedOutput:
         'UserRegistered 이벤트 발행 시:\n' +
-        '[투영] UserRegistered 수신 — userId: 1\n' +
+        '[투영] UserRegistered 수신 - userId: 1\n' +
         '[결과] 읽기 모델 갱신 완료\n' +
         'UserRenamed 이벤트 발행 시:\n' +
-        '[투영] UserRenamed 수신 — userId: 1',
+        '[투영] UserRenamed 수신 - userId: 1',
       realWorldUsage:
         '실제 프로젝트에서 사용자 검색 화면이 느리다는 불만을 해결하기 위해 CQRS + Projection을 도입해요. 쓰기 쪽은 정규화된 PostgreSQL을 그대로 쓰고, 읽기 쪽은 UserRegistered 이벤트를 받아 Elasticsearch에 비정규화된 검색용 문서를 저장해요. "사용자 100만 명을 10ms 안에 검색" 같은 요구사항이 CQRS 없이는 거의 불가능해요.',
       why: '쓰기 트랜잭션과 분리된 비동기 방식으로 읽기 모델을 갱신해서, 쓰기 성능 저하 없이 읽기 성능을 극대화하려고요.',
@@ -778,13 +778,13 @@ class JpaEventStore implements EventStore {
 
   @Override
   public void append(OrderId id, List<DomainEvent> events, long expectedVersion) {
-    System.out.println("[실행] 이벤트 저장 — orderId: " + id + ", eventCount: " + events.size());
+    System.out.println("[실행] 이벤트 저장 - orderId: " + id + ", eventCount: " + events.size());
     long current = eventRepository.countByOrderId(id);
     if (current != expectedVersion) {
       throw new ConcurrencyException("동시 수정 충돌이 발생했어요");
     }
     eventRepository.saveAll(toEntities(id, events));
-    System.out.println("[결과] 이벤트 저장 완료 — newVersion: " + (current + events.size()));
+    System.out.println("[결과] 이벤트 저장 완료 - newVersion: " + (current + events.size()));
   }
 
   @Override
@@ -805,7 +805,7 @@ class JpaEventStore implements EventStore {
       concept:
         '이벤트 소싱(Event Sourcing)은 데이터의 최종 상태 대신 "상태를 변화시킨 모든 사건"을 저장하는 방식이에요. ' +
         '전통적인 방식이 "현재 잔고 10만원"만 저장한다면, 이벤트 소싱은 "입금 100만원 → 출금 90만원"이라는 모든 거래 내역을 저장해요. ' +
-        'append()는 낙관적 동시성 제어(optimistic concurrency)를 적용해서, expectedVersion과 현재 버전이 일치할 때만 저장을 허용해요 — 만약 다른 요청이 먼저 저장했으면 ConcurrencyException을 던져 충돌을 알려줘요. ' +
+        'append()는 낙관적 동시성 제어(optimistic concurrency)를 적용해서, expectedVersion과 현재 버전이 일치할 때만 저장을 허용해요 - 만약 다른 요청이 먼저 저장했으면 ConcurrencyException을 던져 충돌을 알려줘요. ' +
         '상태를 직접 UPDATE/DELETE 하지 않고 INSERT만 하기 때문에, 데이터가 절대 소실되지 않는 감사 추적(audit trail)이 완성돼요.',
       terms: [
         { t: 'EventStore', d: '이벤트를 추가(append)하고 조회(load)하는 창고 인터페이스예요. UPDATE/DELETE 없이 INSERT만 수행해요.' },
@@ -816,8 +816,8 @@ class JpaEventStore implements EventStore {
       ],
       expectedOutput:
         'append(orderId, [LineAdded, OrderConfirmed], expectedVersion=3):\n' +
-        '[실행] 이벤트 저장 — orderId: OrderId[123], eventCount: 2\n' +
-        '[결과] 이벤트 저장 완료 — newVersion: 5\n\n' +
+        '[실행] 이벤트 저장 - orderId: OrderId[123], eventCount: 2\n' +
+        '[결과] 이벤트 저장 완료 - newVersion: 5\n\n' +
         '다른 요청이 먼저 저장해서 expectedVersion 불일치 시:\n' +
         '→ ConcurrencyException: 동시 수정 충돌이 발생했어요',
       realWorldUsage:
@@ -839,12 +839,12 @@ class JpaEventStore implements EventStore {
   }
 
   public Order fromHistory(OrderId id) {
-    System.out.println("[실행] 이벤트 replay 시작 — orderId: " + id);
+    System.out.println("[실행] 이벤트 replay 시작 - orderId: " + id);
     Order order = Order.createEmpty(id);
     for (DomainEvent e : store.load(id)) {
       order = order.apply(e);
     }
-    System.out.println("[결과] replay 완료 — 이벤트 수: ???");
+    System.out.println("[결과] replay 완료 - 이벤트 수: ???");
     return order;
   }
 }
@@ -868,7 +868,7 @@ public class Order {
       concept:
         '리플레이(replay)는 녹음테이프를 처음부터 다시 틀듯, 저장된 모든 이벤트를 순서대로 재적용해서 현재 상태를 재구성하는 방식이에요. ' +
         'fromHistory()는 EventStore에서 모든 이벤트를 조회한 뒤, 빈 Order(createEmpty)에 apply()로 하나씩 이벤트를 적용해가며 현재 상태를 만들어내요. ' +
-        'apply()는 각 도메인 이벤트 타입을 instanceof로 확인하고, 이벤트가 담고 있는 데이터로 상태를 변경해요 — OrderConfirmed 이벤트면 status를 CONFIRMED로, LineAdded 이벤트면 lines에 OrderLine을 추가해요. ' +
+        'apply()는 각 도메인 이벤트 타입을 instanceof로 확인하고, 이벤트가 담고 있는 데이터로 상태를 변경해요 - OrderConfirmed 이벤트면 status를 CONFIRMED로, LineAdded 이벤트면 lines에 OrderLine을 추가해요. ' +
         '이 방식의 놀라운 점은, 롤백이나 시간 여행도 가능하다는 거예요. 특정 시점의 이벤트까지만 replay하면 그 시점의 스냅숏을 얻을 수 있어요.',
       terms: [
         { t: 'fromHistory()', d: '이벤트 이력을 replay해서 애그리거트의 현재 상태를 복원하는 팩터리 메서드예요.' },
@@ -879,8 +879,8 @@ public class Order {
       ],
       expectedOutput:
         'fromHistory(orderId) 호출 시:\n' +
-        '[실행] 이벤트 replay 시작 — orderId: OrderId[123]\n' +
-        '[결과] replay 완료 — 이벤트 수: 5\n' +
+        '[실행] 이벤트 replay 시작 - orderId: OrderId[123]\n' +
+        '[결과] replay 완료 - 이벤트 수: 5\n' +
         '(5개 이벤트: Created → LineAdded → LineAdded → OrderConfirmed → Shipped 순 적용)',
       realWorldUsage:
         '실제 이벤트 소싱 시스템에서 버그 수정 후 "버그 발생 직전 시점까지 replay하면 어떻게 됐을까"를 검증할 때 이 replay 메커니즘을 써요. 과거 시점의 스냅숏을 떠서 별도 DB에 재구성해보고, 버그가 수정됐는지 확인한 뒤에야 운영 DB 마이그레이션을 진행해요. 금융권 감사에서도 "2024년 1월 1일 자정의 모든 계좌 잔고를 재구성해 보세요" 같은 요청을 replay로 처리해요.',
@@ -953,7 +953,7 @@ public class LegacyUserAdapter implements LoadUserPort {
 
   @Override
   public Optional<User> findById(Long id) {
-    System.out.println("[실행] 레거시 시스템 조회 — id: " + id);
+    System.out.println("[실행] 레거시 시스템 조회 - id: " + id);
     LegacyUserDto dto = client.get(id);
     if (dto == null) {
       System.out.println("[결과] 레거시 데이터 없음");
@@ -964,7 +964,7 @@ public class LegacyUserAdapter implements LoadUserPort {
         dto.getFullName(),
         new Email(dto.getEmailAddr())
     );
-    System.out.println("[변환] LegacyUserDto → User — 이름: " + user.getName());
+    System.out.println("[변환] LegacyUserDto → User - 이름: " + user.getName());
     return Optional.of(user);
   }
 
@@ -994,11 +994,11 @@ public class LegacyUserAdapter implements LoadUserPort {
         { t: 'UserId / Email', d: '우리 도메인의 값 객체예요. 레거시 시스템의 원시 필드를 풍부한 도메인 타입으로 감싸줘요.' },
       ],
       expectedOutput:
-        'findById(1L) — 데이터 존재 시:\n' +
-        '[실행] 레거시 시스템 조회 — id: 1\n' +
-        '[변환] LegacyUserDto → User — 이름: kim\n\n' +
-        'findById(999L) — 데이터 없음:\n' +
-        '[실행] 레거시 시스템 조회 — id: 999\n' +
+        'findById(1L) - 데이터 존재 시:\n' +
+        '[실행] 레거시 시스템 조회 - id: 1\n' +
+        '[변환] LegacyUserDto → User - 이름: kim\n\n' +
+        'findById(999L) - 데이터 없음:\n' +
+        '[실행] 레거시 시스템 조회 - id: 999\n' +
         '[결과] 레거시 데이터 없음',
       realWorldUsage:
         '실제 프로젝트에서 메인프레임·레거시 ERP·구버전 API와 연동해야 할 때 ACL을 써요. "사용자"를 레거시는 CUST_MST 테이블에 CUST_NM 컬럼으로 관리하고, 우리는 users 테이블에 name 컬럼으로 관리한다면, ACL이 CUST_NM → name으로 맵핑해줘요. 레거시 시스템이 교체될 때 ACL 구현체만 바꾸면 되고, 도메인 코드는 영향을 받지 않아요.',
@@ -1012,7 +1012,7 @@ public class LegacyUserAdapter implements LoadUserPort {
     title: 'Package Structure - Feature-based',
     file: 'package-info.java',
     code: `/**
- * user/ 기능 패키지 — 사용자 도메인의 모든 코드를 기능별로 모아요.
+ * user/ 기능 패키지 - 사용자 도메인의 모든 코드를 기능별로 모아요.
  *
  *   com.shop.user.domain/
  *     User.java, Email.java, UserId.java  (도메인 모델)
@@ -1033,7 +1033,7 @@ package com.shop.user;`,
         '기능별 패키지(Feature-based Package)는 도메인 개념 중심으로 코드를 묶는 구성 방식이에요. ' +
         '전통적인 계층별 패키지(controller·service·repository)가 기술 관심사로 나누는 반면, 기능별 패키지는 "사용자에 관한 모든 것"을 user/ 폴더 아래에 모아둬요. ' +
         'user/domain에는 순수 도메인 모델, user/application에는 유스케이스, user/adapter/in에는 웹 컨트롤러, user/adapter/out에는 영속성·이벤트·외부 API 어댑터를 둬요. ' +
-        '이 방식의 가장 큰 장점은 "사용자 관련 변경이 생기면 user/ 폴더만 보면 된다"는 거예요 — 관련 코드가 한 곳에 모여 있어서 찾기 쉽고 응집도가 높아요.',
+        '이 방식의 가장 큰 장점은 "사용자 관련 변경이 생기면 user/ 폴더만 보면 된다"는 거예요 - 관련 코드가 한 곳에 모여 있어서 찾기 쉽고 응집도가 높아요.',
       terms: [
         { t: 'com.shop.user', d: '사용자 기능의 루트 패키지예요. 사용자와 관련된 모든 코드가 이 아래에 위치해요.' },
         { t: 'domain/', d: '도메인 모델(Entity, Value Object, Domain Service, Repository 인터페이스)을 모아둔 곳이에요.' },

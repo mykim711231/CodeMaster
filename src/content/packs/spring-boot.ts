@@ -20,7 +20,7 @@ import { dataAdvanced } from './_staging/L18-data';
 import { resilience } from './_staging/L19-resil';
 import { reactive } from './_staging/L20-rx';
 
-// Spring Boot 3.4.x · Java 21 (LTS) — PRD §7 / §8.1
+// Spring Boot 3.4.x · Java 21 (LTS) - PRD §7 / §8.1
 // 짧은 실무 패턴 + 입문자용 설명(개념·코드 뜯어보기·왜·주의).
 // All level arrays imported from _staging/ files.
 
@@ -34,7 +34,7 @@ export const springBootPack: Pack = {
     L(1, 'Java Core', javaCore),
     L(2, 'Spring Core', springCore),
     L(3, 'Spring Boot MVC', springMvc),
-    L(4, 'Database — JPA/MyBatis', springDb),
+    L(4, 'Database - JPA/MyBatis', springDb),
     L(5, 'Concurrency', concurrency),
     L(6, 'Network', network),
     L(7, 'Gateway', gateway),

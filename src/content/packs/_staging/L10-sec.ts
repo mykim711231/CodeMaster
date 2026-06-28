@@ -13,7 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Bean
 public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-  System.out.println("[설정] SecurityFilterChain 구성 — /public 허용, 나머지 인증");
+  System.out.println("[설정] SecurityFilterChain 구성 - /public 허용, 나머지 인증");
   http
     .authorizeHttpRequests(auth -> auth
       .requestMatchers("/public/**").permitAll()
@@ -39,7 +39,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
       why:
         '애플리케이션의 모든 HTTP 요청을 한 곳에서 통제하려고 해요. URL별로 다른 권한 정책을 적용하고, 비인가 접근을 원천 차단해요.',
       expectedOutput:
-        '[설정] SecurityFilterChain 구성 — /public 허용, 나머지 인증',
+        '[설정] SecurityFilterChain 구성 - /public 허용, 나머지 인증',
       realWorldUsage:
         '실제 프로젝트에서 로그인 없이 접근 가능한 페이지(메인, 공지사항, /public)와 로그인이 필요한 페이지(마이페이지, 관리자)를 구분할 때 이 설정을 사용해요. ' +
         'REST API에서는 .formLogin() 대신 .httpBasic()이나 JWT 필터를 사용하는 게 일반적이에요.',
@@ -200,7 +200,7 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 
 public String generateToken(String username) {
-  System.out.println("[발급] JWT 생성 — subject: " + username);
+  System.out.println("[발급] JWT 생성 - subject: " + username);
   String token = Jwts.builder()
     .subject(username)
     .issuedAt(new Date())
@@ -226,7 +226,7 @@ public String generateToken(String username) {
       why:
         '서버가 세션을 저장하지 않고도 사용자 인증을 유지하려고 해요. 서버 증설이 자유롭고, 마이크로서비스 간 인증 전파도 쉬워져요.',
       expectedOutput:
-        '[발급] JWT 생성 — subject: user1\n' +
+        '[발급] JWT 생성 - subject: user1\n' +
         '[완료] 토큰 생성 완료',
       realWorldUsage:
         '실제 프로젝트에서 로그인 API가 성공하면 JWT를 발급해서 클라이언트(웹·앱)에 전달하고, 클라이언트는 이후 모든 요청의 Authorization 헤더에 이 토큰을 담아 보내요. ' +
@@ -418,7 +418,7 @@ public class AdminController {
   @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/users")
   public List<User> listUsers() {
-    System.out.println("[실행] 관리자 전용 — 사용자 목록 조회");
+    System.out.println("[실행] 관리자 전용 - 사용자 목록 조회");
     return userService.findAll();
   }
 }`,
@@ -438,7 +438,7 @@ public class AdminController {
       why:
         'URL 패턴만으로는 표현할 수 없는 세밀한 권한 제어(관리자만, VIP만, 본인의 데이터만)를 메서드 단위로 적용하려고 해요.',
       expectedOutput:
-        '[실행] 관리자 전용 — 사용자 목록 조회',
+        '[실행] 관리자 전용 - 사용자 목록 조회',
       realWorldUsage:
         '실제 프로젝트에서 관리자 API, 사용자 개인정보 API, 결제 취소 API 등 민감한 작업에 @PreAuthorize를 붙여서 권한을 검증해요. ' +
         'hasPermission()으로 객체 레벨의 ACL(접근 제어 목록)도 표현할 수 있어요.',
@@ -505,7 +505,7 @@ import org.springframework.web.cors.CorsConfiguration;
 
 @Bean
 public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-  System.out.println("[설정] CORS — https://example.com 허용");
+  System.out.println("[설정] CORS - https://example.com 허용");
   http.cors(cors -> cors.configurationSource(req -> {
     CorsConfiguration cfg = new CorsConfiguration();
     cfg.setAllowedOrigins(List.of("https://example.com"));
@@ -530,7 +530,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
       why:
         '프론트엔드(React, Vue 등)와 백엔드 API 서버가 서로 다른 도메인에서 운영될 때, 브라우저의 Same-Origin Policy 차단을 해제하려고 해요.',
       expectedOutput:
-        '[설정] CORS — https://example.com 허용',
+        '[설정] CORS - https://example.com 허용',
       realWorldUsage:
         '실제 프로젝트에서 프론트엔드는 https://app.example.com, API 서버는 https://api.example.com으로 분리 배포할 때 CORS 설정이 필수예요. ' +
         '모바일 앱은 브라우저의 CORS 제한을 받지 않아서 CORS 설정이 영향을 주지 않고, 웹 브라우저에서만 작동해요.',
@@ -601,7 +601,7 @@ public class CustomUserDetails implements UserDetails {
   public CustomUserDetails(String username, String password) {
     this.username = username;
     this.password = password;
-    System.out.println("[생성] UserDetails — " + username);
+    System.out.println("[생성] UserDetails - " + username);
   }
 
   @Override
@@ -635,7 +635,7 @@ public class CustomUserDetails implements UserDetails {
       why:
         '스프링 시큐리티가 인증된 사용자의 권한을 알아야 접근 제어(@PreAuthorize, .hasRole())를 할 수 있어요.',
       expectedOutput:
-        '[생성] UserDetails — user1',
+        '[생성] UserDetails - user1',
       realWorldUsage:
         '실제 프로젝트에서 JPA 엔티티(User)가 UserDetails를 직접 구현해서, DB의 사용자 테이블과 스프링 시큐리티의 인증 체계를 연결해요. ' +
         'isEnabled 필드를 DB 컬럼과 매핑해서 관리자가 계정을 잠그거나 활성화할 수 있게 해요.',
@@ -701,7 +701,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Bean
 public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-  System.out.println("[설정] 로그아웃 — /logout, 성공 시 /login");
+  System.out.println("[설정] 로그아웃 - /logout, 성공 시 /login");
   http.logout(logout -> logout
     .logoutUrl("/logout")
     .logoutSuccessUrl("/login")
@@ -724,7 +724,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
       why:
         '사용자가 안전하게 세션을 종료하고, 방치된 세션으로 인한 보안 사고(공용 PC에서 로그인 유지 등)를 막으려고 해요.',
       expectedOutput:
-        '[설정] 로그아웃 — /logout, 성공 시 /login',
+        '[설정] 로그아웃 - /logout, 성공 시 /login',
       realWorldUsage:
         '실제 프로젝트에서 세션 기반 웹 애플리케이션(관리자 콘솔, 사내 시스템)의 로그아웃에 이 설정을 사용해요. ' +
         'JWT 환경에서는 서버 측 로그아웃으로 토큰을 무효화할 수 없기 때문에, Redis에 블랙리스트를 관리하거나 Access Token의 만료 시간을 짧게 가져가는 전략을 함께 써요.',
@@ -808,7 +808,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
       concept:
         'authenticationEntryPoint는 로그인하지 않은 사용자가 보호된 자원에 접근했을 때 보여주는 안내문이에요. ' +
         '기본 동작은 로그인 페이지로 리다이렉트하는 거지만, REST API에서는 리다이렉트 대신 401 상태 코드와 JSON 응답을 반환하는 게 표준이에요. ' +
-        '응답의 Content-Type을 application/json으로 설정하고, 상태 코드 401(Unauthorized — 인증 필요)을 설정해서 클라이언트(프론트엔드)가 이해할 수 있게 해줘요. ' +
+        '응답의 Content-Type을 application/json으로 설정하고, 상태 코드 401(Unauthorized - 인증 필요)을 설정해서 클라이언트(프론트엔드)가 이해할 수 있게 해줘요. ' +
         '이런 커스텀 처리가 필요한 이유는, REST API 클라이언트(React 모바일 앱 등)는 로그인 페이지로 리다이렉트되는 걸 처리할 수 없기 때문이에요.',
       terms: [
         { t: 'exceptionHandling(ex -> ...)', d: '보안 예외(인증 실패, 권한 부족)에 대한 처리 방법을 설정하는 블록이에요.' },

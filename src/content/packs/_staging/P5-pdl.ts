@@ -300,7 +300,7 @@ import torch.nn as nn
 class Net(nn.Module):
   def __init__(self):
     super().__init__()
-    print("[생성] Net.__init__ — 레이어 초기화")
+    print("[생성] Net.__init__ - 레이어 초기화")
     self.fc = nn.Linear(3, 1)
 
   def forward(self, x):
@@ -324,7 +324,7 @@ print(f"[정보] 모델 구조:\n{model}")`,
         '실무에서 ResNet, Transformer 같은 복잡한 모델도 결국 nn.Module을 상속받고, __init__에 nn.Conv2d, nn.MultiheadAttention 등을 조립해서 구성해요.',
       expectedOutput:
         '실행 시:\n' +
-        '[생성] Net.__init__ — 레이어 초기화\n' +
+        '[생성] Net.__init__ - 레이어 초기화\n' +
         '[정보] 모델 생성 완료: Net(\n' +
         '  (fc): Linear(in_features=3, out_features=1, bias=True)\n' +
         ')\n' +
@@ -495,7 +495,7 @@ print(f"[순전파] loss: {loss.item():.4f}")
 loss.backward()
 print(f"[역전파] backward() 실행 완료")
 opt.step()
-print(f"[갱신] step() — 가중치 업데이트 완료")`,
+print(f"[갱신] step() - 가중치 업데이트 완료")`,
     explain: {
       concept:
         '옵티마이저(Optimizer)는 손실을 줄이는 방향으로 모델의 가중치를 조금씩 갱신하는 알고리즘이에요. ' +
@@ -514,7 +514,7 @@ print(f"[갱신] step() — 가중치 업데이트 완료")`,
         '실행 시:\n' +
         '[순전파] loss: 1.2345\n' +
         '[역전파] backward() 실행 완료\n' +
-        '[갱신] step() — 가중치 업데이트 완료',
+        '[갱신] step() - 가중치 업데이트 완료',
       realWorldUsage:
         '실제 GPT 모델 학습 시 AdamW 옵티마이저를 사용하고, 학습률 스케줄러와 함께 수천억 파라미터의 가중치를 수개월에 걸쳐 조금씩 갱신해요.',
       pitfall: 'zero_grad()를 backward() 직전이 아닌, 이미 backward() 이후에 호출하면 방금 계산한 기울기가 지워져서 step()이 아무 일도 안 하게 돼요. 올바른 순서: 순전파 → loss → zero_grad → backward → step.',
@@ -534,7 +534,7 @@ loss_fn = nn.MSELoss()
 
 X = torch.randn(20, 2)
 Y = torch.randn(20, 1)
-print(f"[시작] 학습 — 50 epoch, {len(X)}개 샘플")
+print(f"[시작] 학습 - 50 epoch, {len(X)}개 샘플")
 
 for epoch in range(50):
   pred = model(X)
@@ -543,7 +543,7 @@ for epoch in range(50):
   loss.backward()
   opt.step()
   if epoch % 10 == 0:
-    print(f"  epoch {epoch:3d} — loss: {loss.item():.4f}")
+    print(f"  epoch {epoch:3d} - loss: {loss.item():.4f}")
 
 print(f"[완료] 최종 loss: {loss.item():.4f}")`,
     explain: {
@@ -562,12 +562,12 @@ print(f"[완료] 최종 loss: {loss.item():.4f}")`,
         '실무에서 딥러닝 학습은 수천~수만 번의 epoch가 필요할 수 있어서, 로깅과 체크포인트 저장이 포함된 정교한 학습 루프를 구축해요.',
       expectedOutput:
         '예시:\n' +
-        '[시작] 학습 — 50 epoch, 20개 샘플\n' +
-        '  epoch   0 — loss: 2.3456\n' +
-        '  epoch  10 — loss: 0.8765\n' +
-        '  epoch  20 — loss: 0.4321\n' +
-        '  epoch  30 — loss: 0.2345\n' +
-        '  epoch  40 — loss: 0.1234\n' +
+        '[시작] 학습 - 50 epoch, 20개 샘플\n' +
+        '  epoch   0 - loss: 2.3456\n' +
+        '  epoch  10 - loss: 0.8765\n' +
+        '  epoch  20 - loss: 0.4321\n' +
+        '  epoch  30 - loss: 0.2345\n' +
+        '  epoch  40 - loss: 0.1234\n' +
         '[완료] 최종 loss: 0.0987',
       realWorldUsage:
         '실제 언어 모델 학습 스크립트에서 학습 루프는 "for epoch → for batch → forward → loss → backward → step → log → checkpoint" 패턴으로 구성돼요.',
@@ -584,7 +584,7 @@ import torch.nn as nn
 
 model = nn.Linear(3, 1)
 model.eval()
-print(f"[모드] model.eval() — 평가 모드로 전환")
+print(f"[모드] model.eval() - 평가 모드로 전환")
 
 x = torch.randn(4, 3)
 with torch.no_grad():
@@ -609,7 +609,7 @@ print(f"[정보] 기울기 기록 비활성화됨 (grad_fn 없음)")`,
         '실무에서 모델 서빙 시 수천 건의 예측 요청을 처리하면서 매번 기울기를 기록하면 메모리가 순식간에 고갈되고 속도도 크게 느려져요. no_grad가 필수예요.',
       expectedOutput:
         '실행 시:\n' +
-        '[모드] model.eval() — 평가 모드로 전환\n' +
+        '[모드] model.eval() - 평가 모드로 전환\n' +
         '[예측] no_grad 구간 내 예측 완료\n' +
         '[결과] out:\n' +
         'tensor([[ 0.2341],\n' +
@@ -632,7 +632,7 @@ from torch.utils.data import Dataset
 
 class MyData(Dataset):
   def __init__(self):
-    print("[생성] MyData — 데이터셋 초기화")
+    print("[생성] MyData - 데이터셋 초기화")
     self.x = torch.randn(100, 3)
     self.y = torch.randint(0, 2, (100,))
 
@@ -661,7 +661,7 @@ print(f"[정보] 첫 번째 샘플: x={ds[0][0][:3]}, y={ds[0][1]}")`,
         '실무에서 CSV, JSON, 이미지 파일, 오디오 클립 등 어떤 형식이든 Dataset으로 감싸서 DataLoader와 연결하면 자동 배치, 셔플, 병렬 로딩이 가능해져요.',
       expectedOutput:
         '실행 시:\n' +
-        '[생성] MyData — 데이터셋 초기화\n' +
+        '[생성] MyData - 데이터셋 초기화\n' +
         '[정보] 데이터셋 크기: 100\n' +
         '[정보] 첫 번째 샘플: x=tensor([0.5234, -1.2345, 0.8912]), y=1',
       realWorldUsage:
@@ -682,7 +682,7 @@ y = torch.randint(0, 2, (100,))
 ds = TensorDataset(x, y)
 
 loader = DataLoader(ds, batch_size=16, shuffle=True)
-print(f"[실행] DataLoader — batch_size=16, shuffle=True")
+print(f"[실행] DataLoader - batch_size=16, shuffle=True")
 
 for batch_idx, (xb, yb) in enumerate(loader):
   print(f"  batch {batch_idx}: x shape={tuple(xb.shape)}, y shape={tuple(yb.shape)}")
@@ -706,7 +706,7 @@ print(f"[정보] 총 배치 수: {len(loader)}")`,
         '실무에서 GPU 학습 시 batch_size는 GPU 메모리에 맞춰 최대한 크게 잡아요. 작으면 GPU 활용도가 낮고, 너무 크면 Out of Memory 오류가 발생해요.',
       expectedOutput:
         '예시:\n' +
-        '[실행] DataLoader — batch_size=16, shuffle=True\n' +
+        '[실행] DataLoader - batch_size=16, shuffle=True\n' +
         '  batch 0: x shape=(16, 3), y shape=(16,)\n' +
         '  batch 1: x shape=(16, 3), y shape=(16,)\n' +
         '  batch 2: x shape=(16, 3), y shape=(16,)\n' +

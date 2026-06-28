@@ -15,7 +15,7 @@ config = LoraConfig(
     lora_dropout=0.05,
     task_type="CAUSAL_LM",
 )
-print(f"[실행] LoRA 설정 — r={config.r}, alpha={config.lora_alpha}, dropout={config.lora_dropout}")
+print(f"[실행] LoRA 설정 - r={config.r}, alpha={config.lora_alpha}, dropout={config.lora_dropout}")
 print(f"[정보] task_type={config.task_type}")`,
     explain: {
       concept:
@@ -33,7 +33,7 @@ print(f"[정보] task_type={config.task_type}")`,
       why:
         '전체 파인튜닝은 GPU 메모리를 엄청나게 잡아먹지만, LoRA는 원본 모델을 얼려두고 아주 적은 파라미터만 학습해서 비용과 시간을 획기적으로 줄여줘요. 실무에서 LLM 커스터마이징의 표준 방식이에요.',
       expectedOutput:
-        '[실행] LoRA 설정 — r=8, alpha=16, dropout=0.05\n[정보] task_type=CAUSAL_LM',
+        '[실행] LoRA 설정 - r=8, alpha=16, dropout=0.05\n[정보] task_type=CAUSAL_LM',
       realWorldUsage:
         '스타트업에서 오픈소스 Llama-3 모델을 LoRA로 자사 제품 매뉴얼 데이터로 파인튜닝해서, GPU 1대로 하루 만에 기술 지원 챗봇을 만들어 배포해요.',
       pitfall:
@@ -88,7 +88,7 @@ print(f"[정보] r={config.r}, alpha={config.lora_alpha}")`,
 config = LoraConfig(r=8, lora_alpha=16, task_type="CAUSAL_LM")
 model = load_base_model()
 model = get_peft_model(model, config)
-print(f"[실행] PEFT 어댑터 부착 완료 — 모델 타입: {type(model).__name__}")
+print(f"[실행] PEFT 어댑터 부착 완료 - 모델 타입: {type(model).__name__}")
 print(f"[정보] 모델이 PeftModel인가? {hasattr(model, 'peft_config')}")`,
     explain: {
       concept:
@@ -105,7 +105,7 @@ print(f"[정보] 모델이 PeftModel인가? {hasattr(model, 'peft_config')}")`,
       why:
         'get_peft_model 호출 한 줄로 모델 전체 파라미터의 99% 이상을 동결하고 소수만 학습 가능하게 만들어줘서, GPU 메모리를 획기적으로 절약할 수 있어요.',
       expectedOutput:
-        '[실행] PEFT 어댑터 부착 완료 — 모델 타입: PeftModelForCausalLM\n[정보] 모델이 PeftModel인가? True',
+        '[실행] PEFT 어댑터 부착 완료 - 모델 타입: PeftModelForCausalLM\n[정보] 모델이 PeftModel인가? True',
       realWorldUsage:
         '파인튜닝 스크립트의 진입점에서 model = AutoModelForCausalLM.from_pretrained(...) 직후에 바로 get_peft_model()을 호출해서, 이후의 모든 학습이 LoRA 어댑터에만 적용되도록 설정해요.',
       pitfall:
@@ -155,7 +155,7 @@ model.print_trainable_parameters()`,
 config = LoraConfig(r=8, lora_alpha=16, task_type="CAUSAL_LM")
 model = get_peft_model(load_base_model(), config)
 model.save_pretrained("./my_adapter")
-print("[완료] 어댑터 저장 완료 — ./my_adapter")`,
+print("[완료] 어댑터 저장 완료 - ./my_adapter")`,
     explain: {
       concept:
         'save_pretrained()는 원본 모델이 아닌 LoRA 어댑터 가중치만 별도 폴더에 저장해요. ' +
@@ -170,7 +170,7 @@ print("[완료] 어댑터 저장 완료 — ./my_adapter")`,
       why:
         '어댑터 파일은 보통 수 MB ~ 수십 MB로 가벼워서, HuggingFace Hub에 업로드하거나 팀원과 이메일로 공유하기도 쉬워요. 원본 모델(GB 단위)을 매번 주고받을 필요가 없어요.',
       expectedOutput:
-        '[완료] 어댑터 저장 완료 — ./my_adapter',
+        '[완료] 어댑터 저장 완료 - ./my_adapter',
       realWorldUsage:
         'HuggingFace Hub에 "my-llama3-korean-chat"이라는 이름으로 LoRA 어댑터만 업로드해서, Llama-3 원본 모델 소유자라면 누구나 한 줄로 한국어 채팅 기능을 추가할 수 있게 공유해요.',
       pitfall:
@@ -187,7 +187,7 @@ print("[완료] 어댑터 저장 완료 — ./my_adapter")`,
 
 base = load_base_model()
 model = PeftModel.from_pretrained(base, "./my_adapter")
-print(f"[실행] 어댑터 로드 완료 — PeftModel: {isinstance(model, PeftModel)}")
+print(f"[실행] 어댑터 로드 완료 - PeftModel: {isinstance(model, PeftModel)}")
 print(f"[정보] 로드된 어댑터 목록: {list(model.peft_config.keys())}")`,
     explain: {
       concept:
@@ -204,7 +204,7 @@ print(f"[정보] 로드된 어댑터 목록: {list(model.peft_config.keys())}")`
       why:
         '하나의 베이스 모델에 여러 도메인별 어댑터(의료용, 법률용, 코딩용)를 번갈아 로드하면, GPU 메모리는 하나의 모델만 차지하면서 여러 용도로 쓸 수 있어서 비용 효율이 극대화돼요.',
       expectedOutput:
-        '[실행] 어댑터 로드 완료 — PeftModel: True\n[정보] 로드된 어댑터 목록: [\'default\']',
+        '[실행] 어댑터 로드 완료 - PeftModel: True\n[정보] 로드된 어댑터 목록: [\'default\']',
       realWorldUsage:
         '멀티테넌트 SaaS 서비스에서 각 고객사별로 별도 LoRA 어댑터를 학습해두고, 요청이 들어올 때마다 해당 고객사의 어댑터를 동적으로 로드해서 커스터마이즈된 응답을 제공해요.',
       pitfall:
@@ -222,7 +222,7 @@ print(f"[정보] 로드된 어댑터 목록: {list(model.peft_config.keys())}")`
 base = load_base_model()
 model = PeftModel.from_pretrained(base, "./my_adapter")
 merged = model.merge_and_unload()
-print(f"[실행] merge_and_unload() 완료 — 모델 타입: {type(merged).__name__}")
+print(f"[실행] merge_and_unload() 완료 - 모델 타입: {type(merged).__name__}")
 print(f"[정보] PeftModel인가? {isinstance(merged, PeftModel)}")`,
     explain: {
       concept:
@@ -239,7 +239,7 @@ print(f"[정보] PeftModel인가? {isinstance(merged, PeftModel)}")`,
       why:
         '배포 시에는 어댑터를 별도로 로드할 필요 없이 단일 모델로 만드는 게 운영이 간편하고 추론 속도도 빠르며, GGUF 변환 등 후속 작업과도 호환성이 좋아요.',
       expectedOutput:
-        '[실행] merge_and_unload() 완료 — 모델 타입: LlamaForCausalLM\n[정보] PeftModel인가? False',
+        '[실행] merge_and_unload() 완료 - 모델 타입: LlamaForCausalLM\n[정보] PeftModel인가? False',
       realWorldUsage:
         '파인튜닝 완료 후 merge_and_unload() → save_pretrained()로 단일 모델을 저장하고, 이를 GGUF로 양자화해서 엣지 디바이스에 배포해요. 병합하지 않으면 GGUF 변환기가 LoRA 구조를 이해하지 못해요.',
       pitfall:
@@ -260,7 +260,7 @@ bnb = BitsAndBytesConfig(
     bnb_4bit_quant_type="nf4",
     bnb_4bit_compute_dtype=torch.float16,
 )
-print(f"[실행] 4비트 양자화 설정 — quant_type={bnb.bnb_4bit_quant_type}")
+print(f"[실행] 4비트 양자화 설정 - quant_type={bnb.bnb_4bit_quant_type}")
 print(f"[정보] compute_dtype={bnb.bnb_4bit_compute_dtype}")`,
     explain: {
       concept:
@@ -277,7 +277,7 @@ print(f"[정보] compute_dtype={bnb.bnb_4bit_compute_dtype}")`,
       why:
         '일반 LoRA는 GPU 메모리 문제로 큰 모델을 파인튜닝하지 못하는 경우가 많은데, QLoRA는 4비트 압축으로 이 한계를 획기적으로 낮춰줘요. 개인 GPU로도 대형 모델 파인튜닝이 가능해졌어요.',
       expectedOutput:
-        '[실행] 4비트 양자화 설정 — quant_type=nf4\n[정보] compute_dtype=torch.float16',
+        '[실행] 4비트 양자화 설정 - quant_type=nf4\n[정보] compute_dtype=torch.float16',
       realWorldUsage:
         'RTX 3090(24GB)에서 Llama-3-70B 같은 초대형 모델을 QLoRA로 파인튜닝해요. 원본을 4비트로 압축하면 70B 모델도 약 40GB → 10GB로 줄어서 소비자 GPU로 학습이 가능해져요.',
       pitfall:
@@ -378,7 +378,7 @@ config = LoraConfig(
     lora_alpha=16,
     task_type=TaskType.CAUSAL_LM,
 )
-print(f"[실행] TaskType 설정 — {config.task_type}")
+print(f"[실행] TaskType 설정 - {config.task_type}")
 print(f"[정보] 가능한 TaskType: {[t.name for t in TaskType if 'LM' in t.name]}")`,
     explain: {
       concept:
@@ -394,7 +394,7 @@ print(f"[정보] 가능한 TaskType: {[t.name for t in TaskType if 'LM' in t.nam
       why:
         '작업 유형에 따라 적절한 모델 구조가 달라져요. 텍스트 생성용 어댑터를 분류용 모델에 붙이면 차원 불일치로 오류가 발생하니, 항상 모델의 용도에 맞는 TaskType을 지정해야 해요.',
       expectedOutput:
-        '[실행] TaskType 설정 — CAUSAL_LM\n[정보] 가능한 TaskType: [\'CAUSAL_LM\', \'SEQ_2_SEQ_LM\']',
+        '[실행] TaskType 설정 - CAUSAL_LM\n[정보] 가능한 TaskType: [\'CAUSAL_LM\', \'SEQ_2_SEQ_LM\']',
       realWorldUsage:
         '챗봇 모델 파인튜닝 시 TaskType.CAUSAL_LM을 사용하고, 리뷰 감정 분석 모델 파인튜닝 시 TaskType.SEQ_CLS를 사용해요. 동일한 LoRA 설정이라도 TaskType에 따라 내부 적용 방식이 완전히 달라져요.',
       pitfall:
@@ -411,7 +411,7 @@ from trl import SFTTrainer
 
 
 args = TrainingArguments(output_dir="./out", num_train_epochs=1)
-print(f"[실행] TrainingArguments — output_dir={args.output_dir}, epochs={args.num_train_epochs}")
+print(f"[실행] TrainingArguments - output_dir={args.output_dir}, epochs={args.num_train_epochs}")
 trainer = SFTTrainer(
     model=model,
     train_dataset=data,
@@ -435,7 +435,7 @@ print("[완료] 파인튜닝 종료")`,
       why:
         'PyTorch로 직접 학습 루프를 작성하면 100줄 이상 필요하지만, SFTTrainer로는 5줄이면 끝나요. 학습 코드의 버그 가능성도 크게 줄어서 실무에서 거의 항상 Trainer 계열을 써요.',
       expectedOutput:
-        '[실행] TrainingArguments — output_dir=./out, epochs=1\n[실행] 학습 시작...\n[완료] 파인튜닝 종료',
+        '[실행] TrainingArguments - output_dir=./out, epochs=1\n[실행] 학습 시작...\n[완료] 파인튜닝 종료',
       realWorldUsage:
         '기업에서 사내 데이터로 Llama-3-8B를 파인튜닝할 때, 데이터만 포맷팅해서 Dataset으로 만들고 SFTTrainer에 전달하면 주니어 개발자도 하루 만에 파인튜닝 파이프라인을 구축할 수 있어요.',
       pitfall:
@@ -572,7 +572,7 @@ trainer = Trainer(
 )
 with mlflow.start_run(run_name="auto-hf"):
     trainer.train()
-    print("[실행] Trainer 학습 중 — MLflow가 자동 기록 중")
+    print("[실행] Trainer 학습 중 - MLflow가 자동 기록 중")
 print("[완료] auto-logged")`,
     explain: {
       concept:
@@ -588,7 +588,7 @@ print("[완료] auto-logged")`,
       why:
         '수동으로 log_metric()을 일일이 호출하지 않아도 모든 학습 지표가 자동 기록되니, 기록 누락 걱정이 사라지고 코드도 훨씬 간결해져요.',
       expectedOutput:
-        '[실행] MLflow autolog 활성화\n[실행] Trainer 학습 중 — MLflow가 자동 기록 중\n[완료] auto-logged',
+        '[실행] MLflow autolog 활성화\n[실행] Trainer 학습 중 - MLflow가 자동 기록 중\n[완료] auto-logged',
       realWorldUsage:
         '실험 초기 단계에서 autolog()를 켜두고 여러 하이퍼파라미터 조합을 빠르게 돌려본 뒤, MLflow UI에서 모든 run을 비교해 최적 조합을 찾고, 최종 학습 시에는 autolog + 커스텀 메트릭을 함께 기록해요.',
       pitfall:
@@ -644,7 +644,7 @@ wandb.init(
     name="run-1",
     config={"r": 8, "lr": 1e-4},
 )
-print(f"[실행] W&B run 시작 — project={wandb.run.project}, name={wandb.run.name}")
+print(f"[실행] W&B run 시작 - project={wandb.run.project}, name={wandb.run.name}")
 print(f"[정보] config={dict(wandb.config)}")`,
     explain: {
       concept:
@@ -661,7 +661,7 @@ print(f"[정보] config={dict(wandb.config)}")`,
       why:
         'MLflow가 로컬 중심이라면 W&B는 클라우드 기반이라서, 팀원들과 실시간으로 실험 결과를 공유하고 원격에서도 대시보드를 볼 수 있어요.',
       expectedOutput:
-        '[실행] W&B run 시작 — project=lora-finetune, name=run-1\n[정보] config={\'r\': 8, \'lr\': 0.0001}',
+        '[실행] W&B run 시작 - project=lora-finetune, name=run-1\n[정보] config={\'r\': 8, \'lr\': 0.0001}',
       realWorldUsage:
         '연구실에서 4명이 동시에 각자 GPU로 파인튜닝 실험을 돌리면서, W&B dashboard로 서로의 loss 그래프를 실시간 비교하고 Slack 알림까지 연동해서 학습 완료 여부를 자동으로 공유해요.',
       pitfall:

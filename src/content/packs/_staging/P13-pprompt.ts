@@ -284,7 +284,7 @@ schema = {"type": "object", "required": ["감정"]}
 data = {"감정": "기쁨"}
 try:
     jsonschema.validate(data, schema)
-    print("[결과] 검증 통과 — 데이터가 스키마 규칙을 만족합니다")
+    print("[결과] 검증 통과 - 데이터가 스키마 규칙을 만족합니다")
 except jsonschema.ValidationError as e:
     print(f"[오류] 검증 실패: {e.message}")`,
     explain: {
@@ -302,7 +302,7 @@ except jsonschema.ValidationError as e:
       why:
         'LLM은 확률적으로 응답을 생성하기 때문에 가끔 틀린 형식의 출력을 내요. 검증 단계를 추가하면 이런 불안정성을 잡아내고 안정적인 서비스를 만들 수 있어요.',
       expectedOutput:
-        '[결과] 검증 통과 — 데이터가 스키마 규칙을 만족합니다',
+        '[결과] 검증 통과 - 데이터가 스키마 규칙을 만족합니다',
       realWorldUsage:
         'RAG 챗봇에서 검색된 문서들을 LLM에 전달해 JSON 요약을 생성하게 한 뒤, jsonschema.validate()로 필수 필드("요약", "출처")가 모두 있는지 확인해요. 누락됐으면 재시도하고, 3회 실패 시 빈 응답을 반환해요.',
       pitfall:
@@ -406,7 +406,7 @@ reply = '{"감정": "분노", "점수": 70}'
 item = Feeling.model_validate_json(reply)
 print(f"[결과] 감정: {item.감정}")
 print(f"[결과] 점수: {item.점수}")
-print(f"[정보] 검증 통과 — 타입: {type(item).__name__}")`,
+print(f"[정보] 검증 통과 - 타입: {type(item).__name__}")`,
     explain: {
       concept:
         'model_validate_json()은 LLM이 반환한 JSON 문자열을 한 번에 Pydantic 객체로 변환하면서 동시에 타입 검증까지 수행하는 편리한 메서드예요. ' +
@@ -422,7 +422,7 @@ print(f"[정보] 검증 통과 — 타입: {type(item).__name__}")`,
       why:
         '파싱과 검증을 한 단계로 통합하면 코드가 간결해지고, 중간에 검증이 누락되는 실수를 방지할 수 있어요.',
       expectedOutput:
-        '[결과] 감정: 분노\n[결과] 점수: 70\n[정보] 검증 통과 — 타입: Feeling',
+        '[결과] 감정: 분노\n[결과] 점수: 70\n[정보] 검증 통과 - 타입: Feeling',
       realWorldUsage:
         'LLM API 응답 핸들러에서 model_validate_json()으로 즉시 검증하고, 실패 시 ValidationError를 캐치해서 재시도 로직을 타게 해요. 한 줄로 변환+검증이 끝나서 코드 리뷰하기도 좋아요.',
       pitfall:

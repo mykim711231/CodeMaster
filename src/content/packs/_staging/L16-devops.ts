@@ -31,7 +31,7 @@ java {
         { t: "id 'java'", d: '자바 컴파일·테스트·JAR 생성까지 가능한 표준 Gradle 플러그인이에요' },
         { t: "'org.springframework.boot'", d: 'bootJar·bootRun 같은 스프링 부트 전용 태스크를 추가해요' },
         { t: "'io.spring.dependency-management' version '1.1.6'", d: '의존성 버전을 스프링 부트 BOM에 맞춰 한 번에 관리하는 도구예요' },
-        { t: 'group', d: '메이븐 groupId와 같은 개념 — 보통 회사 도메인을 거꾸로 적어요' },
+        { t: 'group', d: '메이븐 groupId와 같은 개념 - 보통 회사 도메인을 거꾸로 적어요' },
         { t: 'JavaLanguageVersion.of(21)', d: '자바 21 툴체인을 자동으로 다운로드받아 컴파일해요' },
       ],
       why:
@@ -70,7 +70,7 @@ java {
         'compileOnly와 annotationProcessor는 롬복처럼 컴파일 단계에서만 잠깐 쓰고 버리는 도구예요. ' +
         '이렇게 역할별로 구분해두면 최종 빌드 파일이 불필요한 라이브러리로 비대해지지 않고 보안도 좋아져요.',
       terms: [
-        { t: 'implementation', d: '컴파일과 런타임 모두에서 필요 — 가장 많이 쓰는 의존성 선언이에요' },
+        { t: 'implementation', d: '컴파일과 런타임 모두에서 필요 - 가장 많이 쓰는 의존성 선언이에요' },
         { t: 'runtimeOnly', d: '실행 시에만 클래스패스에 올라가요. DB 드라이버에 주로 써요' },
         { t: 'compileOnly', d: '컴파일 때만 참조하고 최종 패키징에는 빠져요. 롬복이 대표적이에요' },
         { t: 'annotationProcessor', d: '컴파일 중 어노테이션을 읽어 코드를 생성하는 처리기를 등록해요' },

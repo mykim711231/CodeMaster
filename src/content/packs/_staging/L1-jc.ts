@@ -13,7 +13,7 @@ export const javaCore: Snippet[] = [
     public Point(int x, int y) {
         this.x = x;
         this.y = y;
-        System.out.println("[실행] Point 생성 — x: " + x + ", y: " + y);
+        System.out.println("[실행] Point 생성 - x: " + x + ", y: " + y);
     }
 
     public static void main(String[] args) {
@@ -31,16 +31,16 @@ export const javaCore: Snippet[] = [
       terms: [
         { t: 'public class Point', d: '누구나 쓸 수 있는 Point라는 설계도를 정의해요' },
         { t: 'private final int x', d: 'x 좌표를 외부에서 직접 못 바꾸게 보호하고, 한 번만 값이 정해져요' },
-        { t: 'Point(int x, int y)', d: '객체를 만들 때 자동으로 실행되는 생성자예요 — 매개변수를 받아 필드를 채워줘요' },
-        { t: 'this.x = x', d: 'this는 "지금 이 객체 자신"을 뜻해요 — 매개변수와 필드를 구분할 때 꼭 필요해요' },
-        { t: 'main', d: '프로그램 실행을 시작하는 진입점이에요 — Java는 이 메서드로 시작해요' },
+        { t: 'Point(int x, int y)', d: '객체를 만들 때 자동으로 실행되는 생성자예요 - 매개변수를 받아 필드를 채워줘요' },
+        { t: 'this.x = x', d: 'this는 "지금 이 객체 자신"을 뜻해요 - 매개변수와 필드를 구분할 때 꼭 필요해요' },
+        { t: 'main', d: '프로그램 실행을 시작하는 진입점이에요 - Java는 이 메서드로 시작해요' },
       ],
       why:
         '관련 데이터와 동작을 하나로 묶어서 코드 구조를 깔끔하게 관리하려고 써요. ' +
         '실무에서는 게시글(Post), 주문(Order) 같은 핵심 개념을 모두 클래스로 표현해요.',
       expectedOutput:
         'java Point\n' +
-        '[실행] Point 생성 — x: 3, y: 5\n' +
+        '[실행] Point 생성 - x: 3, y: 5\n' +
         '[결과] Point 객체: (3, 5)',
       realWorldUsage:
         '실제 프로젝트에서 주문 정보를 담는 Order 클래스를 만들 때 똑같은 구조를 써요. ' +
@@ -67,14 +67,14 @@ export const javaCore: Snippet[] = [
       concept:
         '인터페이스는 "이런 동작을 할 수 있다"는 약속(계약)만 정하고, 실제 방법은 구현하는 클래스가 채워 넣어요. ' +
         '식당으로 치면 "요리사는 요리할 수 있다"는 계약이고, 한식 요리사·중식 요리사가 각자 자기 방식으로 구현하는 거예요. ' +
-        'default 메서드가 추가되면서 인터페이스도 기본 구현을 제공할 수 있게 됐어요 — 텅 빈 계약서가 아니라 기본 양식도 줄 수 있는 거죠. ' +
+        'default 메서드가 추가되면서 인터페이스도 기본 구현을 제공할 수 있게 됐어요 - 텅 빈 계약서가 아니라 기본 양식도 줄 수 있는 거죠. ' +
         '실무에서는 Service 인터페이스를 먼저 정의하고, 실제 로직은 ServiceImpl 클래스가 구현하는 식으로 많이 써요. ' +
         '이렇게 하면 나중에 구현체를 바꿔도(예: 진짜 결제 → 가짜 결제) 인터페이스를 쓰는 쪽 코드는 전혀 안 바뀌어요.',
       terms: [
-        { t: 'interface', d: '동작의 약속만 모아둔 틀이에요 — 몸체 없는 메서드 시그니처를 선언해요' },
-        { t: 'double area();', d: '구현 클래스가 반드시 작성해야 하는 추상 메서드예요 — 세미콜론만 있고 몸체는 없어요' },
-        { t: 'default', d: '인터페이스가 직접 기본 구현을 제공하는 키워드예요 — 모든 구현체가 공유하는 공통 코드를 넣어요' },
-        { t: 'area() 호출', d: 'default 메서드 안에서도 추상 메서드를 호출할 수 있어요 — 구체적인 계산은 구현체가 해줘요' },
+        { t: 'interface', d: '동작의 약속만 모아둔 틀이에요 - 몸체 없는 메서드 시그니처를 선언해요' },
+        { t: 'double area();', d: '구현 클래스가 반드시 작성해야 하는 추상 메서드예요 - 세미콜론만 있고 몸체는 없어요' },
+        { t: 'default', d: '인터페이스가 직접 기본 구현을 제공하는 키워드예요 - 모든 구현체가 공유하는 공통 코드를 넣어요' },
+        { t: 'area() 호출', d: 'default 메서드 안에서도 추상 메서드를 호출할 수 있어요 - 구체적인 계산은 구현체가 해줘요' },
       ],
       why:
         '여러 클래스가 같은 방식으로 동작하도록 공통 규격을 정하려고 써요. ' +
@@ -120,11 +120,11 @@ export const javaCore: Snippet[] = [
         'Enum 안에 필드와 메서드를 넣을 수 있어서 단순한 상수 목록을 넘어 풍부한 객체처럼 만들 수 있어요. ' +
         '문자열 "ACTIVE"를 직접 쓰면 오타가 나도 컴파일러가 못 잡지만, Status.ACTIVE처럼 쓰면 오타가 나자마자 빨간 줄이 떠서 바로 알 수 있어요.',
       terms: [
-        { t: 'enum Status', d: 'Status라는 이름의 열거형 타입을 정의해요 — 정해진 값만 쓸 수 있어요' },
-        { t: 'ACTIVE, INACTIVE, DELETED', d: 'Status가 가질 수 있는 고정된 값 목록이에요 — 이 외의 값은 절대 넣을 수 없어요' },
+        { t: 'enum Status', d: 'Status라는 이름의 열거형 타입을 정의해요 - 정해진 값만 쓸 수 있어요' },
+        { t: 'ACTIVE, INACTIVE, DELETED', d: 'Status가 가질 수 있는 고정된 값 목록이에요 - 이 외의 값은 절대 넣을 수 없어요' },
         { t: 'private final String label', d: '각 값에 붙일 부가 정보(한글 설명)를 저장하는 필드예요' },
         { t: 'Status(String label)', d: '각 열거 상수가 생성될 때 호출되는 비공개 생성자예요' },
-        { t: 'main', d: '프로그램 진입점이에요 — ACTIVE 값을 꺼내서 라벨과 함께 출력해요' },
+        { t: 'main', d: '프로그램 진입점이에요 - ACTIVE 값을 꺼내서 라벨과 함께 출력해요' },
       ],
       why:
         '"active" 같은 문자열 오타를 막고, 정해진 값만 쓰게 안전장치를 두려고 써요. ' +
@@ -147,7 +147,7 @@ export const javaCore: Snippet[] = [
 
     public Money {
         if (amount < 0) throw new IllegalArgumentException("negative");
-        System.out.println("[실행] Money 생성 — " + amount + " " + currency);
+        System.out.println("[실행] Money 생성 - " + amount + " " + currency);
     }
 
     public static void main(String[] args) {
@@ -162,9 +162,9 @@ export const javaCore: Snippet[] = [
         '한 번 만들면 필드 값을 절대 바꿀 수 없는(불변) 게 특징인데, Compact 생성자로 값이 올바른지만 검증할 수 있어요. ' +
         '실무에서는 API 응답 객체(DTO), 설정 정보, 좌표·금액 같은 값 객체(VO)를 만들 때 가장 먼저 떠올리는 도구예요.',
       terms: [
-        { t: 'record Money(long amount, String currency)', d: '불변 데이터 객체를 한 줄로 선언해요 — amount()와 currency() 접근자도 자동으로 생겨요' },
-        { t: 'public Money { ... }', d: 'Compact 생성자예요 — 중괄호 안에서 값 검증만 하고 필드 할당은 자동으로 이뤄져요' },
-        { t: 'IllegalArgumentException', d: '잘못된 인자가 들어왔을 때 던지는 예외예요 — 음수 금액을 막아줘요' },
+        { t: 'record Money(long amount, String currency)', d: '불변 데이터 객체를 한 줄로 선언해요 - amount()와 currency() 접근자도 자동으로 생겨요' },
+        { t: 'public Money { ... }', d: 'Compact 생성자예요 - 중괄호 안에서 값 검증만 하고 필드 할당은 자동으로 이뤄져요' },
+        { t: 'IllegalArgumentException', d: '잘못된 인자가 들어왔을 때 던지는 예외예요 - 음수 금액을 막아줘요' },
         { t: 'm.amount()', d: '레코드는 getAmount() 대신 amount() 접근자를 자동으로 만들어줘요' },
       ],
       why:
@@ -172,7 +172,7 @@ export const javaCore: Snippet[] = [
         '실무에서는 API 응답·요청 DTO의 90% 이상을 record로 만들어요.',
       expectedOutput:
         'java Money\n' +
-        '[실행] Money 생성 — 5000 KRW\n' +
+        '[실행] Money 생성 - 5000 KRW\n' +
         '[결과] 금액: 5000 KRW',
       realWorldUsage:
         '실제 REST API에서 클라이언트가 보낸 JSON을 받을 때, public record SignupRequest(String email, String password) {} 한 줄로 DTO를 정의해요. ' +
@@ -207,14 +207,14 @@ export const javaCore: Snippet[] = [
     explain: {
       concept:
         '제네릭(Generic)은 "타입을 나중에 정하는 빈칸"이에요. Box<T>라고 쓰면 T 자리에 나중에 String, Integer 등 실제 타입이 들어와요. ' +
-        'Box<String>으로 쓰면 문자열 전용 상자가 되고, Box<Integer>면 정수 전용 상자가 되는 거예요 — 코드는 하나인데 타입만 바꿔 재사용할 수 있어서 코드 중복이 사라져요. ' +
+        'Box<String>으로 쓰면 문자열 전용 상자가 되고, Box<Integer>면 정수 전용 상자가 되는 거예요 - 코드는 하나인데 타입만 바꿔 재사용할 수 있어서 코드 중복이 사라져요. ' +
         '컴파일 시점에 타입이 확정되기 때문에, 잘못된 타입을 넣으려고 하면 컴파일러가 바로 빨간 줄을 그어줘요. ' +
         '실무에서는 Repository<T, ID>, Optional<T>, List<T>처럼 거의 모든 곳에서 제네릭을 마주쳐요.',
       terms: [
-        { t: '<T>', d: '타입 매개변수 자리표시자예요 — 나중에 String, Integer 등 실제 타입으로 바뀌어요' },
+        { t: '<T>', d: '타입 매개변수 자리표시자예요 - 나중에 String, Integer 등 실제 타입으로 바뀌어요' },
         { t: 'private T value', d: '아직 미정인 타입 T의 값을 저장하는 필드예요' },
-        { t: 'Box<String>', d: 'T 자리에 String이 들어간 구체적인 타입이에요 — 컴파일 시점에 타입이 확정돼요' },
-        { t: 'box.set("hello")', d: 'String 타입만 넣을 수 있어요 — Integer를 넣으면 컴파일 에러가 나요' },
+        { t: 'Box<String>', d: 'T 자리에 String이 들어간 구체적인 타입이에요 - 컴파일 시점에 타입이 확정돼요' },
+        { t: 'box.set("hello")', d: 'String 타입만 넣을 수 있어요 - Integer를 넣으면 컴파일 에러가 나요' },
       ],
       why:
         '타입마다 똑같은 코드를 반복해 만들지 않으려고 제네릭을 써요. ' +
@@ -227,7 +227,7 @@ export const javaCore: Snippet[] = [
       realWorldUsage:
         '실제로 스프링의 JpaRepository<T, ID>가 이 제네릭 문법으로 만들어져 있어요. ' +
         'JpaRepository<User, Long>이라고 쓰면 User 엔티티와 Long ID에 맞춰진 리포지토리가 자동 구성돼요.',
-      pitfall: 'Box와 Box<int>는 쓸 수 없어요 — 제네릭 타입 인자에는 참조 타입만 올 수 있어요. int 대신 Integer를 쓰세요.',
+      pitfall: 'Box와 Box<int>는 쓸 수 없어요 - 제네릭 타입 인자에는 참조 타입만 올 수 있어요. int 대신 Integer를 쓰세요.',
     },
   },
   {
@@ -259,7 +259,7 @@ public class Util {
         '실무에서는 컬렉션 유틸리티 메서드나 변환기(Converter) 같은 곳에서 자주 등장해요.',
       terms: [
         { t: 'static <T> T firstOrNull', d: '<T>는 "이 메서드만의 타입 매개변수"를 선언하고, 반환형 T는 그 타입을 결과로 돌려줘요' },
-        { t: 'List<T> list', d: '어떤 타입의 리스트든 받을 수 있어요 — 호출 시점에 타입이 결정돼요' },
+        { t: 'List<T> list', d: '어떤 타입의 리스트든 받을 수 있어요 - 호출 시점에 타입이 결정돼요' },
         { t: 'list.isEmpty() ? null : list.get(0)', d: '삼항 연산자로 리스트가 비었으면 null, 아니면 첫 요소를 반환해요' },
         { t: 'Util.firstOrNull(names)', d: 'static 메서드니까 객체 없이 클래스명으로 바로 호출해요' },
       ],
@@ -286,13 +286,13 @@ public class Util {
 
 record Ok(String value) implements Result {
     public Ok {
-        System.out.println("[실행] Ok 생성 — 값: " + value);
+        System.out.println("[실행] Ok 생성 - 값: " + value);
     }
 }
 
 record Err(String message) implements Result {
     public Err {
-        System.out.println("[실행] Err 생성 — 메시지: " + message);
+        System.out.println("[실행] Err 생성 - 메시지: " + message);
     }
 }
 
@@ -306,22 +306,22 @@ class Demo {
     explain: {
       concept:
         'Sealed(봉인)는 "이 인터페이스를 구현할 수 있는 클래스를 딱 이 목록으로 제한한다"고 컴파일러에게 알려주는 문법이에요. ' +
-        '성공(Ok)과 실패(Err)처럼 가능한 경우가 정해져 있는 상황에 딱 맞아요 — 제3의 상태가 끼어들지 못하게 원천 차단해요. ' +
+        '성공(Ok)과 실패(Err)처럼 가능한 경우가 정해져 있는 상황에 딱 맞아요 - 제3의 상태가 끼어들지 못하게 원천 차단해요. ' +
         'Sealed와 switch를 같이 쓰면 컴파일러가 "모든 경우를 다 다뤘는지" 확인해줘서, 새 상태를 추가했는데 처리를 빼먹는 실수를 컴파일 시점에 잡아줘요. ' +
         'Java 21의 패턴 매칭과 결합하면 switch에서 타입별로 깔끔하게 분기할 수 있어서 코드가 훨씬 읽기 쉬워져요.',
       terms: [
-        { t: 'sealed', d: '"봉인" — 허락된 구현체 목록 외에는 누구도 이 타입을 구현할 수 없어요' },
-        { t: 'permits Ok, Err', d: '구현을 허용하는 타입 목록을 명시해요 — 이 목록에 없는 클래스는 컴파일 에러가 나요' },
-        { t: 'record Ok(String value)', d: '성공 케이스를 담는 불변 데이터 객체예요 — implements Result로 계약을 이행해요' },
-        { t: 'record Err(String message)', d: '실패 케이스를 담는 불변 데이터 객체예요 — 오류 메시지를 보관해요' },
+        { t: 'sealed', d: '"봉인" - 허락된 구현체 목록 외에는 누구도 이 타입을 구현할 수 없어요' },
+        { t: 'permits Ok, Err', d: '구현을 허용하는 타입 목록을 명시해요 - 이 목록에 없는 클래스는 컴파일 에러가 나요' },
+        { t: 'record Ok(String value)', d: '성공 케이스를 담는 불변 데이터 객체예요 - implements Result로 계약을 이행해요' },
+        { t: 'record Err(String message)', d: '실패 케이스를 담는 불변 데이터 객체예요 - 오류 메시지를 보관해요' },
       ],
       why:
         '경우의 수를 제한해 switch에서 빠뜨림 없이 처리하도록 컴파일러가 강제하게 하려고 써요. ' +
         '실무에서는 Result 타입(Ok/Err)이나 결제상태(Pending/Completed/Failed/Refunded) 등 "경우의 수가 고정된 도메인"에 써요.',
       expectedOutput:
         'java Demo\n' +
-        '[실행] Ok 생성 — 값: 데이터\n' +
-        '[실행] Err 생성 — 메시지: 실패\n' +
+        '[실행] Ok 생성 - 값: 데이터\n' +
+        '[실행] Err 생성 - 메시지: 실패\n' +
         '[결과] Ok: Ok[value=데이터], Err: Err[message=실패]',
       realWorldUsage:
         '실제로 API 응답을 통일할 때 sealed interface ApiResponse permits Success, Failure 를 정의해 써요. ' +
@@ -354,9 +354,9 @@ public class Lists {
         'stream은 원본을 건드리지 않고 새 컬렉션을 만들어내기 때문에 원본 데이터가 안전하게 보호돼요. ' +
         '실무에서는 DB에서 꺼낸 엔티티 목록을 DTO 목록으로 변환할 때 이 stream-map 패턴을 가장 많이 써요.',
       terms: [
-        { t: 'List.of("kim", "lee", "park")', d: '고정된(불변) 문자열 목록을 한 줄로 만들어요 — add/remove가 불가능해요' },
+        { t: 'List.of("kim", "lee", "park")', d: '고정된(불변) 문자열 목록을 한 줄로 만들어요 - add/remove가 불가능해요' },
         { t: '.stream()', d: '컬렉션에서 값을 하나씩 흘려보내는 파이프라인을 열어요' },
-        { t: '.map(String::toUpperCase)', d: '각 문자열을 대문자로 변환해요 — 메서드 참조(::)로 더 짧게 써요' },
+        { t: '.map(String::toUpperCase)', d: '각 문자열을 대문자로 변환해요 - 메서드 참조(::)로 더 짧게 써요' },
         { t: '.toList()', d: '스트림 결과를 불변 List로 수집해요 (Java 16+)' },
       ],
       why:
@@ -384,7 +384,7 @@ public class Maps {
     public static void main(String[] args) {
         Map<String, Integer> scores = new HashMap<>();
         scores.put("math", 90);
-        System.out.println("[실행] 추가 — math: " + scores.get("math"));
+        System.out.println("[실행] 추가 - math: " + scores.get("math"));
 
         scores.merge("math", 5, Integer::sum);
         System.out.println("[실행] merge 후 math: " + scores.get("math"));
@@ -395,21 +395,21 @@ public class Maps {
     explain: {
       concept:
         'Map은 키-값 쌍을 저장하는 사전 같은 자료구조예요. "math"라는 키로 점수 90을 저장하고, 나중에 "math"로 바로 찾을 수 있어요. ' +
-        'merge()는 특별한 메서드인데, 키가 이미 있으면 기존 값에 새 값을 함수로 합치고, 없으면 그냥 넣어줘요 — 카운터나 누적 집계에 아주 편리해요. ' +
+        'merge()는 특별한 메서드인데, 키가 이미 있으면 기존 값에 새 값을 함수로 합치고, 없으면 그냥 넣어줘요 - 카운터나 누적 집계에 아주 편리해요. ' +
         'forEach로 모든 키-값 쌍을 하나씩 순회할 수 있어서, 결과 출력이나 집계 작업을 간결하게 작성할 수 있어요.',
       terms: [
-        { t: 'Map<String, Integer>', d: '"문자열 키 → 정수 값" 구조의 사전을 만들어요 — 타입 안전하게 키와 값의 타입을 지정해요' },
-        { t: 'put("math", 90)', d: 'math라는 키에 90을 저장해요 — 이미 있으면 값이 덮어써져요' },
+        { t: 'Map<String, Integer>', d: '"문자열 키 → 정수 값" 구조의 사전을 만들어요 - 타입 안전하게 키와 값의 타입을 지정해요' },
+        { t: 'put("math", 90)', d: 'math라는 키에 90을 저장해요 - 이미 있으면 값이 덮어써져요' },
         { t: 'merge(key, 5, Integer::sum)', d: '키가 있으면 기존 값에 5를 더하고, 없으면 5를 새로 넣어요' },
         { t: 'forEach((k, v) -> ...)', d: '모든 키-값 쌍을 하나씩 꺼내 람다로 처리해요' },
-        { t: 'Integer::sum', d: '두 정수를 더하는 메서드 참조예요 — (a, b) -> a + b 와 같아요' },
+        { t: 'Integer::sum', d: '두 정수를 더하는 메서드 참조예요 - (a, b) -> a + b 와 같아요' },
       ],
       why:
         '이름표(키)로 값을 빠르게 찾거나, 키별로 집계할 때 Map을 써요. ' +
         '실무에서는 캐시 구현, 요청 파라미터 파싱, 카운터 집계 등 거의 모든 곳에 Map이 등장해요.',
       expectedOutput:
         'java Maps\n' +
-        '[실행] 추가 — math: 90\n' +
+        '[실행] 추가 - math: 90\n' +
         '[실행] merge 후 math: 95\n' +
         '[결과] math=95',
       realWorldUsage:
@@ -431,7 +431,7 @@ import java.nio.file.Path;
 
 public class Io {
     public static String readFirstLine(Path path) {
-        System.out.println("[실행] 파일 읽기 — 경로: " + path);
+        System.out.println("[실행] 파일 읽기 - 경로: " + path);
         try (var reader = Files.newBufferedReader(path)) {
             String line = reader.readLine();
             System.out.println("[결과] 첫 줄: " + line);
@@ -445,11 +445,11 @@ public class Io {
     explain: {
       concept:
         'Try-with-resources는 파일, 네트워크 연결처럼 "쓰고 나면 반드시 닫아야 하는 자원"을 자동으로 닫아주는 문법이에요. ' +
-        'try 괄호 안에서 연 자원은 코드가 끝나거나 예외가 발생해도 무조건 close()가 호출돼요 — 깜빡하고 close()를 안 불러서 메모리 누수가 생기는 사고를 원천 차단해줘요. ' +
-        'IOException 같은 입출력 예외를 catch 블록에서 잡아서 UncheckedIOException이라는 언체크 예외로 감싸서 다시 던지고 있어요 — 이렇게 하면 호출하는 쪽에서 throws를 강제하지 않아도 돼요.',
+        'try 괄호 안에서 연 자원은 코드가 끝나거나 예외가 발생해도 무조건 close()가 호출돼요 - 깜빡하고 close()를 안 불러서 메모리 누수가 생기는 사고를 원천 차단해줘요. ' +
+        'IOException 같은 입출력 예외를 catch 블록에서 잡아서 UncheckedIOException이라는 언체크 예외로 감싸서 다시 던지고 있어요 - 이렇게 하면 호출하는 쪽에서 throws를 강제하지 않아도 돼요.',
       terms: [
         { t: 'try (var reader = ...)', d: '괄호 안에서 연 자원은 try 블록이 끝날 때 자동으로 close()가 호출돼요' },
-        { t: 'Files.newBufferedReader(path)', d: '파일을 읽기 위한 BufferedReader를 열어요 — 한 줄씩 효율적으로 읽어요' },
+        { t: 'Files.newBufferedReader(path)', d: '파일을 읽기 위한 BufferedReader를 열어요 - 한 줄씩 효율적으로 읽어요' },
         { t: 'catch (IOException e)', d: '파일이 없거나 읽기 권한이 없을 때 등 입출력 오류를 잡아 처리해요' },
         { t: 'UncheckedIOException', d: '체크 예외(IOException)를 언체크 예외로 감싸는 래퍼예요' },
       ],
@@ -458,7 +458,7 @@ public class Io {
         'finally 블록에 직접 close()를 쓰는 것보다 훨씬 간결하고, 실수로 close()를 빼먹을 위험이 없어요.',
       expectedOutput:
         'readFirstLine(test.txt) 호출 시:\n' +
-        '[실행] 파일 읽기 — 경로: test.txt\n' +
+        '[실행] 파일 읽기 - 경로: test.txt\n' +
         '[결과] 첫 줄: hello world',
       realWorldUsage:
         '실제로 설정 파일 읽기, 로그 파일 분석, HTTP 응답 본문 읽기 등 입출력이 있는 모든 곳에서 try-with-resources를 써요. ' +
@@ -475,7 +475,7 @@ public class Io {
 
     public NotFoundException(String message) {
         super(message);
-        System.out.println("[실행] NotFoundException 생성 — 메시지: " + message);
+        System.out.println("[실행] NotFoundException 생성 - 메시지: " + message);
     }
 
     public static void main(String[] args) {
@@ -493,10 +493,10 @@ public class Io {
         'RuntimeException을 상속받으면 throws 선언 없이도 어디서든 던질 수 있어서 스프링의 예외 처리 구조와 잘 맞아요. ' +
         '실무에서는 각 도메인 패키지마다 커스텀 예외를 만들어서 예외 종류만 봐도 어느 영역에서 문제가 생겼는지 알 수 있게 해요.',
       terms: [
-        { t: 'extends RuntimeException', d: '언체크 예외로 만들어요 — throws 없이 던질 수 있고, 스프링이 자동 롤백 처리해줘요' },
-        { t: 'super(message)', d: '부모(Exception) 생성자를 호출해서 오류 메시지를 전달해요 — getMessage()로 꺼낼 수 있어요' },
-        { t: 'throw new NotFoundException', d: '예외 객체를 만들어 던져요 — 실행 흐름이 즉시 catch 블록으로 점프해요' },
-        { t: 'catch (NotFoundException e)', d: '특정 예외 타입만 골라 잡아요 — 여러 catch 블록으로 타입별 처리가 가능해요' },
+        { t: 'extends RuntimeException', d: '언체크 예외로 만들어요 - throws 없이 던질 수 있고, 스프링이 자동 롤백 처리해줘요' },
+        { t: 'super(message)', d: '부모(Exception) 생성자를 호출해서 오류 메시지를 전달해요 - getMessage()로 꺼낼 수 있어요' },
+        { t: 'throw new NotFoundException', d: '예외 객체를 만들어 던져요 - 실행 흐름이 즉시 catch 블록으로 점프해요' },
+        { t: 'catch (NotFoundException e)', d: '특정 예외 타입만 골라 잡아요 - 여러 catch 블록으로 타입별 처리가 가능해요' },
       ],
       why:
         '표준 예외만으로는 비즈니스 의미를 표현하기 어려워서 커스텀 예외를 만들어요. ' +
@@ -504,7 +504,7 @@ public class Io {
         '실무에서는 @ExceptionHandler와 연결해 404나 400 같은 적절한 HTTP 상태 코드로 자동 변환되게 해요.',
       expectedOutput:
         'java NotFoundException\n' +
-        '[실행] NotFoundException 생성 — 메시지: 회원을 찾을 수 없음\n' +
+        '[실행] NotFoundException 생성 - 메시지: 회원을 찾을 수 없음\n' +
         '[결과] 예외 잡힘: 회원을 찾을 수 없음',
       realWorldUsage:
         '실제로 UserController.findUser()에서 DB에 사용자가 없으면 throw new NotFoundException("user " + id)를 던지고, ' +
@@ -538,10 +538,10 @@ public class Lambdas {
         'Function은 입력 하나를 받아 결과를 반환하는 함수, Supplier는 입력 없이 결과만 공급하는 함수, Runnable은 입력도 결과도 없이 실행만 하는 함수예요. ' +
         '실무에서는 스트림의 map, filter, forEach에 람다를 넘기거나, 비동기 작업을 정의할 때 매일 써요.',
       terms: [
-        { t: 'n -> n * n', d: '입력 n을 받아 n*n을 반환하는 함수예요 — Function<Integer, Integer>에 담겨요' },
+        { t: 'n -> n * n', d: '입력 n을 받아 n*n을 반환하는 함수예요 - Function<Integer, Integer>에 담겨요' },
         { t: '() -> "hello"', d: '입력 없이 "hello"를 반환하는 공급자(Supplier)예요' },
         { t: '() -> System.out.println(...)', d: '입력도 결과도 없이 실행만 하는 Runnable이에요' },
-        { t: 'Function<Integer, Integer>', d: 'Integer를 받아 Integer를 반환하는 함수 타입이에요 — apply()로 실행해요' },
+        { t: 'Function<Integer, Integer>', d: 'Integer를 받아 Integer를 반환하는 함수 타입이에요 - apply()로 실행해요' },
       ],
       why:
         '동작을 값처럼 전달해서 코드를 간결하게 만들려고 써요. ' +
@@ -583,10 +583,10 @@ public class Streams {
         '이 모든 과정은 원본 리스트를 건드리지 않고 새 리스트를 만들어내기 때문에, 원본 데이터가 안전하게 보호돼요. ' +
         '실무에서는 검색 결과 필터링, 유효하지 않은 데이터 제거, 조건부 집계 등에 filter-sorted 조합을 매일 써요.',
       terms: [
-        { t: '.filter(n -> n % 2 == 0)', d: '각 요소에 대해 조건이 참인 것만 다음 단계로 보내요 — %는 나머지 연산자예요' },
-        { t: '.sorted()', d: '스트림을 오름차순으로 정렬해요 — Comparator를 넘겨 내림차순 등 커스텀 정렬도 가능해요' },
-        { t: '.toList()', d: '스트림을 불변 List로 수집해요 — 최종 연산이라 이걸 호출해야 실제로 데이터가 흘러요' },
-        { t: 'n % 2', d: 'n을 2로 나눈 나머지를 구해요 — 0이면 짝수, 1이면 홀수예요' },
+        { t: '.filter(n -> n % 2 == 0)', d: '각 요소에 대해 조건이 참인 것만 다음 단계로 보내요 - %는 나머지 연산자예요' },
+        { t: '.sorted()', d: '스트림을 오름차순으로 정렬해요 - Comparator를 넘겨 내림차순 등 커스텀 정렬도 가능해요' },
+        { t: '.toList()', d: '스트림을 불변 List로 수집해요 - 최종 연산이라 이걸 호출해야 실제로 데이터가 흘러요' },
+        { t: 'n % 2', d: 'n을 2로 나눈 나머지를 구해요 - 0이면 짝수, 1이면 홀수예요' },
       ],
       why:
         '컬렉션에서 조건을 만족하는 요소만 골라내려고 filter를 써요. ' +
@@ -623,11 +623,11 @@ public class Grouping {
     explain: {
       concept:
         'Collectors는 스트림을 마무리할 때 결과를 다양한 형태로 수집하는 도구 모음이에요. ' +
-        'partitioningBy는 조건이 참인 그룹과 거짓인 그룹, 딱 두 그룹으로 데이터를 나눠줘요 — 여기서는 양수(true)와 음수+0(false)로 분할하고 있어요. ' +
+        'partitioningBy는 조건이 참인 그룹과 거짓인 그룹, 딱 두 그룹으로 데이터를 나눠줘요 - 여기서는 양수(true)와 음수+0(false)로 분할하고 있어요. ' +
         'groupingBy를 쓰면 여러 그룹으로 나눌 수 있고, toMap을 쓰면 키-값 맵으로도 만들 수 있어요. ' +
         '실무에서는 통계 집계, 카테고리별 분류, 등급별 회원 분할 같은 작업에 이 Collectors 패밀리를 써요.',
       terms: [
-        { t: '.collect(...)', d: '스트림의 최종 연산이에요 — 흘러온 모든 값을 하나의 결과로 모아줘요' },
+        { t: '.collect(...)', d: '스트림의 최종 연산이에요 - 흘러온 모든 값을 하나의 결과로 모아줘요' },
         { t: 'partitioningBy(n -> n > 0)', d: '조건이 true인 그룹과 false인 그룹으로 나누는 Collectors예요' },
         { t: 'Map<Boolean, List<Integer>>', d: 'true 키에 양수 리스트, false 키에 나머지 리스트가 담겨요' },
         { t: 'parts.get(true)', d: 'true 키로 양수 그룹의 리스트를 꺼내요' },
@@ -675,13 +675,13 @@ public class Optionals {
       concept:
         'Optional은 "값이 있을 수도, 없을 수도 있다"는 상황을 안전하게 표현하는 상자예요. ' +
         'Java에서 가장 무서운 NullPointerException을 근본적으로 막아주는 도구로, null일 수 있는 값을 ofNullable로 감싸면 값이 없을 때도 안전하게 처리할 수 있어요. ' +
-        'map은 값이 있을 때만 변환을 적용하고, orElse는 값이 없을 때 기본값을 제공해요 — "값 있으면 처리, 없으면 기본값"이라는 흐름이 한 줄로 표현돼요. ' +
+        'map은 값이 있을 때만 변환을 적용하고, orElse는 값이 없을 때 기본값을 제공해요 - "값 있으면 처리, 없으면 기본값"이라는 흐름이 한 줄로 표현돼요. ' +
         '실무에서는 DB 조회 결과(findById가 Optional을 반환)를 처리하거나, 외부 API 응답의 null 가능 필드를 다룰 때 필수적으로 써요.',
       terms: [
-        { t: 'Optional.ofNullable(user)', d: 'null일 수도 있는 값을 Optional 상자에 담아요 — null이면 빈 상자가 돼요' },
-        { t: '.map(User::name)', d: '값이 있을 때만 name을 꺼내요 — 값이 없으면 아무것도 하지 않고 빈 Optional을 반환해요' },
-        { t: '.orElse("guest")', d: '값이 있으면 그 값을, 없으면 "guest"를 반환해요 — 최종적으로 null이 절대 나오지 않아요' },
-        { t: 'Optional.ofNullable(null)', d: 'null을 넣으면 Optional.empty()가 반환돼요 — NPE 대신 안전한 빈 상자예요' },
+        { t: 'Optional.ofNullable(user)', d: 'null일 수도 있는 값을 Optional 상자에 담아요 - null이면 빈 상자가 돼요' },
+        { t: '.map(User::name)', d: '값이 있을 때만 name을 꺼내요 - 값이 없으면 아무것도 하지 않고 빈 Optional을 반환해요' },
+        { t: '.orElse("guest")', d: '값이 있으면 그 값을, 없으면 "guest"를 반환해요 - 최종적으로 null이 절대 나오지 않아요' },
+        { t: 'Optional.ofNullable(null)', d: 'null을 넣으면 Optional.empty()가 반환돼요 - NPE 대신 안전한 빈 상자예요' },
       ],
       why:
         'null 체크를 강제해서 NullPointerException을 컴파일 시점에 예방하려고 써요. ' +
@@ -729,9 +729,9 @@ public class Async {
         '실무에서는 외부 API 호출, 파일 처리, 이메일 발송 등 시간이 걸리는 작업을 비동기로 전환할 때 써요.',
       terms: [
         { t: 'supplyAsync(() -> ...)', d: '백그라운드 스레드에서 작업을 실행하고 결과를 만들어내는 비동기 작업이에요' },
-        { t: 'thenApply(String::trim)', d: '앞 작업 결과가 오면 trim()을 적용해 변환해요 — 동기 변환이에요' },
-        { t: 'thenAccept(System.out::println)', d: '최종 결과를 받아서 소비만 해요 — 반환값 없이 끝나요' },
-        { t: '.join()', d: '파이프라인이 끝날 때까지 메인 스레드를 대기시켜요 — 없으면 결과 출력 전에 프로그램이 종료돼요' },
+        { t: 'thenApply(String::trim)', d: '앞 작업 결과가 오면 trim()을 적용해 변환해요 - 동기 변환이에요' },
+        { t: 'thenAccept(System.out::println)', d: '최종 결과를 받아서 소비만 해요 - 반환값 없이 끝나요' },
+        { t: '.join()', d: '파이프라인이 끝날 때까지 메인 스레드를 대기시켜요 - 없으면 결과 출력 전에 프로그램이 종료돼요' },
       ],
       why:
         '시간이 오래 걸리는 I/O 작업을 비동기로 처리해서 메인 스레드가 다른 요청을 계속 처리할 수 있게 하려고 써요. ' +
@@ -773,11 +773,11 @@ public class Async {
         'Switch Expression은 조건에 따라 "값을 돌려주는" 새로운 switch 문법이에요 (Java 14+). ' +
         '전통적인 switch는 break를 빼먹으면 다음 case로 떨어지는(fall-through) 버그가 있었는데, 화살표(->) 문법은 break 없이 바로 값을 반환해서 이런 실수가 원천 차단돼요. ' +
         '여러 case를 콤마로 묶을 수 있어서 APR, JUN, SEP, NOV처럼 같은 결과를 내는 조건을 한 줄로 표현할 수 있어요. ' +
-        '세미콜론이 case 라인 끝이 아니라 switch 블록 끝에 붙는다는 점에 주의하세요 — switch 전체가 "식을 평가해 값을 만든다"는 의미예요.',
+        '세미콜론이 case 라인 끝이 아니라 switch 블록 끝에 붙는다는 점에 주의하세요 - switch 전체가 "식을 평가해 값을 만든다"는 의미예요.',
       terms: [
-        { t: 'case FEB -> 28', d: 'FEB가 매칭되면 28을 결과값으로 반환해요 — break가 필요 없어요' },
-        { t: '->', d: '화살표 문법이에요 — case와 결과를 직관적으로 연결하고 fall-through 버그를 없애줘요' },
-        { t: 'default -> 31', d: '위 case들에 매칭되지 않은 모든 경우를 처리해요 — 빠뜨리면 컴파일 에러가 나요' },
+        { t: 'case FEB -> 28', d: 'FEB가 매칭되면 28을 결과값으로 반환해요 - break가 필요 없어요' },
+        { t: '->', d: '화살표 문법이에요 - case와 결과를 직관적으로 연결하고 fall-through 버그를 없애줘요' },
+        { t: 'default -> 31', d: '위 case들에 매칭되지 않은 모든 경우를 처리해요 - 빠뜨리면 컴파일 에러가 나요' },
         { t: 'int days = switch (month) { ... };', d: 'switch 전체가 하나의 식(expression)으로 값을 반환해 변수에 할당돼요' },
       ],
       why:
@@ -821,9 +821,9 @@ public class Async {
         'sealed 인터페이스와 조합하면 가능한 모든 하위 타입을 컴파일러가 알고 있어서 default 없이도 완벽한 분기 처리가 돼요. ' +
         '타입 안전성과 간결함을 동시에 잡은 문법이어서, 실무에서 다형성 분기 처리를 완전히 새로 쓰게 만드는 기능이에요.',
       terms: [
-        { t: 'case Circle c', d: 'shape가 Circle 타입이면 c라는 변수에 담아 바로 써요 — instanceof + 형변환을 한 번에 처리해요' },
+        { t: 'case Circle c', d: 'shape가 Circle 타입이면 c라는 변수에 담아 바로 써요 - instanceof + 형변환을 한 번에 처리해요' },
         { t: 'c.radius()', d: '패턴 매칭으로 얻은 변수 c에서 바로 Circle의 메서드를 호출할 수 있어요' },
-        { t: 'sealed interface Shape', d: '가능한 하위 타입이 Circle, Square 뿐이라고 컴파일러에게 알려줘요 — default가 필요 없어요' },
+        { t: 'sealed interface Shape', d: '가능한 하위 타입이 Circle, Square 뿐이라고 컴파일러에게 알려줘요 - default가 필요 없어요' },
       ],
       why:
         'instanceof로 타입 확인 후 형변환하던 반복 코드를 없애고, 새 타입 추가 시 누락된 처리를 컴파일 에러로 알 수 있게 하려고 써요. ' +
@@ -861,8 +861,8 @@ public class Async {
         '공통 들여쓰기는 자동으로 정리돼서, 코드 들여쓰기와 실제 문자열 내용이 분리돼요. ' +
         '실무에서는 SQL 쿼리, JSON 테스트 데이터, HTML 템플릿 등 여러 줄 문자열이 필요한 곳에서 가독성을 확 올려줘요.',
       terms: [
-        { t: '"""', d: 'Text Block의 시작과 끝을 나타내는 구분자예요 — 세 개의 큰따옴표로 감싸요' },
-        { t: '들여쓰기 자동 정리', d: '닫는 """의 위치를 기준으로 공통 공백이 제거돼요 — 코드 들여쓰기에 신경 안 써도 돼요' },
+        { t: '"""', d: 'Text Block의 시작과 끝을 나타내는 구분자예요 - 세 개의 큰따옴표로 감싸요' },
+        { t: '들여쓰기 자동 정리', d: '닫는 """의 위치를 기준으로 공통 공백이 제거돼요 - 코드 들여쓰기에 신경 안 써도 돼요' },
       ],
       why:
         'SQL, JSON, HTML 같은 여러 줄 문자열을 이스케이프 없이 사람이 읽기 좋게 작성하려고 써요. ' +
@@ -905,12 +905,12 @@ public class Loop {
         'Enhanced for(향상된 for문)는 배열이나 컬렉션의 모든 요소를 인덱스 없이 하나씩 꺼내 처리하는 반복문이에요. ' +
         '기존 for문처럼 int i = 0; i < list.size(); i++ 같은 인덱스 관리를 직접 할 필요가 없어서, "범위를 벗어났다"거나 "인덱스를 잘못 썼다"는 실수가 원천 차단돼요. ' +
         'var 키워드로 타입을 생략할 수 있어서 더 간결하게 쓸 수 있고, 읽을 때도 "numbers의 각 n에 대해"라고 자연스럽게 읽혀요. ' +
-        '실무에서 가장 많이 보는 반복문 스타일이에요 — 컬렉션 순회할 때는 거의 항상 이 형태를 써요.',
+        '실무에서 가장 많이 보는 반복문 스타일이에요 - 컬렉션 순회할 때는 거의 항상 이 형태를 써요.',
       terms: [
-        { t: 'for (var n : numbers)', d: 'numbers의 각 요소를 순서대로 n에 담아 반복해요 — 인덱스 없이 안전하게 순회해요' },
-        { t: 'var', d: '타입을 자동으로 추론해요 — numbers가 List<Integer>니까 n은 int로 추론돼요' },
-        { t: 'total += n', d: 'total에 n을 더한 값을 다시 total에 저장해요 — 복합 대입 연산자예요' },
-        { t: 'var total = 0', d: '초기값 0으로 total을 선언해요 — 컴파일러가 int 타입으로 추론해요' },
+        { t: 'for (var n : numbers)', d: 'numbers의 각 요소를 순서대로 n에 담아 반복해요 - 인덱스 없이 안전하게 순회해요' },
+        { t: 'var', d: '타입을 자동으로 추론해요 - numbers가 List<Integer>니까 n은 int로 추론돼요' },
+        { t: 'total += n', d: 'total에 n을 더한 값을 다시 total에 저장해요 - 복합 대입 연산자예요' },
+        { t: 'var total = 0', d: '초기값 0으로 total을 선언해요 - 컴파일러가 int 타입으로 추론해요' },
       ],
       why:
         '컬렉션을 간결하고 안전하게 순회하려고 써요. ' +

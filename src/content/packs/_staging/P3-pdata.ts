@@ -671,7 +671,7 @@ plt.show()`,
     code: `import matplotlib.pyplot as plt
 
 fig, axes = plt.subplots(1, 2)
-print(f"[실행] subplots(1,2) — 1행 2열 레이아웃")
+print(f"[실행] subplots(1,2) - 1행 2열 레이아웃")
 axes[0].plot([1, 2, 3], [1, 4, 9])
 axes[1].bar(['a', 'b', 'c'], [3, 5, 2])
 plt.show()`,
@@ -691,7 +691,7 @@ plt.show()`,
         '실무에서 A/B 테스트 리포트를 만들 때 "대조군 vs 실험군"의 전환율 추이를 좌우에 나란히 배치해서 직관적으로 비교해요.',
       expectedOutput:
         '실행 시:\n' +
-        '[실행] subplots(1,2) — 1행 2열 레이아웃\n' +
+        '[실행] subplots(1,2) - 1행 2열 레이아웃\n' +
         '( 좌우 두 개의 그래프가 한 창에 표시됨: 왼쪽=선 그래프, 오른쪽=막대 그래프 )',
       realWorldUsage:
         '실제 마케팅 대시보드에서 "채널별 광고비(막대)"와 "전환율 추이(선)"를 subplots로 한 화면에 배치해서, 투자 대비 성과를 한눈에 파악할 수 있게 해요.',

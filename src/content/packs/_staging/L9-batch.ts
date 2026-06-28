@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 
 @Bean
 public Job helloJob(JobRepository repo, Step step) {
-  System.out.println("[설정] Job 생성 — helloJob");
+  System.out.println("[설정] Job 생성 - helloJob");
   return new JobBuilder("helloJob", repo)
     .start(step)
     .build();
@@ -35,7 +35,7 @@ public Job helloJob(JobRepository repo, Step step) {
       why:
         '일련의 처리 절차를 하나의 논리적 단위로 묶어서 실행하고, 실행 이력을 DB로 관리하려고 해요. 재시작, 재처리, 모니터링이 가능해져요.',
       expectedOutput:
-        '[설정] Job 생성 — helloJob',
+        '[설정] Job 생성 - helloJob',
       realWorldUsage:
         '실제 프로젝트에서 매일 밤 실행되는 정산 Job, 사용자 등급 갱신 Job, 대용량 데이터 마이그레이션 Job 등 정기적인 대량 처리 작업을 Spring Batch Job으로 정의해요. ' +
         '은행의 일일 마감 처리, 전자상거래의 매출 집계가 대표적인 배치 Job이에요.',
@@ -57,7 +57,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 @Bean
 public Step helloStep(JobRepository repo, PlatformTransactionManager tx) {
-  System.out.println("[설정] Step 생성 — helloStep");
+  System.out.println("[설정] Step 생성 - helloStep");
   return new StepBuilder("helloStep", repo)
     .tasklet((contribution, chunkContext) -> {
       System.out.println("[실행] hello batch");
@@ -81,7 +81,7 @@ public Step helloStep(JobRepository repo, PlatformTransactionManager tx) {
       why:
         '간단한 일회성 작업(파일 전처리, 초기화, 알림 발송 등)을 Chunk 프로세싱의 복잡함 없이 빠르게 구현하려고 해요.',
       expectedOutput:
-        '[설정] Step 생성 — helloStep\n' +
+        '[설정] Step 생성 - helloStep\n' +
         '[실행] hello batch',
       realWorldUsage:
         '실제 프로젝트에서 배치 시작 전 임시 파일 정리, 배치 완료 후 알림 메일 발송, DB 저장 프로시저 호출 등 부수 작업을 Tasklet Step으로 구현해요. ' +
@@ -107,7 +107,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Bean
 public Step chunkStep(JobRepository repo, PlatformTransactionManager tx,
                      ItemReader<String> reader, ItemWriter<String> writer) {
-  System.out.println("[설정] Chunk Step 생성 — 청크크기 10");
+  System.out.println("[설정] Chunk Step 생성 - 청크크기 10");
   return new StepBuilder("chunkStep", repo)
     .chunk(10, tx)
     .reader(reader)
@@ -129,7 +129,7 @@ public Step chunkStep(JobRepository repo, PlatformTransactionManager tx,
       why:
         '수백만 건의 데이터를 한 번에 처리하면 메모리가 턱없이 부족해져요. 청크 단위로 쪼개서 메모리를 일정하게 유지하면서 처리하려고 해요.',
       expectedOutput:
-        '[설정] Chunk Step 생성 — 청크크기 10',
+        '[설정] Chunk Step 생성 - 청크크기 10',
       realWorldUsage:
         '실제 프로젝트에서 CSV 파일 100만 줄을 DB로 이관하거나, 사용자 데이터를 일괄 갱신하는 대부분의 배치 작업이 Chunk Step으로 구현돼요. ' +
         '청크 크기는 보통 10~1000 사이에서 DB 커밋 비용과 메모리 사용량을 고려해 튜닝해요.',
@@ -151,7 +151,7 @@ import org.springframework.context.annotation.Bean;
 @Bean
 public ItemReader<String> nameReader() {
   List<String> names = List.of("kim", "lee", "park");
-  System.out.println("[설정] ListItemReader 생성 — 데이터 " + names.size() + "건");
+  System.out.println("[설정] ListItemReader 생성 - 데이터 " + names.size() + "건");
   return new ListItemReader<>(names);
 }`,
     explain: {
@@ -168,7 +168,7 @@ public ItemReader<String> nameReader() {
       why:
         '간단한 데모나 단위 테스트에서 Reader 역할을 빠르게 준비하려고 해요. 별도 파일이나 DB 설정 없이 즉시 데이터를 공급할 수 있어요.',
       expectedOutput:
-        '[설정] ListItemReader 생성 — 데이터 3건',
+        '[설정] ListItemReader 생성 - 데이터 3건',
       realWorldUsage:
         '실제 프로젝트에서 테스트 코드 작성 시, 테스트용 데이터를 List.of(...)로 준비해서 ListItemReader로 배치 Step을 단위 테스트해요. ' +
         '프로토타입 단계에서 실제 DB 연동 전에 배치 로직을 먼저 검증할 때도 유용해요.',
@@ -187,7 +187,7 @@ import org.springframework.context.annotation.Bean;
 
 @Bean
 public ItemProcessor<String, String> upperProcessor() {
-  System.out.println("[설정] ItemProcessor 생성 — 대문자 변환");
+  System.out.println("[설정] ItemProcessor 생성 - 대문자 변환");
   return item -> item.toUpperCase();
 }`,
     explain: {
@@ -205,7 +205,7 @@ public ItemProcessor<String, String> upperProcessor() {
       why:
         '원본 데이터를 그대로 저장하기 전에 정제(trim, 대소문자 변환), 보강(외부 API 조회로 데이터 추가), 검증(유효성 확인), 필터링(불량 데이터 제거)이 필요할 때 써요.',
       expectedOutput:
-        '[설정] ItemProcessor 생성 — 대문자 변환',
+        '[설정] ItemProcessor 생성 - 대문자 변환',
       realWorldUsage:
         '실제 프로젝트에서 CSV로 읽은 고객명을 대문자로 정규화하거나, 주소 데이터에 우편번호 API 조회 결과를 추가해서 Writer에 넘겨요. ' +
         '이메일 형식 검증에 실패한 데이터는 null을 반환해서 DB에 저장되지 않게 필터링하는 패턴이 일반적이에요.',
@@ -225,7 +225,7 @@ import org.springframework.context.annotation.Bean;
 
 @Bean
 public ItemWriter<String> printWriter() {
-  System.out.println("[설정] ItemWriter 생성 — 콘솔 출력");
+  System.out.println("[설정] ItemWriter 생성 - 콘솔 출력");
   return chunk -> {
     for (String item : chunk) {
       System.out.println("[쓰기] " + item);
@@ -246,7 +246,7 @@ public ItemWriter<String> printWriter() {
       why:
         '가공된 데이터를 DB, 파일, 메시지 큐, 외부 API 등 최종 목적지에 저장하려고 해요. Writer가 없으면 배치 결과가 휘발돼 버려요.',
       expectedOutput:
-        '[설정] ItemWriter 생성 — 콘솔 출력\n' +
+        '[설정] ItemWriter 생성 - 콘솔 출력\n' +
         '[쓰기] KIM\n' +
         '[쓰기] LEE\n' +
         '[쓰기] PARK',
@@ -276,7 +276,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @JobScope
 public Step paramStep(JobRepository repo, PlatformTransactionManager tx,
                      @Value("#{jobParameters['date']}") String date) {
-  System.out.println("[설정] 파라미터 기반 Step — date=" + date);
+  System.out.println("[설정] 파라미터 기반 Step - date=" + date);
   return new StepBuilder("paramStep", repo)
     .tasklet((contribution, ctx) -> {
       System.out.println("[실행] 기준 날짜: " + date);
@@ -299,7 +299,7 @@ public Step paramStep(JobRepository repo, PlatformTransactionManager tx,
       why:
         '같은 배치 Job을 매일 다른 날짜로 실행하거나, 파일 경로를 동적으로 바꿔가며 실행하려고 해요. 파라미터 없으면 하드코딩된 값만 쓸 수 있어요.',
       expectedOutput:
-        '[설정] 파라미터 기반 Step — date=2026-07-01\n' +
+        '[설정] 파라미터 기반 Step - date=2026-07-01\n' +
         '[실행] 기준 날짜: 2026-07-01',
       realWorldUsage:
         '실제 프로젝트에서 매일 새벽 2시에 "어제 날짜"를 파라미터로 받아서 전일 데이터를 집계하는 배치, 파일명을 파라미터로 받아서 특정 파일을 처리하는 배치 등 거의 모든 배치가 JobParameters를 사용해요.',
@@ -381,7 +381,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @JobScope
 public Step scopedStep(JobRepository repo, PlatformTransactionManager tx,
                        @Value("#{jobParameters['date']}") String date) {
-  System.out.println("[생성] @JobScope Step — date=" + date);
+  System.out.println("[생성] @JobScope Step - date=" + date);
   return new StepBuilder("scopedStep", repo)
     .tasklet((c, ctx) -> {
       System.out.println("[실행] 처리 날짜: " + date);
@@ -404,7 +404,7 @@ public Step scopedStep(JobRepository repo, PlatformTransactionManager tx,
       why:
         'Job 실행 시마다 다른 파라미터를 빈에 주입하려고 해요. 같은 Job이라도 "2026-07-01", "2026-07-02" 처럼 매일 다른 값으로 동작해야 할 때 필수예요.',
       expectedOutput:
-        '[생성] @JobScope Step — date=2026-07-01\n' +
+        '[생성] @JobScope Step - date=2026-07-01\n' +
         '[실행] 처리 날짜: 2026-07-01',
       realWorldUsage:
         '실제 프로젝트에서 날짜별 데이터를 읽는 Reader나 파일 경로를 동적으로 받는 Writer를 @JobScope/@StepScope로 정의해서, ' +
@@ -430,7 +430,7 @@ import org.springframework.context.annotation.Bean;
 public ListItemReader<String> stepReader(
     @Value("#{jobParameters['date']}") String date) {
   List<String> data = List.of(date + "-item1", date + "-item2");
-  System.out.println("[생성] @StepScope Reader — date=" + date
+  System.out.println("[생성] @StepScope Reader - date=" + date
       + ", data=" + data);
   return new ListItemReader<>(data);
 }`,
@@ -449,7 +449,7 @@ public ListItemReader<String> stepReader(
       why:
         'Step마다, 또는 같은 Step의 재실행마다 Reader를 새로 만들어서 데이터를 처음부터 다시 읽게 하려고 해요. 배치의 재시작 안정성을 높여줘요.',
       expectedOutput:
-        '[생성] @StepScope Reader — date=2026-07-01, data=[2026-07-01-item1, 2026-07-01-item2]',
+        '[생성] @StepScope Reader - date=2026-07-01, data=[2026-07-01-item1, 2026-07-01-item2]',
       realWorldUsage:
         '실제 프로젝트에서 FlatFileItemReader나 JdbcCursorItemReader를 @StepScope로 정의해서, Step 실행 시 지정된 파일 경로나 날짜 조건으로 데이터를 읽어요. ' +
         '배치가 실패 후 재시작될 때도 Reader가 새로 생성돼서 처음부터 정상적으로 데이터를 읽을 수 있어요.',
@@ -474,7 +474,7 @@ import org.springframework.core.io.FileSystemResource;
 @StepScope
 public FlatFileItemReader<String> csvReader(
     @Value("#{jobParameters['file']}") String path) {
-  System.out.println("[설정] FlatFileReader — file=" + path);
+  System.out.println("[설정] FlatFileReader - file=" + path);
   return new FlatFileItemReaderBuilder<String>()
     .name("csvReader")
     .resource(new FileSystemResource(path))
@@ -496,7 +496,7 @@ public FlatFileItemReader<String> csvReader(
       why:
         'CSV나 로그 파일을 한 줄씩 읽어서 DB에 저장하는 배치를 만들려고 해요. 파일 전체를 한 번에 메모리에 올리지 않고 스트리밍 방식으로 처리해요.',
       expectedOutput:
-        '[설정] FlatFileReader — file=/data/users.csv',
+        '[설정] FlatFileReader - file=/data/users.csv',
       realWorldUsage:
         '실제 프로젝트에서 은행의 거래 내역 CSV를 DB로 이관하는 배치, FTP로 받은 주문 파일을 처리하는 배치, 로그 파일을 분석해서 Elasticsearch에 색인하는 배치 등에 FlatFileItemReader를 사용해요.',
       pitfall:
@@ -518,7 +518,7 @@ import org.springframework.context.annotation.Bean;
 @Bean
 @StepScope
 public JdbcCursorItemReader<User> jdbcUserReader(DataSource dataSource) {
-  System.out.println("[설정] JdbcCursorReader — SELECT id, name FROM users");
+  System.out.println("[설정] JdbcCursorReader - SELECT id, name FROM users");
   return new JdbcCursorItemReaderBuilder<User>()
     .name("jdbcUserReader")
     .dataSource(dataSource)
@@ -541,7 +541,7 @@ public JdbcCursorItemReader<User> jdbcUserReader(DataSource dataSource) {
       why:
         'DB에 있는 대량의 데이터를 메모리 부담 없이 스트리밍으로 읽어서 가공하려고 해요. 전체 SELECT 결과를 한 번에 메모리에 올리지 않아도 돼요.',
       expectedOutput:
-        '[설정] JdbcCursorReader — SELECT id, name FROM users',
+        '[설정] JdbcCursorReader - SELECT id, name FROM users',
       realWorldUsage:
         '실제 프로젝트에서 회원 데이터 전체를 대상으로 등급 재계산 배치를 돌리거나, 거래 내역을 집계하는 배치에서 JdbcCursorItemReader로 원천 데이터를 읽어와요. ' +
         'PagingReader와 달리 정렬된 데이터를 순서대로 안정적으로 읽을 수 있어서, 재시작 시 정합성이 중요한 경우에 선호돼요.',
@@ -564,7 +564,7 @@ import org.springframework.context.annotation.Bean;
 @Bean
 @StepScope
 public JpaPagingItemReader<User> userReader(EntityManagerFactory emf) {
-  System.out.println("[설정] JpaPagingReader — pageSize=100");
+  System.out.println("[설정] JpaPagingReader - pageSize=100");
   return new JpaPagingItemReaderBuilder<User>()
     .name("userReader")
     .entityManagerFactory(emf)
@@ -587,7 +587,7 @@ public JpaPagingItemReader<User> userReader(EntityManagerFactory emf) {
       why:
         'JPA 기반 프로젝트에서 엔티티로 데이터를 다루면서도, 전체 결과를 한 번에 메모리에 올리지 않고 안전하게 페이지 단위로 처리하려고 해요.',
       expectedOutput:
-        '[설정] JpaPagingReader — pageSize=100',
+        '[설정] JpaPagingReader - pageSize=100',
       realWorldUsage:
         '실제 프로젝트에서 JPA를 주 ORM으로 쓰는 경우, 사용자 데이터를 엔티티로 읽어서 가공한 뒤 JpaItemWriter로 저장하는 전 과정을 JPA로 통일해요. ' +
         'Spring Data JPA와의 호환성이 좋아서, Repository 기반 프로젝트에서 자연스럽게 통합돼요.',
@@ -609,7 +609,7 @@ import org.springframework.context.annotation.Bean;
 @Bean
 public JdbcBatchItemWriter<User> userWriter(DataSource dataSource) {
   String sql = "INSERT INTO audit (id, name) VALUES (:id, :name)";
-  System.out.println("[설정] JdbcBatchWriter — " + sql);
+  System.out.println("[설정] JdbcBatchWriter - " + sql);
   return new JdbcBatchItemWriterBuilder<User>()
     .dataSource(dataSource)
     .sql(sql)
@@ -631,7 +631,7 @@ public JdbcBatchItemWriter<User> userWriter(DataSource dataSource) {
       why:
         '대량의 데이터를 DB에 빠르게 저장하려고 해요. 건별 INSERT는 100만 건 처리에 수 시간 걸리지만, 배치 INSERT는 수 분으로 단축돼요.',
       expectedOutput:
-        '[설정] JdbcBatchWriter — INSERT INTO audit (id, name) VALUES (:id, :name)',
+        '[설정] JdbcBatchWriter - INSERT INTO audit (id, name) VALUES (:id, :name)',
       realWorldUsage:
         '실제 프로젝트에서 로그 데이터를 배치로 집계해 통계 테이블에 저장하거나, 외부에서 받은 주문 데이터를 대량으로 DB에 이관할 때 JdbcBatchItemWriter를 사용해요. ' +
         'Spring Batch의 가장 흔한 Writer 구현체 중 하나예요.',
@@ -693,7 +693,7 @@ import org.springframework.context.annotation.Bean;
 public CompositeItemProcessor<String, String> compositeProcessor(
     ItemProcessor<String, String> trim,
     ItemProcessor<String, String> upper) {
-  System.out.println("[설정] CompositeProcessor — trim -> upper 순서");
+  System.out.println("[설정] CompositeProcessor - trim -> upper 순서");
   CompositeItemProcessor<String, String> p = new CompositeItemProcessor<>();
   p.setDelegates(List.of(trim, upper));
   return p;
@@ -714,7 +714,7 @@ public CompositeItemProcessor<String, String> compositeProcessor(
       why:
         '가공 단계가 여러 개일 때 하나의 Processor에 욱여넣지 않고, 단계별로 분리해서 재사용·조립할 수 있게 하려고 해요.',
       expectedOutput:
-        '[설정] CompositeProcessor — trim -> upper 순서',
+        '[설정] CompositeProcessor - trim -> upper 순서',
       realWorldUsage:
         '실제 프로젝트에서 CSV 데이터 정제 파이프라인: trim(공백 제거) → validate(형식 검증) → enrich(외부 API로 정보 보강) → transform(최종 변환) 순서로 Processor를 합성해요. ' +
         '각 Processor를 독립적으로 단위 테스트할 수 있어서 유지보수성이 크게 향상돼요.',
@@ -749,7 +749,7 @@ public Step listeningStep(JobRepository repo, PlatformTransactionManager tx,
     .listener(new ChunkListener() {
       @Override
       public void afterChunk(ChunkContext context) {
-        System.out.println("[청크] 처리 완료 — 청크 #"
+        System.out.println("[청크] 처리 완료 - 청크 #"
             + context.getStepContext().getStepExecution().getCommitCount());
       }
     })
@@ -772,8 +772,8 @@ public Step listeningStep(JobRepository repo, PlatformTransactionManager tx,
         '대량 배치에서 진행 상황을 실시간으로 모니터링하려고 해요. "현재 30% 처리 중" 같은 정보를 로그나 대시보드에 표시할 수 있어요.',
       expectedOutput:
         '[설정] ChunkListener 등록 Step\n' +
-        '[청크] 처리 완료 — 청크 #1\n' +
-        '[청크] 처리 완료 — 청크 #2',
+        '[청크] 처리 완료 - 청크 #1\n' +
+        '[청크] 처리 완료 - 청크 #2',
       realWorldUsage:
         '실제 프로젝트에서 1000만 건 데이터 처리 배치에 ChunkListener를 붙여서, 매 청크마다 "35% 완료 (3,500,000/10,000,000)" 같은 진행 로그를 남겨요. ' +
         '이 정보를 Micrometer로 Prometheus에 전송해서 Grafana 대시보드로 실시간 모니터링하는 게 일반적인 운영 패턴이에요.',
@@ -802,11 +802,11 @@ public Job loggingJob(JobRepository repo, Step step) {
     .listener(new JobExecutionListener() {
       @Override
       public void beforeJob(JobExecution exec) {
-        System.out.println("[시작] Job 시작 — " + exec.getJobInstance().getJobName());
+        System.out.println("[시작] Job 시작 - " + exec.getJobInstance().getJobName());
       }
       @Override
       public void afterJob(JobExecution exec) {
-        System.out.println("[종료] Job 종료 — 상태: " + exec.getStatus());
+        System.out.println("[종료] Job 종료 - 상태: " + exec.getStatus());
       }
     })
     .start(step)
@@ -828,8 +828,8 @@ public Job loggingJob(JobRepository repo, Step step) {
         'Job의 시작과 종료 시점에 로깅·알림·리소스 정리 같은 공통 작업을 넣으려고 해요. 실패했을 때 관리자에게 알림을 보내는 것도 여기서 처리해요.',
       expectedOutput:
         '[설정] JobExecutionListener 등록\n' +
-        '[시작] Job 시작 — loggingJob\n' +
-        '[종료] Job 종료 — 상태: COMPLETED',
+        '[시작] Job 시작 - loggingJob\n' +
+        '[종료] Job 종료 - 상태: COMPLETED',
       realWorldUsage:
         '실제 프로젝트에서 Job 시작 시 Slack으로 "정산 배치 시작합니다" 알림을 보내고, 종료 시 성공/실패 여부와 처리 건수를 함께 보고해요. ' +
         '실패 시에는 담당자에게 PagerDuty로 장애 알림을 발송하는 패턴이 일반적이에요.',

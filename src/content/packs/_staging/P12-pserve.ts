@@ -10,7 +10,7 @@ export const pythonServing: Snippet[] = [
 
 
 llm = LLM(model='facebook/opt-125m')
-print("[실행] LLM 모델 로드 완료 — facebook/opt-125m")
+print("[실행] LLM 모델 로드 완료 - facebook/opt-125m")
 out = llm.generate(['안녕하세요, '])
 print(f"[결과] 생성된 텍스트: {out[0].outputs[0].text}")`,
     explain: {
@@ -28,7 +28,7 @@ print(f"[결과] 생성된 텍스트: {out[0].outputs[0].text}")`,
       why:
         'GPU 메모리를 효율적으로 관리해서 throughput(처리량)이 크게 늘어나고, 여러 사용자의 요청을 동시에 처리하는 서버 환경에서 비용 대비 성능이 가장 뛰어나요.',
       expectedOutput:
-        '[실행] LLM 모델 로드 완료 — facebook/opt-125m\n[결과] 생성된 텍스트: 안녕하세요, 저는 오늘 처음으로 이곳에 왔습니다.',
+        '[실행] LLM 모델 로드 완료 - facebook/opt-125m\n[결과] 생성된 텍스트: 안녕하세요, 저는 오늘 처음으로 이곳에 왔습니다.',
       realWorldUsage:
         '실제 LLM 서빙 서버에서 vLLM을 백엔드로 띄워두고, FastAPI나 OpenAI 호환 엔드포인트로 클라이언트 요청을 받아 처리해요. GPU 서버 한 대로 동시에 수백 명의 사용자 요청을 소화할 수 있어요.',
       pitfall:
@@ -45,7 +45,7 @@ print(f"[결과] 생성된 텍스트: {out[0].outputs[0].text}")`,
 
 llm = LLM(model='facebook/opt-125m')
 sp = SamplingParams(temperature=0.7, top_p=0.9, max_tokens=64)
-print(f"[실행] SamplingParams — temperature={sp.temperature}, top_p={sp.top_p}, max_tokens={sp.max_tokens}")
+print(f"[실행] SamplingParams - temperature={sp.temperature}, top_p={sp.top_p}, max_tokens={sp.max_tokens}")
 out = llm.generate(['이야기를 시작해 줘'], sp)
 print(f"[결과] 생성된 텍스트: {out[0].outputs[0].text}")`,
     explain: {
@@ -63,7 +63,7 @@ print(f"[결과] 생성된 텍스트: {out[0].outputs[0].text}")`,
       why:
         '같은 모델이라도 이 파라미터에 따라 "사실 위주 보수적 답변"에서 "창의적 스토리텔링"까지 완전히 다른 결과가 나와요. 상황에 맞는 파라미터 튜닝이 필수예요.',
       expectedOutput:
-        '[실행] SamplingParams — temperature=0.7, top_p=0.9, max_tokens=64\n[결과] 생성된 텍스트: 이야기를 시작해 줘.\n\n옛날 옛적에, 작은 마을에 한 소녀가 살고 있었어요...',
+        '[실행] SamplingParams - temperature=0.7, top_p=0.9, max_tokens=64\n[결과] 생성된 텍스트: 이야기를 시작해 줘.\n\n옛날 옛적에, 작은 마을에 한 소녀가 살고 있었어요...',
       realWorldUsage:
         '챗봇 서비스에서 "정보 검색" 모드일 때는 temperature=0.1로 정확한 답변을 유도하고, "창의적 글쓰기 도우미" 모드일 때는 temperature=0.9로 전환하는 식으로 파라미터를 동적으로 조정해요.',
       pitfall:
@@ -80,7 +80,7 @@ print(f"[결과] 생성된 텍스트: {out[0].outputs[0].text}")`,
 
 llm = LLM(model='facebook/opt-125m')
 prompts = ['봄이 오면', '여름이 오면', '가을이 오면']
-print(f"[실행] 배치 추론 — {len(prompts)}개 프롬프트")
+print(f"[실행] 배치 추론 - {len(prompts)}개 프롬프트")
 outs = llm.generate(prompts)
 for i, o in enumerate(outs):
     print(f"[결과 {i+1}] {prompts[i]}{o.outputs[0].text}")`,
@@ -99,7 +99,7 @@ for i, o in enumerate(outs):
       why:
         'GPU는 병렬 연산에 특화되어 있어서, 입력을 하나씩 처리하면 GPU 자원이 남아돌아요. 배치로 묶어서 한 번에 넣으면 GPU 활용률이 90% 이상으로 올라가고 처리 속도도 비약적으로 빨라져요.',
       expectedOutput:
-        '[실행] 배치 추론 — 3개 프롬프트\n[결과 1] 봄이 오면 꽃이 피고 따뜻한 날씨가 시작됩니다.\n[결과 2] 여름이 오면 해변이 사람들로 북적입니다.\n[결과 3] 가을이 오면 나뭇잎이 붉게 물듭니다.',
+        '[실행] 배치 추론 - 3개 프롬프트\n[결과 1] 봄이 오면 꽃이 피고 따뜻한 날씨가 시작됩니다.\n[결과 2] 여름이 오면 해변이 사람들로 북적입니다.\n[결과 3] 가을이 오면 나뭇잎이 붉게 물듭니다.',
       realWorldUsage:
         '전자상거래에서 10만 개의 상품 설명을 밤새 배치 추론으로 한국어 번역하거나 요약하는 작업에 사용해요. 실시간 응답이 필요 없고 대량 처리가 중요한 야간 배치 작업에서 필수예요.',
       pitfall:
@@ -162,7 +162,7 @@ print("[완료]")`,
 
 
 llm = LLM(model='Qwen/Qwen2-0.5B-Instruct')
-print("[실행] 채팅 모델 로드 완료 — Qwen2-0.5B-Instruct")
+print("[실행] 채팅 모델 로드 완료 - Qwen2-0.5B-Instruct")
 msgs = [{'role': 'user', 'content': '안녕!'}]
 out = llm.chat(msgs)
 print(f"[결과] 어시스턴트 응답: {out[0].outputs[0].text}")`,
@@ -181,7 +181,7 @@ print(f"[결과] 어시스턴트 응답: {out[0].outputs[0].text}")`,
       why:
         '멀티턴 대화에서는 이전 대화 내역을 messages 리스트에 누적해 계속 전달해야 맥락을 유지할 수 있어요. chat()은 이 구조를 그대로 받아서 편리하게 처리해줘요.',
       expectedOutput:
-        '[실행] 채팅 모델 로드 완료 — Qwen2-0.5B-Instruct\n[결과] 어시스턴트 응답: 안녕하세요! 무엇을 도와드릴까요?',
+        '[실행] 채팅 모델 로드 완료 - Qwen2-0.5B-Instruct\n[결과] 어시스턴트 응답: 안녕하세요! 무엇을 도와드릴까요?',
       realWorldUsage:
         '실제 챗봇 애플리케이션에서 사용자가 "오늘 날씨 알려줘"라고 한 뒤 이어서 "내일은?"이라고 물으면, messages 리스트에 이전 assistant 응답까지 포함시켜서 전달해 맥락을 이해시켜요.',
       pitfall:
@@ -369,7 +369,7 @@ print("[완료] 스트리밍 종료")`,
 
 
 client = InferenceClient(model='meta-llama/Llama-3.2-1B-Instruct')
-print("[실행] TGI InferenceClient 생성 — Llama-3.2-1B-Instruct")
+print("[실행] TGI InferenceClient 생성 - Llama-3.2-1B-Instruct")
 ans = client.text_generation(prompt='안녕!', max_new_tokens=32)
 print(f"[결과] 생성된 텍스트: {ans}")`,
     explain: {
@@ -387,7 +387,7 @@ print(f"[결과] 생성된 텍스트: {ans}")`,
       why:
         '직접 GPU 서버를 관리하지 않고도 최신 LLM을 쓸 수 있어서 인프라 비용이 절감되고, 여러 모델을 쉽게 바꿔가며 실험할 수 있어요.',
       expectedOutput:
-        '[실행] TGI InferenceClient 생성 — Llama-3.2-1B-Instruct\n[결과] 생성된 텍스트: 안녕하세요! 무엇을 도와드릴까요?',
+        '[실행] TGI InferenceClient 생성 - Llama-3.2-1B-Instruct\n[결과] 생성된 텍스트: 안녕하세요! 무엇을 도와드릴까요?',
       realWorldUsage:
         '스타트업에서 자체 GPU 서버 구축 대신 HuggingFace Inference Endpoint를 구독하고, InferenceClient로 회원가입 이메일 자동 생성 기능을 구현해요. 월 구독료만 내면 바로 서비스 가능해요.',
       pitfall:
@@ -440,7 +440,7 @@ print("[완료] 스트리밍 종료")`,
 
 
 llm = Llama(model_path='llama-3.2-1b-q4_k_m.gguf', n_ctx=2048)
-print("[실행] GGUF 모델 로드 완료 — n_ctx=2048")
+print("[실행] GGUF 모델 로드 완료 - n_ctx=2048")
 out = llm('안녕하세요', max_tokens=32, stop=['</s>'])
 print(f"[결과] 생성된 텍스트: {out['choices'][0]['text']}")`,
     explain: {
@@ -460,7 +460,7 @@ print(f"[결과] 생성된 텍스트: {out['choices'][0]['text']}")`,
       why:
         'GPU가 없는 환경(저사양 노트북, 라즈베리파이 등)에서도 LLM을 구동할 수 있어서, AI 접근성과 오프라인 사용 가능성이 크게 좋아져요.',
       expectedOutput:
-        '[실행] GGUF 모델 로드 완료 — n_ctx=2048\n[결과] 생성된 텍스트: 안녕하세요! 저는 오늘 처음으로 이곳에 왔습니다.',
+        '[실행] GGUF 모델 로드 완료 - n_ctx=2048\n[결과] 생성된 텍스트: 안녕하세요! 저는 오늘 처음으로 이곳에 왔습니다.',
       realWorldUsage:
         '인터넷이 제한된 병원이나 법률 사무소에서 민감한 문서를 외부 API로 전송하지 않고, GGUF 모델을 로컬에서 실행해 문서 요약·분류를 처리하는 온프레미스 AI 솔루션에 사용해요.',
       pitfall:
@@ -520,7 +520,7 @@ model = AutoAWQForCausalLM.from_quantized(
 )
 print("[실행] AWQ 양자화 모델 로드 완료")
 tok = AutoTokenizer.from_pretrained('TheBloke/Llama-2-7B-Chat-AWQ')
-print(f"[정보] 토크나이저 로드 완료 — vocab_size={tok.vocab_size}")
+print(f"[정보] 토크나이저 로드 완료 - vocab_size={tok.vocab_size}")
 print(f"[정보] 모델 타입: {type(model).__name__}")`,
     explain: {
       concept:
@@ -537,7 +537,7 @@ print(f"[정보] 모델 타입: {type(model).__name__}")`,
       why:
         'AWQ는 품질 저하를 거의 체감할 수 없으면서도 메모리를 절반 가까이 줄일 수 있어서, GPU 메모리가 부족한 환경에서도 큰 모델을 돌릴 수 있게 해줘요.',
       expectedOutput:
-        '[실행] AWQ 양자화 모델 로드 완료\n[정보] 토크나이저 로드 완료 — vocab_size=32000\n[정보] 모델 타입: AutoAWQForCausalLM',
+        '[실행] AWQ 양자화 모델 로드 완료\n[정보] 토크나이저 로드 완료 - vocab_size=32000\n[정보] 모델 타입: AutoAWQForCausalLM',
       realWorldUsage:
         'Llama-2-7B 원본 모델은 GPU 메모리가 14GB 필요하지만, AWQ로 양자화된 버전은 4GB로 줄어들어서 RTX 3070(8GB) 같은 중급 GPU에서도 무리 없이 실행할 수 있어요.',
       pitfall:
@@ -567,7 +567,7 @@ model.quantize(tok, quant_config=qcfg, calib_data=calib_data)
 print("[실행] 양자화 완료")
 
 model.save_quantized('llama2-7b-awq')
-print("[완료] 양자화된 모델 저장 완료 — llama2-7b-awq")`,
+print("[완료] 양자화된 모델 저장 완료 - llama2-7b-awq")`,
     explain: {
       concept:
         '직접 AWQ 양자화를 수행할 때는 비트 수(w_bit), 그룹 크기(q_group_size), 영점 보정(zero_point)을 설정해요. ' +
@@ -586,7 +586,7 @@ print("[완료] 양자화된 모델 저장 완료 — llama2-7b-awq")`,
       why:
         '도메인 특화 데이터로 직접 양자화하면 일반 양자화보다 해당 도메인에서 더 높은 품질의 모델을 얻을 수 있어요. 예를 들어 의료 텍스트로 캘리브레이션하면 의료 QA에 더 강한 압축 모델이 만들어져요.',
       expectedOutput:
-        '[실행] 베이스 모델 로드 완료\n[실행] 양자화 완료\n[완료] 양자화된 모델 저장 완료 — llama2-7b-awq',
+        '[실행] 베이스 모델 로드 완료\n[실행] 양자화 완료\n[완료] 양자화된 모델 저장 완료 - llama2-7b-awq',
       realWorldUsage:
         '금융권에서 Llama-2-7B를 금융 상담 데이터로 캘리브레이션해 AWQ 양자화한 뒤, 보안이 중요한 온프레미스 서버에 배포해 고객 상담 챗봇으로 활용해요.',
       pitfall:
@@ -656,7 +656,7 @@ client = OpenAI(
     base_url='http://localhost:8000/v1',
     api_key='dummy',
 )
-print("[실행] OpenAI 호환 클라이언트 생성 — localhost:8000")
+print("[실행] OpenAI 호환 클라이언트 생성 - localhost:8000")
 
 stream = client.chat.completions.create(
     model='facebook/opt-125m',
@@ -685,7 +685,7 @@ print("[완료]")`,
       why:
         'OpenAI 호환 인터페이스 덕분에 vLLM, TGI, Ollama 등 서로 다른 백엔드 서버를 코드 변경 없이 자유롭게 교체할 수 있어요. 벤더 종속성에서 벗어나는 핵심 전략이에요.',
       expectedOutput:
-        '[실행] OpenAI 호환 클라이언트 생성 — localhost:8000\n[스트리밍 시작]\n안녕하세요! 무엇을 도와드릴까요?\n[완료]',
+        '[실행] OpenAI 호환 클라이언트 생성 - localhost:8000\n[스트리밍 시작]\n안녕하세요! 무엇을 도와드릴까요?\n[완료]',
       realWorldUsage:
         'OpenAI API로 개발된 SaaS 제품을 온프레미스로 전환할 때, 기존 코드에서 base_url과 api_key만 바꾸고 vLLM 서버를 띄우면 모든 기능이 그대로 동작해요. 수천 줄의 코드를 전혀 고치지 않아도 돼요.',
       pitfall:

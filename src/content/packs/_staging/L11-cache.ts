@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
 public class CacheConfig {
   @Bean
   public CacheManager cacheManager() {
-    System.out.println("[실행] 캐시 매니저 생성 — 보관함: users, products");
+    System.out.println("[실행] 캐시 매니저 생성 - 보관함: users, products");
     CacheManager cm = new ConcurrentMapCacheManager("users", "products");
     System.out.println("[결과] ConcurrentMapCacheManager 등록 완료");
     return cm;
@@ -27,7 +27,7 @@ public class CacheConfig {
       concept:
         '@EnableCaching은 애플리케이션에 "이제부터 캐시 기능을 쓸 거예요"라고 알려주는 설정 스위치예요. ' +
         '이 어노테이션이 없으면 @Cacheable 같은 캐시 어노테이션이 전부 무시돼요. ' +
-        'ConcurrentMapCacheManager는 스프링이 기본으로 제공하는 인메모리 보관함 관리자예요 — 별도 설치 없이 바로 쓸 수 있어요. ' +
+        'ConcurrentMapCacheManager는 스프링이 기본으로 제공하는 인메모리 보관함 관리자예요 - 별도 설치 없이 바로 쓸 수 있어요. ' +
         '"users"와 "products"는 보관함의 이름이에요. 같은 앱 안에서도 데이터 종류별로 서로 다른 보관함을 두고 독립적으로 관리할 수 있어요. ' +
         '실제 프로젝트에서는 개발 환경에서 이 기본 보관함으로 빠르게 확인하고, 운영 환경에서는 Redis로 교체하는 식으로 활용해요.',
       terms: [
@@ -39,7 +39,7 @@ public class CacheConfig {
       ],
       expectedOutput:
         '앱 시작 시 콘솔 출력:\n' +
-        '[실행] 캐시 매니저 생성 — 보관함: users, products\n' +
+        '[실행] 캐시 매니저 생성 - 보관함: users, products\n' +
         '[결과] ConcurrentMapCacheManager 등록 완료',
       realWorldUsage:
         '실제 프로젝트의 CacheConfig 클래스에 이 코드가 있어요. @Cacheable("users")가 붙은 모든 메서드의 결과가 자동으로 이 보관함을 통해 메모리에 저장되고, 두 번째 호출부터는 메서드 본문을 실행하지 않고 캐시된 값을 바로 반환해요.',
@@ -65,7 +65,7 @@ public class UserService {
 
   @Cacheable("users")
   public User getUser(Long id) {
-    System.out.println("[실행] DB 조회 — userId: " + id);
+    System.out.println("[실행] DB 조회 - userId: " + id);
     User user = userRepository.findById(id).orElseThrow();
     System.out.println("[결과] 조회된 사용자: " + user.getName());
     return user;
@@ -75,7 +75,7 @@ public class UserService {
       concept:
         '@Cacheable은 "처음엔 계산하고, 두 번째부터는 보관함에서 꺼내줘요"라는 캐시 읽기 도구예요. ' +
         '같은 키로 메서드가 호출되면 스프링이 메서드 본문을 건너뛰고 캐시에서 값을 반환해줘요. ' +
-        '여러분이 자주 조회하는 사용자 정보가 있다고 생각해보세요 — 매번 DB까지 갔다 오는 대신 메모리에서 1ms 만에 가져오는 거예요. ' +
+        '여러분이 자주 조회하는 사용자 정보가 있다고 생각해보세요 - 매번 DB까지 갔다 오는 대신 메모리에서 1ms 만에 가져오는 거예요. ' +
         '여기서는 메서드 파라미터인 id가 자동으로 캐시 키로 사용돼요. id=1로 첫 호출 시 DB를 조회하고, 두 번째 id=1 호출부터는 DB 없이 캐시에서 바로 반환해요. ' +
         '캐시 적중률이 높을수록 DB 커넥션 비용을 아끼고 응답 시간이 극적으로 빨라져요.',
       terms: [
@@ -86,9 +86,9 @@ public class UserService {
       ],
       expectedOutput:
         'getUser(1L) 첫 호출 시:\n' +
-        '[실행] DB 조회 — userId: 1\n' +
+        '[실행] DB 조회 - userId: 1\n' +
         '[결과] 조회된 사용자: kim\n\n' +
-        'getUser(1L) 두 번째 호출 시: (콘솔 출력 없음 — 캐시에서 반환)',
+        'getUser(1L) 두 번째 호출 시: (콘솔 출력 없음 - 캐시에서 반환)',
       realWorldUsage:
         '실제 프로젝트에서 사용자 프로필 조회 API가 @Cacheable("users")로 캐싱돼 있어요. 하루에 수백만 번 조회되는 인기 사용자 프로필은 DB를 한 번만 조회하고 나머지는 캐시에서 응답해요. 서비스 응답 시간이 DB 조회 50ms에서 캐시 조회 1ms로 줄어들어요.',
       why: '같은 데이터를 반복 조회할 때 DB 부하를 줄이고 응답 속도를 극적으로 개선하려고요.',
@@ -113,7 +113,7 @@ public class ProductService {
 
   @Cacheable(value = "products", key = "#id")
   public Product getProduct(Long id) {
-    System.out.println("[실행] DB 조회 — productId: " + id);
+    System.out.println("[실행] DB 조회 - productId: " + id);
     Product product = productRepository.findById(id).orElseThrow();
     System.out.println("[결과] 조회된 상품: " + product.getName());
     return product;
@@ -133,10 +133,10 @@ public class ProductService {
       ],
       expectedOutput:
         'getProduct(100L) 첫 호출 시:\n' +
-        '[실행] DB 조회 — productId: 100\n' +
+        '[실행] DB 조회 - productId: 100\n' +
         '[결과] 조회된 상품: 노트북\n\n' +
         'getProduct(200L) 첫 호출 시:\n' +
-        '[실행] DB 조회 — productId: 200\n' +
+        '[실행] DB 조회 - productId: 200\n' +
         '[결과] 조회된 상품: 키보드',
       realWorldUsage:
         '실제 쇼핑몰 프로젝트에서 상품 상세 페이지 API가 이 패턴으로 캐싱돼요. 복수 인자를 받는 검색 메서드라도 key="#productId"로 명시하면 검색 조건과 무관하게 상품 ID만으로 캐시를 식별할 수 있어요.',
@@ -162,7 +162,7 @@ public class UserService {
 
   @Cacheable(value = "users", condition = "#id > 100")
   public User getUser(Long id) {
-    System.out.println("[실행] DB 조회 — userId: " + id);
+    System.out.println("[실행] DB 조회 - userId: " + id);
     User user = userRepository.findById(id).orElseThrow();
     System.out.println("[결과] 조회된 사용자: " + user.getName());
     return user;
@@ -173,7 +173,7 @@ public class UserService {
         'condition은 "이 조건이 참일 때만 보관함에 넣어주세요"라는 필터예요. ' +
         '여기서는 id가 100보다 클 때만 캐시에 저장하고, id가 100 이하인 조회는 매번 DB까지 다녀와요. ' +
         '왜 이런 조건이 필요할까요? VIP 사용자(id가 큰 번호)는 조회가 많으니 캐시하고, 일반 사용자는 캐시 메모리를 아끼기 위해서예요. ' +
-        'condition은 메서드 인자 기준으로 판단하고, 반대 개념인 unless는 메서드 반환값 기준으로 판단해요 — 둘을 헷갈리지 않는 게 중요해요.',
+        'condition은 메서드 인자 기준으로 판단하고, 반대 개념인 unless는 메서드 반환값 기준으로 판단해요 - 둘을 헷갈리지 않는 게 중요해요.',
       terms: [
         { t: 'condition', d: '메서드 인자 기준으로 캐싱 여부를 결정하는 조건이에요. SpEL로 표현해요.' },
         { t: '#id > 100', d: 'id가 100을 초과할 때만 true가 되어 캐싱이 동작해요. 이하일 땐 캐싱하지 않아요.' },
@@ -182,10 +182,10 @@ public class UserService {
       ],
       expectedOutput:
         'getUser(50L) 호출 시 (매번):\n' +
-        '[실행] DB 조회 — userId: 50\n' +
+        '[실행] DB 조회 - userId: 50\n' +
         '[결과] 조회된 사용자: guest\n\n' +
         'getUser(200L) 첫 호출:\n' +
-        '[실행] DB 조회 — userId: 200\n' +
+        '[실행] DB 조회 - userId: 200\n' +
         '[결과] 조회된 사용자: admin\n' +
         'getUser(200L) 두 번째 호출: (콘솔 출력 없음)',
       realWorldUsage:
@@ -212,7 +212,7 @@ public class UserService {
 
   @CacheEvict(value = "users", key = "#id")
   public void deleteUser(Long id) {
-    System.out.println("[실행] 사용자 삭제 + 캐시 제거 — userId: " + id);
+    System.out.println("[실행] 사용자 삭제 + 캐시 제거 - userId: " + id);
     userRepository.deleteById(id);
     System.out.println("[결과] userId=" + id + " 삭제 완료, 캐시도 비워짐");
   }
@@ -231,7 +231,7 @@ public class UserService {
       ],
       expectedOutput:
         'deleteUser(1L) 호출 시:\n' +
-        '[실행] 사용자 삭제 + 캐시 제거 — userId: 1\n' +
+        '[실행] 사용자 삭제 + 캐시 제거 - userId: 1\n' +
         '[결과] userId=1 삭제 완료, 캐시도 비워짐',
       realWorldUsage:
         '실제 프로젝트에서 사용자 정보 수정 API나 회원 탈퇴 API가 이 패턴을 써요. 탈퇴한 사용자의 캐시가 남아 있으면 보안 문제로 이어질 수 있기 때문에 더욱 중요해요. 삭제·수정 시에는 반드시 @CacheEvict로 캐시를 정리하는 게 실무 관행이에요.',
@@ -302,9 +302,9 @@ public class UserService {
 
   @CachePut(value = "users", key = "#user.id")
   public User updateUser(User user) {
-    System.out.println("[실행] 사용자 수정 + 캐시 갱신 — userId: " + user.getId());
+    System.out.println("[실행] 사용자 수정 + 캐시 갱신 - userId: " + user.getId());
     User updated = userRepository.save(user);
-    System.out.println("[결과] 캐시 갱신 완료 — userId: " + updated.getId());
+    System.out.println("[결과] 캐시 갱신 완료 - userId: " + updated.getId());
     return updated;
   }
 }`,
@@ -312,7 +312,7 @@ public class UserService {
       concept:
         '@CachePut은 메서드를 무조건 실행하고, 그 결과로 캐시를 덮어써요. ' +
         '@Cacheable이 "캐시에 있으면 메서드 건너뛰기"라면, @CachePut은 "무조건 실행하고 캐시 갱신"이에요. ' +
-        '사용자 정보를 수정하는 상황을 생각해보세요 — DB에 새 값을 저장하고, 캐시에도 새 값을 반영해야 다음 조회에서 최신 데이터를 보여줘요. ' +
+        '사용자 정보를 수정하는 상황을 생각해보세요 - DB에 새 값을 저장하고, 캐시에도 새 값을 반영해야 다음 조회에서 최신 데이터를 보여줘요. ' +
         '이 어노테이션은 메서드의 반환값으로 캐시를 갱신하기 때문에, 업데이트된 엔티티를 그대로 반환하는 패턴과 잘 맞아요.',
       terms: [
         { t: '@CachePut', d: '메서드를 항상 실행하고 그 반환값으로 캐시를 갱신해요. 캐시에 있든 없든 무조건 실행하고 덮어써요.' },
@@ -322,8 +322,8 @@ public class UserService {
       ],
       expectedOutput:
         'updateUser(user) 호출 시:\n' +
-        '[실행] 사용자 수정 + 캐시 갱신 — userId: 1\n' +
-        '[결과] 캐시 갱신 완료 — userId: 1',
+        '[실행] 사용자 수정 + 캐시 갱신 - userId: 1\n' +
+        '[결과] 캐시 갱신 완료 - userId: 1',
       realWorldUsage:
         '실제 프로젝트의 사용자 정보 수정 API에서 이 패턴을 써요. 이름이나 이메일을 변경했을 때 @CachePut이 캐시를 갱신해서, 바로 이어지는 프로필 조회에서 최신 정보를 보여줘요. @Cacheable로 조회하는 메서드와 key 값을 동일하게 맞추는 게 핵심이에요.',
       why: '데이터가 수정됐을 때 캐시에도 즉시 반영해 다음 조회에서 오래된 데이터가 반환되지 않게 하려고요.',
@@ -351,7 +351,7 @@ public class RedisConfig {
     template.setConnectionFactory(factory);
     template.setKeySerializer(new StringRedisSerializer());
     template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-    System.out.println("[결과] RedisTemplate 설정 완료 — 키: String, 값: JSON");
+    System.out.println("[결과] RedisTemplate 설정 완료 - 키: String, 값: JSON");
     return template;
   }
 }`,
@@ -371,7 +371,7 @@ public class RedisConfig {
       expectedOutput:
         '앱 시작 시:\n' +
         '[실행] RedisTemplate 생성 시작\n' +
-        '[결과] RedisTemplate 설정 완료 — 키: String, 값: JSON',
+        '[결과] RedisTemplate 설정 완료 - 키: String, 값: JSON',
       realWorldUsage:
         '실제 프로젝트에서 마이크로서비스 간 세션 공유나 분산 캐시가 필요할 때 RedisTemplate을 설정해요. 예를 들어 서버 A가 저장한 로그인 토큰을 서버 B에서도 Redis를 통해 조회할 수 있어요. 로드밸런서 뒤의 여러 서버가 동일한 캐시 데이터를 바라보게 되는 거예요.',
       why: '여러 서버가 동일한 캐시 데이터를 공유해야 하는 분산 환경에서, 각 서버의 로컬 메모리가 아닌 중앙 Redis에 데이터를 저장하려고요.',
@@ -397,9 +397,9 @@ public class TokenService {
   }
 
   public void saveToken(String userId, String token) {
-    System.out.println("[실행] 토큰 저장 — userId: " + userId);
+    System.out.println("[실행] 토큰 저장 - userId: " + userId);
     redis.opsForValue().set("token:" + userId, token, Duration.ofMinutes(30));
-    System.out.println("[결과] 토큰 저장 완료 — 만료 30분 후");
+    System.out.println("[결과] 토큰 저장 완료 - 만료 30분 후");
   }
 }`,
     explain: {
@@ -417,8 +417,8 @@ public class TokenService {
       ],
       expectedOutput:
         'saveToken("user123", "abc-xyz-token") 호출 시:\n' +
-        '[실행] 토큰 저장 — userId: user123\n' +
-        '[결과] 토큰 저장 완료 — 만료 30분 후',
+        '[실행] 토큰 저장 - userId: user123\n' +
+        '[결과] 토큰 저장 완료 - 만료 30분 후',
       realWorldUsage:
         '실제 프로젝트의 로그인 기능에서 JWT 리프레시 토큰을 Redis에 저장할 때 이 패턴을 써요. 로그인하면 서버가 토큰을 Redis에 30분 TTL로 저장하고, 이후 요청에서 토큰을 검증할 때 Redis에서 조회해요. 만료된 토큰은 Redis가 자동으로 삭제하니 별도 스케줄러가 필요 없어요.',
       why: '로그인 토큰이나 인증 코드처럼 일정 시간 후 자동 폐기돼야 하는 임시 데이터를 안전하게 관리하려고요.',
@@ -442,7 +442,7 @@ public class CartService {
   }
 
   public void addItem(String userId, String itemId, int qty) {
-    System.out.println("[실행] 장바구니 추가 — userId: " + userId + ", itemId: " + itemId + ", qty: " + qty);
+    System.out.println("[실행] 장바구니 추가 - userId: " + userId + ", itemId: " + itemId + ", qty: " + qty);
     redis.opsForHash().put("cart:" + userId, itemId, String.valueOf(qty));
     System.out.println("[결과] 장바구니 저장 완료");
   }
@@ -461,7 +461,7 @@ public class CartService {
       ],
       expectedOutput:
         'addItem("user1", "item-99", 3) 호출 시:\n' +
-        '[실행] 장바구니 추가 — userId: user1, itemId: item-99, qty: 3\n' +
+        '[실행] 장바구니 추가 - userId: user1, itemId: item-99, qty: 3\n' +
         '[결과] 장바구니 저장 완료',
       realWorldUsage:
         '실제 쇼핑몰 프로젝트의 장바구니 기능에서 이 패턴을 써요. userId로 구분된 Hash에 각 상품을 필드로 저장하고, 장바구니 페이지를 열면 hgetAll로 모든 상품을 한 번에 가져와요. 로그인하지 않은 사용자의 장바구니도 Redis에 임시로 저장할 수 있어서 세션보다 유연해요.',
@@ -491,14 +491,14 @@ public class CacheConfig {
     manager.setCaffeine(Caffeine.newBuilder()
       .expireAfterWrite(10, TimeUnit.MINUTES)
       .maximumSize(1000));
-    System.out.println("[결과] Caffeine 설정 완료 — max 1000개, TTL 10분");
+    System.out.println("[결과] Caffeine 설정 완료 - max 1000개, TTL 10분");
     return manager;
   }
 }`,
     explain: {
       concept:
         'Caffeine은 자바 생태계에서 가장 빠른 인메모리 캐시 라이브러리예요. ' +
-        'ConcurrentMapCacheManager보다 훨씬 정교한 설정을 제공해요 — 최대 저장 개수, 쓰기 후 만료 시간, 접근 후 만료 시간 등을 세밀하게 제어할 수 있어요. ' +
+        'ConcurrentMapCacheManager보다 훨씬 정교한 설정을 제공해요 - 최대 저장 개수, 쓰기 후 만료 시간, 접근 후 만료 시간 등을 세밀하게 제어할 수 있어요. ' +
         '여기서는 users 보관함에 최대 1000개까지 저장하고, 저장한 지 10분이 지나면 자동 삭제되도록 했어요. ' +
         '최대 크기를 정해두지 않으면 메모리가 무한정 늘어날 위험이 있어서, 실무에서는 항상 maximumSize와 만료 정책을 함께 설정해요.',
       terms: [
@@ -511,7 +511,7 @@ public class CacheConfig {
       expectedOutput:
         '앱 시작 시:\n' +
         '[실행] Caffeine 캐시 매니저 생성\n' +
-        '[결과] Caffeine 설정 완료 — max 1000개, TTL 10분',
+        '[결과] Caffeine 설정 완료 - max 1000개, TTL 10분',
       realWorldUsage:
         '실제 프로젝트에서 단일 서버 애플리케이션의 로컬 캐시로 Caffeine을 많이 써요. 예를 들어 카테고리 목록처럼 자주 조회되지만 자주 바뀌지 않는 데이터를 10분 TTL로 캐싱하면, DB 조회를 99% 이상 줄이면서 메모리 사용량은 1000개로 제한할 수 있어요.',
       why: '단일 서버 환경에서 가장 빠른 인메모리 캐시를 쓰면서도, 메모리 사용량과 데이터 신선도를 정밀하게 제어하려고요.',
@@ -546,7 +546,7 @@ public class CacheConfig {
         .maximumSize(200)
         .expireAfterWrite(1, TimeUnit.MINUTES)
         .build());
-    System.out.println("[결과] 개별 캐시 등록 완료 — hotItems(500개/5분), searchResults(200개/1분)");
+    System.out.println("[결과] 개별 캐시 등록 완료 - hotItems(500개/5분), searchResults(200개/1분)");
     return manager;
   }
 }`,
@@ -565,7 +565,7 @@ public class CacheConfig {
       expectedOutput:
         '앱 시작 시:\n' +
         '[실행] Caffeine 멀티 캐시 매니저 생성\n' +
-        '[결과] 개별 캐시 등록 완료 — hotItems(500개/5분), searchResults(200개/1분)',
+        '[결과] 개별 캐시 등록 완료 - hotItems(500개/5분), searchResults(200개/1분)',
       realWorldUsage:
         '실제 전자상거래 프로젝트에서 hotItems는 메인 페이지의 인기 상품 섹션에, searchResults는 검색 결과 페이지에 사용되는 캐시예요. 인기 상품은 5분에 한 번 갱신해도 사용자가 체감하지 못하고, 검색 결과는 1분만 지나도 재고 변동으로 정보가 부정확해질 수 있어서 더 짧은 TTL을 적용해요.',
       why: '데이터 특성(신선도 요구사항, 크기)에 따라 보관함별로 최적의 만료 정책과 용량을 다르게 적용하려고요. 일률적인 설정은 어떤 데이터에는 과하고 어떤 데이터에는 부족해요.',
@@ -591,9 +591,9 @@ public class CodeService {
   }
 
   public void saveCode(String key, String code) {
-    System.out.println("[실행] 인증 코드 저장 — key: " + key);
+    System.out.println("[실행] 인증 코드 저장 - key: " + key);
     redis.opsForValue().set(key, code, Duration.ofSeconds(60));
-    System.out.println("[결과] 인증 코드 저장 완료 — TTL 60초");
+    System.out.println("[결과] 인증 코드 저장 완료 - TTL 60초");
   }
 }`,
     explain: {
@@ -610,8 +610,8 @@ public class CodeService {
       ],
       expectedOutput:
         'saveCode("email:user@test.com", "123456") 호출 시:\n' +
-        '[실행] 인증 코드 저장 — key: email:user@test.com\n' +
-        '[결과] 인증 코드 저장 완료 — TTL 60초',
+        '[실행] 인증 코드 저장 - key: email:user@test.com\n' +
+        '[결과] 인증 코드 저장 완료 - TTL 60초',
       realWorldUsage:
         '실제 프로젝트의 이메일 인증이나 SMS 인증 기능에서 이 패턴을 써요. 사용자가 인증 코드를 요청하면 60초 TTL로 Redis에 저장하고, 사용자가 입력한 코드와 Redis의 코드를 비교해 인증을 완료해요. 60초가 지나면 코드가 자동 삭제돼서 보안이 강화되고, 만료된 코드를 별도로 정리할 필요도 없어져요.',
       why: '인증 코드나 일회용 토큰처럼 짧은 시간만 유효해야 하는 민감 데이터를 안전하게 자동 폐기하려고요.',
@@ -643,14 +643,14 @@ public class CacheConfig {
     CacheManager cm = RedisCacheManager.builder(factory)
       .cacheDefaults(cfg)
       .build();
-    System.out.println("[결과] RedisCacheManager 등록 완료 — 기본 TTL 10분, null 캐싱 비활성");
+    System.out.println("[결과] RedisCacheManager 등록 완료 - 기본 TTL 10분, null 캐싱 비활성");
     return cm;
   }
 }`,
     explain: {
       concept:
         'RedisCacheManager는 스프링의 @Cacheable 같은 캐시 어노테이션이 내부적으로 Redis를 쓰도록 연결해주는 다리예요. ' +
-        '이 설정 하나로 앱 전체의 캐시 저장소가 메모리에서 Redis로 바뀌어요 — @Cacheable("users")는 그대로 두고, 설정만 바꾸면 돼요. ' +
+        '이 설정 하나로 앱 전체의 캐시 저장소가 메모리에서 Redis로 바뀌어요 - @Cacheable("users")는 그대로 두고, 설정만 바꾸면 돼요. ' +
         'entryTtl로 모든 캐시의 기본 만료 시간을 10분으로 정하고, disableCachingNullValues로 null 값을 캐싱하지 않게 했어요. ' +
         'null이 캐싱되면 "데이터가 없음"이라는 결과가 계속 반환돼서 캐시 침투라는 보안·성능 문제가 생길 수 있어서, 실무에서는 항상 이 설정을 켜둬요.',
       terms: [
@@ -663,7 +663,7 @@ public class CacheConfig {
       expectedOutput:
         '앱 시작 시:\n' +
         '[실행] RedisCacheManager 생성\n' +
-        '[결과] RedisCacheManager 등록 완료 — 기본 TTL 10분, null 캐싱 비활성',
+        '[결과] RedisCacheManager 등록 완료 - 기본 TTL 10분, null 캐싱 비활성',
       realWorldUsage:
         '실제 프로젝트에서 로컬 개발 환경은 ConcurrentMapCacheManager로, 운영 환경은 RedisCacheManager로 전환하는 패턴을 자주 써요. application.yml의 spring.cache.type=redis 설정 하나로 전체 캐시 인프라를 바꿀 수 있어요. 캐시 관련 코드는 하나도 안 고치고 말이에요.',
       why: '스프링의 캐시 추상화(@Cacheable 등)를 Redis로 구현하고, null 캐싱 방지·기본 TTL 등 운영에 필요한 최소한의 안전장치를 설정하려고요.',
@@ -689,13 +689,13 @@ public class ProductService {
 
   @Cacheable("products")
   public Product get(Long id) {
-    System.out.println("[실행] DB에서 상품 조회 — id: " + id);
+    System.out.println("[실행] DB에서 상품 조회 - id: " + id);
     return repo.findById(id).orElseThrow();
   }
 
   @CachePut(value = "products", key = "#result.id")
   public Product save(Product p) {
-    System.out.println("[실행] 상품 저장 + 캐시 갱신 — id: " + p.getId());
+    System.out.println("[실행] 상품 저장 + 캐시 갱신 - id: " + p.getId());
     Product saved = repo.save(p);
     System.out.println("[결과] 저장 완료, 캐시에 새 값 반영됨");
     return saved;
@@ -704,8 +704,8 @@ public class ProductService {
     explain: {
       concept:
         '이 코드는 @Cacheable과 @CachePut의 용도 차이를 한 클래스에서 보여주는 예제예요. ' +
-        'get() 메서드는 @Cacheable을 써서 읽기 전용이에요 — 처음엔 DB 조회하고, 두 번째부터는 캐시에서 즉시 반환해요. ' +
-        'save() 메서드는 @CachePut을 써서 쓰기 전용이에요 — 항상 DB에 저장하고 그 결과로 캐시를 덮어써요. ' +
+        'get() 메서드는 @Cacheable을 써서 읽기 전용이에요 - 처음엔 DB 조회하고, 두 번째부터는 캐시에서 즉시 반환해요. ' +
+        'save() 메서드는 @CachePut을 써서 쓰기 전용이에요 - 항상 DB에 저장하고 그 결과로 캐시를 덮어써요. ' +
         '읽기(get)와 쓰기(save)에 서로 다른 어노테이션을 쓰는 게 핵심이에요. 쓰기 작업에 @Cacheable을 써버리면, 한 번 저장한 후에는 다시 저장해도 캐시된 옛날 값만 반환되는 버그가 생겨요.',
       terms: [
         { t: '@Cacheable', d: '읽기 작업에 사용해요. 캐시에 값이 있으면 메서드를 건너뛰고 캐시 값을 바로 반환해요.' },
@@ -715,9 +715,9 @@ public class ProductService {
       ],
       expectedOutput:
         'save(p1) 호출 시:\n' +
-        '[실행] 상품 저장 + 캐시 갱신 — id: 1\n' +
+        '[실행] 상품 저장 + 캐시 갱신 - id: 1\n' +
         '[결과] 저장 완료, 캐시에 새 값 반영됨\n' +
-        'get(1L) 호출 시: (콘솔 출력 없음 — 캐시에서 반환, save로 갱신된 최신 값)',
+        'get(1L) 호출 시: (콘솔 출력 없음 - 캐시에서 반환, save로 갱신된 최신 값)',
       realWorldUsage:
         '실제 프로젝트의 상품 관리 시스템에서 get()은 상품 상세 페이지 API가 호출하고, save()는 관리자의 상품 수정 API가 호출해요. 관리자가 상품 가격을 수정하면 @CachePut이 캐시를 갱신하고, 이후 고객이 상세 페이지를 열면 @Cacheable이 최신 가격을 캐시에서 바로 보여줘요.',
       why: '읽기와 쓰기 작업을 분리해 각각에 최적화된 캐시 전략을 적용하고, 저장 후에도 캐시 일관성을 유지하려고요.',
@@ -742,7 +742,7 @@ public class UserService {
 
   @Cacheable({"users", "dashboard"})
   public User getUser(Long id) {
-    System.out.println("[실행] DB 조회 — userId: " + id + " (캐시: users, dashboard)");
+    System.out.println("[실행] DB 조회 - userId: " + id + " (캐시: users, dashboard)");
     User user = userRepository.findById(id).orElseThrow();
     System.out.println("[결과] 조회 완료, 두 보관함에 동시 저장됨");
     return user;
@@ -762,9 +762,9 @@ public class UserService {
       ],
       expectedOutput:
         'getUser(1L) 첫 호출 시:\n' +
-        '[실행] DB 조회 — userId: 1 (캐시: users, dashboard)\n' +
+        '[실행] DB 조회 - userId: 1 (캐시: users, dashboard)\n' +
         '[결과] 조회 완료, 두 보관함에 동시 저장됨\n' +
-        'getUser(1L) 두 번째 호출 시: (콘솔 출력 없음 — users 또는 dashboard 캐시에서 반환)',
+        'getUser(1L) 두 번째 호출 시: (콘솔 출력 없음 - users 또는 dashboard 캐시에서 반환)',
       realWorldUsage:
         '실제 대시보드 프로젝트에서 사용자 프로필 정보는 여러 위젯이 각자 다른 캐시 보관함을 바라봐요. users 보관함은 10분 TTL로 운영되고, dashboard 보관함은 2분 TTL로 더 자주 갱신돼요. 한 번의 DB 조회 결과가 두 보관함에 동시에 저장되니 불필요한 중복 쿼리를 방지할 수 있어요.',
       why: '같은 데이터를 여러 화면이나 용도에서 빠르게 꺼내 쓸 수 있도록, 각 용도에 맞는 별도 보관함에 동시 저장하려고요.',
@@ -790,7 +790,7 @@ import java.util.Map;
 public class CacheConfig {
   @Bean
   public CacheManager cacheManager(RedisConnectionFactory factory) {
-    System.out.println("[실행] RedisCacheManager 생성 — 보관함별 TTL 설정");
+    System.out.println("[실행] RedisCacheManager 생성 - 보관함별 TTL 설정");
     RedisCacheConfiguration defaultCfg = RedisCacheConfiguration
       .defaultCacheConfig().entryTtl(Duration.ofMinutes(5));
     Map<String, RedisCacheConfiguration> perCache = Map.of(
@@ -801,7 +801,7 @@ public class CacheConfig {
       .cacheDefaults(defaultCfg)
       .withInitialCacheConfigurations(perCache)
       .build();
-    System.out.println("[결과] 설정 완료 — 기본 5분, tokens 60초, users 1시간");
+    System.out.println("[결과] 설정 완료 - 기본 5분, tokens 60초, users 1시간");
     return cm;
   }
 }`,
@@ -820,8 +820,8 @@ public class CacheConfig {
       ],
       expectedOutput:
         '앱 시작 시:\n' +
-        '[실행] RedisCacheManager 생성 — 보관함별 TTL 설정\n' +
-        '[결과] 설정 완료 — 기본 5분, tokens 60초, users 1시간',
+        '[실행] RedisCacheManager 생성 - 보관함별 TTL 설정\n' +
+        '[결과] 설정 완료 - 기본 5분, tokens 60초, users 1시간',
       realWorldUsage:
         '실제 프로젝트에서 JWT 액세스 토큰은 tokens 보관함에 60초 TTL로 캐싱하고, 사용자 프로필은 users 보관함에 1시간 TTL로 캐싱해요. 관리자 페이지에서 조회하는 통계 데이터는 별도 stats 보관함에 10분 TTL로 설정하는 식으로, 데이터 성격에 맞는 최적의 만료 전략을 캐시 이름별로 설계할 수 있어요.',
       why: '데이터의 특성(보안 민감도, 변경 빈도, 용량)에 따라 수명을 다르게 관리해서, 캐시 효율과 데이터 신선도 사이의 균형을 맞추려고요.',
@@ -846,10 +846,10 @@ public class UserService {
 
   @Cacheable(value = "users", unless = "#result == null")
   public User findOptional(Long id) {
-    System.out.println("[실행] DB 조회 — userId: " + id);
+    System.out.println("[실행] DB 조회 - userId: " + id);
     User user = userRepository.findById(id).orElse(null);
     if (user == null) {
-      System.out.println("[결과] 사용자 없음 — 캐시 저장 안 함 (unless)");
+      System.out.println("[결과] 사용자 없음 - 캐시 저장 안 함 (unless)");
     } else {
       System.out.println("[결과] 조회된 사용자: " + user.getName());
     }
@@ -859,7 +859,7 @@ public class UserService {
     explain: {
       concept:
         'unless는 "반환값이 이 조건에 맞으면 캐시에 저장하지 말아요"라는 배제 규칙이에요. ' +
-        '여기서는 조회 결과가 null이면 캐싱하지 않도록 설정했어요 — 없는 사용자를 계속 조회할 때마다 매번 DB까지 가서 확인하는 게 맞으니까요. ' +
+        '여기서는 조회 결과가 null이면 캐싱하지 않도록 설정했어요 - 없는 사용자를 계속 조회할 때마다 매번 DB까지 가서 확인하는 게 맞으니까요. ' +
         'condition이 인자 기준이라면, unless는 메서드 실행 결과 기준으로 판단하는 게 가장 큰 차이예요. ' +
         'null을 캐싱해버리면 "이 ID는 사용자가 없어요"라는 정보가 캐시에 남아서, 나중에 진짜 그 사용자가 등록돼도 한동안 없다고 응답하는 버그가 생겨요.',
       terms: [
@@ -869,11 +869,11 @@ public class UserService {
         { t: 'condition vs unless', d: 'condition은 실행 전 인자로 판단, unless는 실행 후 결과로 판단해요. 용도가 완전히 달라요.' },
       ],
       expectedOutput:
-        'findOptional(999L) — 없는 사용자:\n' +
-        '[실행] DB 조회 — userId: 999\n' +
-        '[결과] 사용자 없음 — 캐시 저장 안 함 (unless)\n\n' +
-        'findOptional(1L) — 있는 사용자:\n' +
-        '[실행] DB 조회 — userId: 1\n' +
+        'findOptional(999L) - 없는 사용자:\n' +
+        '[실행] DB 조회 - userId: 999\n' +
+        '[결과] 사용자 없음 - 캐시 저장 안 함 (unless)\n\n' +
+        'findOptional(1L) - 있는 사용자:\n' +
+        '[실행] DB 조회 - userId: 1\n' +
         '[결과] 조회된 사용자: kim',
       realWorldUsage:
         '실제 프로젝트에서 탈퇴한 사용자나 존재하지 않는 ID로 프로필 조회 요청이 들어올 때, unless로 null 캐싱을 막아요. 만약 null을 캐싱했다면, 탈퇴 후 재가입한 사용자의 프로필이 캐시 만료 전까지 "없음"으로 표시되는 심각한 버그가 발생할 거예요.',
@@ -898,10 +898,10 @@ public class TokenService {
   }
 
   public String getToken(String userId) {
-    System.out.println("[실행] 토큰 조회 — userId: " + userId);
+    System.out.println("[실행] 토큰 조회 - userId: " + userId);
     String token = redis.opsForValue().get("token:" + userId);
     if (token == null) {
-      System.out.println("[결과] 토큰 만료 또는 없음 — 예외 발생");
+      System.out.println("[결과] 토큰 만료 또는 없음 - 예외 발생");
       throw new IllegalStateException("토큰이 만료됐어요");
     }
     System.out.println("[결과] 토큰 조회 성공");
@@ -921,12 +921,12 @@ public class TokenService {
         { t: 'null 체크', d: 'Redis 조회 결과는 null일 수 있어서 반드시 확인해야 해요. 안 하면 NPE가 발생할 수 있어요.' },
       ],
       expectedOutput:
-        'getToken("user1") — 토큰 존재 시:\n' +
-        '[실행] 토큰 조회 — userId: user1\n' +
+        'getToken("user1") - 토큰 존재 시:\n' +
+        '[실행] 토큰 조회 - userId: user1\n' +
         '[결과] 토큰 조회 성공\n\n' +
-        'getToken("user1") — 토큰 만료 시:\n' +
-        '[실행] 토큰 조회 — userId: user1\n' +
-        '[결과] 토큰 만료 또는 없음 — 예외 발생',
+        'getToken("user1") - 토큰 만료 시:\n' +
+        '[실행] 토큰 조회 - userId: user1\n' +
+        '[결과] 토큰 만료 또는 없음 - 예외 발생',
       realWorldUsage:
         '실제 프로젝트의 API 인증 필터에서 이 패턴으로 Redis에 저장된 토큰을 검증해요. 매 요청마다 Authorization 헤더에서 토큰을 추출하고 Redis에서 조회해서 유효성을 확인하고, null이면 401 Unauthorized를 반환해요. TTL 덕분에 로그아웃 기능을 구현하지 않아도 일정 시간 후 자동 로그아웃이 돼요.',
       why: '저장된 토큰을 조회하고 만료 여부를 판단해 인증 흐름을 제어하려고요. null 체크로 만료와 부재를 동시에 처리할 수 있어요.',
@@ -951,9 +951,9 @@ public class UserService {
 
   @CacheEvict(value = "users", key = "#id", beforeInvocation = true)
   public void deleteUser(Long id) {
-    System.out.println("[실행] 캐시 먼저 제거 후 삭제 시도 — userId: " + id);
+    System.out.println("[실행] 캐시 먼저 제거 후 삭제 시도 - userId: " + id);
     if (!userRepository.existsById(id)) {
-      System.out.println("[결과] 존재하지 않는 사용자 — 캐시는 이미 제거됨");
+      System.out.println("[결과] 존재하지 않는 사용자 - 캐시는 이미 제거됨");
       throw new IllegalArgumentException("없는 사용자예요");
     }
     userRepository.deleteById(id);
@@ -973,12 +973,12 @@ public class UserService {
         { t: 'deleteById', d: 'JPA가 제공하는 단일 엔티티 삭제 메서드예요. 내부적으로 DELETE SQL을 실행해요.' },
       ],
       expectedOutput:
-        'deleteUser(1L) — 존재하는 사용자:\n' +
-        '[실행] 캐시 먼저 제거 후 삭제 시도 — userId: 1\n' +
+        'deleteUser(1L) - 존재하는 사용자:\n' +
+        '[실행] 캐시 먼저 제거 후 삭제 시도 - userId: 1\n' +
         '[결과] 사용자 삭제 완료\n\n' +
-        'deleteUser(999L) — 없는 사용자:\n' +
-        '[실행] 캐시 먼저 제거 후 삭제 시도 — userId: 999\n' +
-        '[결과] 존재하지 않는 사용자 — 캐시는 이미 제거됨',
+        'deleteUser(999L) - 없는 사용자:\n' +
+        '[실행] 캐시 먼저 제거 후 삭제 시도 - userId: 999\n' +
+        '[결과] 존재하지 않는 사용자 - 캐시는 이미 제거됨',
       realWorldUsage:
         '실제 프로젝트에서 대량 삭제 배치 작업이나 외부 API 연동 삭제처럼 실패 가능성이 있는 작업에서 이 설정을 써요. 삭제 작업 자체가 실패하더라도, 적어도 캐시의 오래된 데이터는 지워서 다음 조회에서 DB의 최신 상태를 반영하게 하는 전략이에요.',
       why: '메서드가 실패하더라도 캐시를 먼저 비워서, 다음 조회 시 최신 DB 상태를 반영하게 하려고요.',

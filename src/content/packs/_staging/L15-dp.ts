@@ -59,19 +59,19 @@ export const designPattern: Snippet[] = [
 
 public class EmailSender implements NotificationSender {
   public void send(String to, String msg) {
-    System.out.println("[전송] 이메일 — to: " + to + ", msg: " + msg);
+    System.out.println("[전송] 이메일 - to: " + to + ", msg: " + msg);
   }
 }
 
 public class SmsSender implements NotificationSender {
   public void send(String to, String msg) {
-    System.out.println("[전송] SMS — to: " + to + ", msg: " + msg);
+    System.out.println("[전송] SMS - to: " + to + ", msg: " + msg);
   }
 }
 
 public class NotificationFactory {
   public static NotificationSender of(String type) {
-    System.out.println("[실행] 팩터리 생성 요청 — type: " + type);
+    System.out.println("[실행] 팩터리 생성 요청 - type: " + type);
     return switch (type) {
       case "email" -> new EmailSender();
       case "sms"   -> new SmsSender();
@@ -82,7 +82,7 @@ public class NotificationFactory {
     explain: {
       concept:
         '정적 팩터리(Simple Factory)는 주문서만 내면 공장이 알맞은 제품을 만들어주는 패턴이에요. ' +
-        '호출자는 "어떤 클래스가 만들어지는지" 전혀 몰라도 돼요 — notiFactory.send("email")이라고만 하면 EmailSender가 생성되는 거예요. ' +
+        '호출자는 "어떤 클래스가 만들어지는지" 전혀 몰라도 돼요 - notiFactory.send("email")이라고만 하면 EmailSender가 생성되는 거예요. ' +
         'Java 14+의 switch 표현식(-> 화살표)을 써서 if-else보다 훨씬 간결하게 타입 분기를 처리하고 있어요. ' +
         'GoF의 Factory Method(서브클래스가 생성 결정)와는 다른, 가장 단순한 생성 분리 방법이에요. 새 타입을 추가하려면 case를 하나 더 넣으면 돼요.',
       terms: [
@@ -94,9 +94,9 @@ public class NotificationFactory {
       ],
       expectedOutput:
         'NotificationFactory.of("email"):\n' +
-        '[실행] 팩터리 생성 요청 — type: email\n' +
+        '[실행] 팩터리 생성 요청 - type: email\n' +
         'NotificationFactory.of("sms"):\n' +
-        '[실행] 팩터리 생성 요청 — type: sms\n' +
+        '[실행] 팩터리 생성 요청 - type: sms\n' +
         'NotificationFactory.of("push"):\n' +
         '→ IllegalArgumentException: 알 수 없는 타입: push',
       realWorldUsage:
@@ -135,7 +135,7 @@ public class NotificationFactory {
     public Builder age(int a)      { this.age   = a; return this; }
 
     public User build() {
-      System.out.println("[실행] User 빌드 — name: " + name + ", email: " + email + ", age: " + age);
+      System.out.println("[실행] User 빌드 - name: " + name + ", email: " + email + ", age: " + age);
       if (name == null || name.isBlank()) {
         throw new IllegalStateException("name은 필수값이에요");
       }
@@ -163,7 +163,7 @@ public class NotificationFactory {
       ],
       expectedOutput:
         'User.builder().name("kim").email("kim@test.com").age(25).build():\n' +
-        '[실행] User 빌드 — name: kim, email: kim@test.com, age: 25\n' +
+        '[실행] User 빌드 - name: kim, email: kim@test.com, age: 25\n' +
         '→ User{name="kim", email="kim@test.com", age=25}\n\n' +
         'User.builder().email("test").build() (name 누락):\n' +
         '→ IllegalStateException: name은 필수값이에요',
@@ -187,7 +187,7 @@ public class PercentDiscount implements DiscountStrategy {
   public PercentDiscount(int percent) { this.percent = percent; }
   public long apply(long price) {
     long result = price - (price * percent / 100);
-    System.out.println("[실행] " + percent + "% 할인 — " + price + " -> " + result);
+    System.out.println("[실행] " + percent + "% 할인 - " + price + " -> " + result);
     return result;
   }
 }
@@ -197,7 +197,7 @@ public class FixedDiscount implements DiscountStrategy {
   public FixedDiscount(long amount) { this.amount = amount; }
   public long apply(long price) {
     long result = Math.max(0, price - amount);
-    System.out.println("[실행] " + amount + "원 할인 — " + price + " -> " + result);
+    System.out.println("[실행] " + amount + "원 할인 - " + price + " -> " + result);
     return result;
   }
 }
@@ -226,10 +226,10 @@ public class OrderService {
       expectedOutput:
         'setStrategy(new PercentDiscount(10)) → calculatePrice(10000):\n' +
         '[전략] 할인 전략 교체: PercentDiscount\n' +
-        '[실행] 10% 할인 — 10000 -> 9000\n\n' +
+        '[실행] 10% 할인 - 10000 -> 9000\n\n' +
         'setStrategy(new FixedDiscount(2000)) → calculatePrice(10000):\n' +
         '[전략] 할인 전략 교체: FixedDiscount\n' +
-        '[실행] 2000원 할인 — 10000 -> 8000',
+        '[실행] 2000원 할인 - 10000 -> 8000',
       realWorldUsage:
         '실제 전자상거래 프로젝트에서 할인 정책(회원 등급 할인·쿠폰 할인·시즌 할인·적립금 사용)이 전략 패턴으로 구현돼요. 사용자가 쿠폰을 적용하면 CouponDiscountStrategy로 교체되고, 적립금을 사용하면 PointDiscountStrategy로 교체돼요. 두 할인을 동시에 적용하려면 전략들을 리스트로 묶어 순차적으로 apply()할 수도 있어요.',
       why: '알고리즘을 실행 코드에서 분리해서, 런타임에 유연하게 교체할 수 있고 새 전략 추가가 기존 코드를 변경하지 않게 하려고요(OCP).',
@@ -271,7 +271,7 @@ public class NewsPublisher {
     explain: {
       concept:
         '옵저버(Observer) 패턴은 신문 구독과 똑같이 동작해요. 구독자(Observer)가 출판사(Subject)에 "새 기사 나오면 알려줘"라고 등록해 두면, 기사가 나올 때마다 자동으로 통보를 받아요. ' +
-        '출판사는 구독자가 몇 명인지, 누군지, 알림을 받고 무슨 일을 하는지 전혀 몰라요 — 그냥 등록된 모든 구독자에게 update()를 호출할 뿐이에요. ' +
+        '출판사는 구독자가 몇 명인지, 누군지, 알림을 받고 무슨 일을 하는지 전혀 몰라요 - 그냥 등록된 모든 구독자에게 update()를 호출할 뿐이에요. ' +
         '이게 느슨한 결합(Loose Coupling)의 핵심이에요. 새 구독자를 추가할 때 출판사 코드를 전혀 수정하지 않아도 돼요. ' +
         '실제로 스프링의 ApplicationEvent, 자바의 Observable/PropertyChangeListener, 메시지 큐의 Pub/Sub 모두 이 패턴을 기반으로 해요.',
       terms: [
@@ -289,7 +289,7 @@ public class NewsPublisher {
         'unsubscribe(user1) → publish("두 번째 기사"):\n' +
         '[해지] 구독자 제거\n' +
         '[발행] 새 기사: 두 번째 기사\n' +
-        '(구독자 없음 — 알림 전파 안 됨)',
+        '(구독자 없음 - 알림 전파 안 됨)',
       realWorldUsage:
         '실제 프로젝트에서 주문 완료 → 이메일 발송 + 포인트 적립 + 재고 감소 + 통계 업데이트처럼 하나의 이벤트에 여러 후속 작업이 연결될 때 옵저버 패턴을 써요. 주문 로직은 "주문 완료"만 신경 쓰고, 나머지는 각 구독자가 알아서 처리해요. 주문 코드에 이메일·포인트·재고 코드가 전혀 없어서, 새 후속 작업이 추가돼도 주문 코드를 수정하지 않아도 돼요.',
       why: '주체(Subject)와 구독자(Observer)를 느슨하게 연결해서, 한쪽 변경이 다른 쪽으로 전파되지 않게 하고 새 구독자를 자유롭게 추가하려고요.',
@@ -433,7 +433,7 @@ public class LegacyPrinterAdapter implements Printer {
     explain: {
       concept:
         '어댑터(Adapter) 패턴은 해외여행용 전원 플러그 변환기처럼, 규격이 달라서 직접 연결할 수 없는 두 인터페이스를 연결해줘요. ' +
-        'LegacyPrinter는 우리가 원하는 Printer 인터페이스(print)가 아니라 자기만의 writeLine 메서드를 가지고 있어요 — 이걸 우리가 바꿀 수도 없어요(레거시 코드니까요). ' +
+        'LegacyPrinter는 우리가 원하는 Printer 인터페이스(print)가 아니라 자기만의 writeLine 메서드를 가지고 있어요 - 이걸 우리가 바꿀 수도 없어요(레거시 코드니까요). ' +
         'LegacyPrinterAdapter가 Printer를 구현하고 내부에서 LegacyPrinter의 writeLine을 호출해줘서, 우리 새 코드는 Printer 인터페이스만 보고 작업할 수 있게 돼요. ' +
         '레거시 코드를 전혀 수정하지 않고도 새 시스템에 통합할 수 있는 게 어댑터의 가장 큰 장점이에요.',
       terms: [
@@ -480,7 +480,7 @@ public class LazyImageProxy implements Image {
   public LazyImageProxy(String p) { this.path = p; }
   public void display() {
     if (real == null) {
-      System.out.println("[프록시] 최초 호출 — RealImage 생성");
+      System.out.println("[프록시] 최초 호출 - RealImage 생성");
       real = new RealImage(path);
     } else {
       System.out.println("[프록시] 캐시된 RealImage 재사용");
@@ -491,7 +491,7 @@ public class LazyImageProxy implements Image {
     explain: {
       concept:
         '프록시(Proxy) 패턴은 본인이 직접 일하지 않고 대리인을 내세우는 패턴이에요. ' +
-        'LazyImageProxy는 RealImage의 대리인이에요 — display()가 처음 호출될 때까지 진짜 RealImage를 만들지 않고 기다리다가, 꼭 필요할 때만 생성해요. ' +
+        'LazyImageProxy는 RealImage의 대리인이에요 - display()가 처음 호출될 때까지 진짜 RealImage를 만들지 않고 기다리다가, 꼭 필요할 때만 생성해요. ' +
         'RealImage는 생성 시 loadFromDisk()로 디스크에서 이미지를 로드하는데, 이 작업이 무겁고 느려요. 하지만 프록시 덕분에 display()가 호출되기 전까지는 디스크 로딩이 전혀 일어나지 않아요. ' +
         '이걸 지연 로딩(Lazy Loading)이라고 하고, 자원을 꼭 필요한 순간까지 아끼는 전략이에요. 두 번째 호출부터는 이미 생성된 RealImage를 바로 재사용해요.',
       terms: [
@@ -503,7 +503,7 @@ public class LazyImageProxy implements Image {
       ],
       expectedOutput:
         'new LazyImageProxy("photo.jpg").display() 첫 호출:\n' +
-        '[프록시] 최초 호출 — RealImage 생성\n' +
+        '[프록시] 최초 호출 - RealImage 생성\n' +
         '[로드] 디스크에서 읽는 중: photo.jpg\n' +
         '[표시] photo.jpg\n\n' +
         '두 번째 display() 호출:\n' +
@@ -541,7 +541,7 @@ public class OrderFacade {
     payment.charge(order);
     System.out.println("[완료] 결제 완료");
     shipping.dispatch(order);
-    System.out.println("[결과] 주문 처리 완료 — 배송 지시까지 완료");
+    System.out.println("[결과] 주문 처리 완료 - 배송 지시까지 완료");
   }
 }`,
     explain: {
@@ -562,7 +562,7 @@ public class OrderFacade {
         '[실행] 주문 접수 시작\n' +
         '[완료] 재고 확보\n' +
         '[완료] 결제 완료\n' +
-        '[결과] 주문 처리 완료 — 배송 지시까지 완료',
+        '[결과] 주문 처리 완료 - 배송 지시까지 완료',
       realWorldUsage:
         '실제 프로젝트의 컨트롤러가 주문 접수를 처리할 때, OrderFacade.placeOrder() 하나만 호출해요. 컨트롤러는 재고 서비스가 따로 있고 결제 서비스가 따로 있다는 사실을 몰라요. 덕분에 내부 서비스 구조가 마이크로서비스로 분리돼도, 퍼사드만 수정하면 컨트롤러 코드는 그대로 유지할 수 있어요.',
       why: '복잡한 서비스 간 상호작용을 하나의 단순한 인터페이스 뒤로 숨겨서, 클라이언트의 부담을 줄이고 내부 변경의 영향을 최소화하려고요.',
@@ -794,7 +794,7 @@ public class PaymentService {
   private final Map<String, PaymentStrategy> strategies;
 
   public PaymentService(List<PaymentStrategy> list) {
-    System.out.println("[실행] 전략 Map 생성 — 전략 수: " + list.size());
+    System.out.println("[실행] 전략 Map 생성 - 전략 수: " + list.size());
     this.strategies = list.stream()
         .collect(Collectors.toMap(PaymentStrategy::type, s -> s));
     strategies.forEach((k, v) ->
@@ -813,7 +813,7 @@ public class PaymentService {
       concept:
         '스프링의 DI(의존성 주입)와 전략 패턴을 조합하면, 새 전략을 추가할 때 기존 코드를 전혀 건드리지 않는 개방-폐쇄 원칙(OCP)의 완벽한 예가 만들어져요. ' +
         'PaymentStrategy를 구현한 모든 @Component 빈이 자동으로 List<PaymentStrategy>에 주입되고, 생성자에서 type() 값을 키로 하는 Map이 만들어져요. ' +
-        'pay()는 Map에서 type으로 전략을 조회해서 실행만 하면 돼요 — if(type=="card") else if(type=="kakao")... 같은 긴 조건문이 사라져요. ' +
+        'pay()는 Map에서 type으로 전략을 조회해서 실행만 하면 돼요 - if(type=="card") else if(type=="kakao")... 같은 긴 조건문이 사라져요. ' +
         '새로운 NaverPay 전략을 추가하고 싶다면, NaverPayment 클래스를 만들고 @Component만 붙이면 자동으로 Map에 등록돼요. PaymentService 코드는 완전히 그대로예요.',
       terms: [
         { t: 'List<PaymentStrategy> 주입', d: '스프링이 PaymentStrategy 타입의 모든 빈을 찾아 리스트로 자동 주입해줘요.' },
@@ -824,7 +824,7 @@ public class PaymentService {
       ],
       expectedOutput:
         '앱 시작 시:\n' +
-        '[실행] 전략 Map 생성 — 전략 수: 2\n' +
+        '[실행] 전략 Map 생성 - 전략 수: 2\n' +
         '  - card -> CardPayment\n' +
         '  - kakao -> KakaoPayment\n' +
         'pay("card", 10000):\n' +
@@ -857,7 +857,7 @@ public class OrderService {
   public OrderService(ApplicationEventPublisher ep) { this.eventPublisher = ep; }
 
   public void place(Long orderId, String email) {
-    System.out.println("[실행] 주문 생성 — orderId: " + orderId);
+    System.out.println("[실행] 주문 생성 - orderId: " + orderId);
     eventPublisher.publishEvent(new OrderPlacedEvent(orderId, email));
     System.out.println("[결과] 이벤트 발행 완료");
   }
@@ -883,7 +883,7 @@ public class PointAccumulator {
       concept:
         '스프링의 ApplicationEvent는 옵저버 패턴을 스프링 생태계에 완벽하게 통합한 구현이에요. ' +
         'OrderService는 ApplicationEventPublisher를 통해 OrderPlacedEvent라는 불변 이벤트 객체를 발행하고, EmailNotifier와 PointAccumulator는 @EventListener로 해당 이벤트를 자동으로 구독해요. ' +
-        '발행자(OrderService)는 구독자가 누구인지 전혀 몰라요 — 이메일을 보내는지, 포인트를 적립하는지, 통계를 업데이트하는지 발행자 코드에는 단 한 줄의 흔적도 없어요. ' +
+        '발행자(OrderService)는 구독자가 누구인지 전혀 몰라요 - 이메일을 보내는지, 포인트를 적립하는지, 통계를 업데이트하는지 발행자 코드에는 단 한 줄의 흔적도 없어요. ' +
         '@Async가 붙은 PointAccumulator는 별도 스레드에서 비동기로 실행돼서, 주문 생성의 응답 시간에 영향을 전혀 주지 않아요.',
       terms: [
         { t: 'ApplicationEventPublisher', d: '스프링이 제공하는 이벤트 발행기예요. publishEvent()로 이벤트를 모든 구독자에게 전파해요.' },
@@ -894,7 +894,7 @@ public class PointAccumulator {
       ],
       expectedOutput:
         'place(1L, "kim@test.com") 호출 시:\n' +
-        '[실행] 주문 생성 — orderId: 1\n' +
+        '[실행] 주문 생성 - orderId: 1\n' +
         '[결과] 이벤트 발행 완료\n' +
         '[이메일] 발송 -> kim@test.com\n' +
         '[포인트] 적립 -> 주문 1 (비동기, 다른 스레드에서 실행)',
@@ -931,7 +931,7 @@ public class UserDao {
   }
 
   public int countByActive(boolean active) {
-    System.out.println("[실행] 활성 사용자 수 조회 — active: " + active);
+    System.out.println("[실행] 활성 사용자 수 조회 - active: " + active);
     int count = jdbc.queryForObject(
         "SELECT COUNT(*) FROM users WHERE active = ?",
         Integer.class,
@@ -942,7 +942,7 @@ public class UserDao {
   }
 
   public void save(String name, String email) {
-    System.out.println("[실행] 사용자 저장 — name: " + name);
+    System.out.println("[실행] 사용자 저장 - name: " + name);
     jdbc.update("INSERT INTO users (name, email) VALUES (?, ?)", name, email);
     System.out.println("[결과] 저장 완료");
   }
@@ -951,7 +951,7 @@ public class UserDao {
       concept:
         'JdbcTemplate은 템플릿 메서드 패턴의 실전 사례로, 스프링에서 가장 성공적인 패턴 적용 중 하나예요. ' +
         '"커넥션 열기 → PreparedStatement 생성 → SQL 실행 → ResultSet 순회 → 자원 닫기 + 예외 변환"이라는 복잡한 뼈대는 JdbcTemplate이 알아서 처리하고, 우리는 SQL 문자열과 결과 매핑 로직만 딱 채워 넣으면 돼요. ' +
-        'query()에 전달된 람다 (rs, rowNum) -> rs.getString("name")는 RowMapper라고 부르는 콜백이에요 — JdbcTemplate이 ResultSet의 각 행에 이 람다를 호출해서 결과 리스트를 만들어줘요. ' +
+        'query()에 전달된 람다 (rs, rowNum) -> rs.getString("name")는 RowMapper라고 부르는 콜백이에요 - JdbcTemplate이 ResultSet의 각 행에 이 람다를 호출해서 결과 리스트를 만들어줘요. ' +
         'JDBC에서 직접 Connection·PreparedStatement·ResultSet을 try-catch-finally로 관리하던 지저분한 코드가 모두 사라지는 이유가 바로 템플릿 메서드 패턴 덕분이에요.',
       terms: [
         { t: 'JdbcTemplate', d: 'JDBC의 반복 작업을 추상화한 스프링 클래스예요. 커넥션·예외·자원 관리를 모두 처리해줘요.' },
@@ -965,7 +965,7 @@ public class UserDao {
         '[실행] 모든 사용자 이름 조회\n' +
         '[결과] 조회된 이름 수: 3\n' +
         'countByActive(true) 호출 시:\n' +
-        '[실행] 활성 사용자 수 조회 — active: true\n' +
+        '[실행] 활성 사용자 수 조회 - active: true\n' +
         '[결과] 활성 사용자 수: 150',
       realWorldUsage:
         '실제 프로젝트에서 JPA만으로는 처리하기 어려운 복잡한 네이티브 SQL이나 대량 배치 쿼리에 JdbcTemplate을 써요. JPA가 자동 생성하는 쿼리보다 수동으로 튜닝한 SQL이 훨씬 빠를 때, 템플릿 메서드 덕분에 복잡한 JDBC 코드 없이 몇 줄로 최적화 쿼리를 실행할 수 있어요.',
@@ -988,18 +988,18 @@ public class ProductQueryService {
 
   @Cacheable(value = "products", key = "#id")
   public ProductDto findById(Long id) {
-    System.out.println("[실행] DB 조회 — productId: " + id);
+    System.out.println("[실행] DB 조회 - productId: " + id);
     return new ProductDto("상품" + id, 10000, true, 1);
   }
 
   @CacheEvict(value = "products", key = "#id")
   public void evict(Long id) {
-    System.out.println("[실행] 캐시 제거 — productId: " + id);
+    System.out.println("[실행] 캐시 제거 - productId: " + id);
   }
 
   @CachePut(value = "products", key = "#dto.name")
   public ProductDto update(ProductDto dto) {
-    System.out.println("[실행] 캐시 갱신 — " + dto);
+    System.out.println("[실행] 캐시 갱신 - " + dto);
     return dto;
   }
 }
@@ -1020,11 +1020,11 @@ record ProductDto(String name, int price, boolean inStock, int quantity) {}`,
       ],
       expectedOutput:
         'findById(1L) 첫 호출:\n' +
-        '[실행] DB 조회 — productId: 1\n' +
+        '[실행] DB 조회 - productId: 1\n' +
         'findById(1L) 두 번째 호출:\n' +
-        '(콘솔 출력 없음 — 프록시가 캐시 반환)\n' +
+        '(콘솔 출력 없음 - 프록시가 캐시 반환)\n' +
         'evict(1L) 호출:\n' +
-        '[실행] 캐시 제거 — productId: 1',
+        '[실행] 캐시 제거 - productId: 1',
       realWorldUsage:
         '실제 프로젝트에서 @Transactional·@Cacheable·@Secured 같은 선언적 기능이 모두 스프링 AOP 프록시로 구현돼요. ProductService에 @Transactional을 붙이면, 스프링이 프록시를 만들고 메서드 호출 전후로 트랜잭션을 시작·커밋·롤백해줘요. 비즈니스 코드에는 트랜잭션 관리 코드가 한 줄도 없어도 되는 이유가 바로 프록시 덕분이에요.',
       why: '반복적인 DB 조회를 프록시 기반 캐시로 줄여 응답 속도를 높이고, 비즈니스 코드에서 캐시 관리 코드를 완전히 분리하려고요.',
@@ -1058,12 +1058,12 @@ public class LoggingFilter extends OncePerRequestFilter {
   ) throws ServletException, IOException {
 
     long start = System.currentTimeMillis();
-    System.out.println("[필터] 요청 시작 — " + request.getMethod() + " " + request.getRequestURI());
+    System.out.println("[필터] 요청 시작 - " + request.getMethod() + " " + request.getRequestURI());
     try {
       chain.doFilter(request, response);
     } finally {
       long elapsed = System.currentTimeMillis() - start;
-      System.out.printf("[필터] 요청 완료 — %s %s %dms%n",
+      System.out.printf("[필터] 요청 완료 - %s %s %dms%n",
           request.getMethod(), request.getRequestURI(), elapsed);
     }
   }
@@ -1083,8 +1083,8 @@ public class LoggingFilter extends OncePerRequestFilter {
       ],
       expectedOutput:
         'GET /api/users 요청 시:\n' +
-        '[필터] 요청 시작 — GET /api/users\n' +
-        '[필터] 요청 완료 — GET /api/users 42ms',
+        '[필터] 요청 시작 - GET /api/users\n' +
+        '[필터] 요청 완료 - GET /api/users 42ms',
       realWorldUsage:
         '실제 프로젝트에서 모든 HTTP 요청-응답을 로깅·인증·CORS·CSRF·XSS 방어·요청 압축 해제·응답 압축·트레이싱 ID 주입까지, 필터 체인에 여러 데코레이터를 연결해서 처리해요. 비즈니스 로직(컨트롤러·서비스)에는 이런 횡단 관심사가 단 한 줄도 없어서 깔끔하게 유지되고, 필터 순서만 조정하면 기능을 자유롭게 조합할 수 있어요.',
       why: '비즈니스 로직을 전혀 건드리지 않고 HTTP 요청-응답 흐름에 로깅·보안·압축 같은 공통 기능을 투명하게 덧붙이려고요.',
@@ -1117,13 +1117,13 @@ public class CheckoutFacade {
   }
 
   public Long checkout(Long userId, String couponCode) {
-    System.out.println("[실행] 체크아웃 시작 — userId: " + userId);
+    System.out.println("[실행] 체크아웃 시작 - userId: " + userId);
     List<CartItem> items    = cart.getItems(userId);
     long           discount = coupon.apply(couponCode, userId);
     Long           orderId  = order.create(userId, items, discount);
     point.earn(userId, orderId);
     cart.clear(userId);
-    System.out.println("[결과] 체크아웃 완료 — orderId: " + orderId);
+    System.out.println("[결과] 체크아웃 완료 - orderId: " + orderId);
     return orderId;
   }
 }`,
@@ -1142,10 +1142,10 @@ public class CheckoutFacade {
       ],
       expectedOutput:
         'checkout(1L, "WELCOME10") 호출 시:\n' +
-        '[실행] 체크아웃 시작 — userId: 1\n' +
-        '[결과] 체크아웃 완료 — orderId: 123\n\n' +
+        '[실행] 체크아웃 시작 - userId: 1\n' +
+        '[결과] 체크아웃 완료 - orderId: 123\n\n' +
         '중간에 예외 발생 시:\n' +
-        '(트랜잭션 전체 롤백 — 장바구니·주문·포인트 모두 원상복구)',
+        '(트랜잭션 전체 롤백 - 장바구니·주문·포인트 모두 원상복구)',
       realWorldUsage:
         '실제 전자상거래 프로젝트에서 체크아웃·주문 취소·반품 처리·정산처럼 여러 서비스가 협력하는 작업은 모두 트랜잭션 퍼사드로 구현해요. PG사 결제는 성공했는데 주문 저장이 실패하는 최악의 시나리오를 트랜잭션 하나로 방지해요. 장바구니 비우기와 포인트 적립 같은 부수 작업도 트랜잭션에 포함시켜서, 부분 실패로 인한 데이터 불일치가 절대 발생하지 않게 해요.',
       why: '여러 서비스에 걸친 복잡한 비즈니스 흐름을 하나의 원자적 트랜잭션으로 묶어서, 데이터 정합성을 완벽하게 보장하려고요.',
