@@ -37,8 +37,10 @@ const EXCLUDE_DIRS = new Set([
 const MAX_FILES = 1000;
 
 function extLang(ext: string): 'java' | 'python' | 'unknown' {
-  if (ext === '.java') return 'java';
-  if (ext === '.py') return 'python';
+  if (ext === '.java' || ext === '.kt' || ext === '.groovy') return 'java';
+  if (ext === '.xml' || ext === '.yml' || ext === '.yaml' ||
+      ext === '.gradle' || ext === '.properties' || ext === '.sql') return 'java';
+  if (ext === '.py' || ext === '.cfg' || ext === '.toml') return 'python';
   return 'unknown';
 }
 
@@ -63,7 +65,9 @@ async function scanDirectory(
       );
     } else if (handle.kind === 'file') {
       const ext = name.lastIndexOf('.') >= 0 ? name.slice(name.lastIndexOf('.')) : '';
-      if (ext === '.java' || ext === '.py') {
+      if (ext === '.java' || ext === '.py' || ext === '.xml' || ext === '.yml' ||
+          ext === '.yaml' || ext === '.sql' || ext === '.gradle' || ext === '.properties' ||
+          ext === '.kt' || ext === '.groovy' || ext === '.toml' || ext === '.cfg') {
         files.push({
           path: basePath ? `${basePath}/${name}` : name,
           name,
