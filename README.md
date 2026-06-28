@@ -36,23 +36,53 @@ NOTICE          # 저작권·서드파티 귀속
 
 ## 로컬 실행
 
-정적 파일이라 빌드가 없습니다. 정적 서버로 열기만 하면 됩니다 (Service Worker는 `http(s)` 필요):
-
+### 빠른 시작 (개발 서버)
 ```bash
-# 예: Python
-python -m http.server 8080
-# → http://localhost:8080
+npm ci          # 의존성 설치 (최초 1회)
+npm run dev     # Vite 개발 서버 실행 → http://localhost:5173
+```
+
+### 프로덕션 빌드 검증
+```bash
+npm run build   # dist/ 폴더에 프로덕션 빌드 산출
+npm run preview # 빌드 결과 미리보기
+```
+
+### PowerShell 자동화 스크립트 (Windows 권장)
+| 스크립트 | 설명 |
+|----------|------|
+| `00-git-cli-setup.ps1` | **최초 1회** — Git/gh CLI 설치, Git 사용자 설정, GitHub 브라우저 인증 |
+| `01-build.ps1` | 로컬 프로덕션 빌드 검증 (`npm ci && npm run build`) |
+| `01-deploy.ps1` | **일체형** — 빌드 → 커밋 → 푸시 → GitHub Actions 배포 대기까지 한 번에 |
+| `02-build.ps1` | (별도) 빌드만 수행 |
+| `03-commit.ps1` | (별도) 커밋/푸시만 수행 |
+| `04-deploy-wait.ps1` | (별도) 배포 상태만 대기/확인 |
+
+```powershell
+# 최초 설정 (관리자 PowerShell)
+.\00-setup.ps1
+
+# 이후 배포 (일반 PowerShell)
+.\01-deploy.ps1              # 전체 자동화
+.\01-deploy.ps1 -CommitMessage "feat: 새로운 기능"  # 커밋 메시지 지정
+.\01-build.ps1               # 빌드만 검증
 ```
 
 ## 배포
 
-`main` 브랜치에 push하면 **GitHub Pages** 가 자동 재배포합니다.
+`main` 브랜치에 push하면 **GitHub Pages** 가 자동 재배포합니다. (GitHub Actions → Deploy to GitHub Pages)
 
 ```bash
 git add -A
 git commit -m "변경 내용"
 git push
 ```
+
+또는 PowerShell 자동화:
+```powershell
+.\01-deploy.ps1
+```
+배포 완료 시: https://mykim711231.github.io/CodeMaster/
 
 ## 기술 스택 (목표 아키텍처 — Phase 3 풀스택)
 
