@@ -644,7 +644,7 @@ def count_lines(fileobj: io.IOBase) -> int:
   return result
 
 
-sample = io.StringIO('line1\nline2\nline3\n')
+sample = io.StringIO('line1\\nline2\\nline3\\n')
 print(f"[실행] 메모리 파일로 줄 수 세기")
 print(count_lines(sample))
 

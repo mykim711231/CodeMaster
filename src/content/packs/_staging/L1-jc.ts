@@ -851,7 +851,7 @@ public class Async {
           "age": 30
         }
         """;
-        System.out.println("[결과] JSON:\n" + json);
+        System.out.println("[결과] JSON:\\n" + json);
     }
 }`,
     explain: {

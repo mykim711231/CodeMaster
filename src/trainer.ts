@@ -1,6 +1,6 @@
 import { initTypingEngine } from './engine/typing';
 import { PACKS, type Level, type Snippet, type Pack } from './content';
-import { saveSession, addWrongAnswer, getWrongAnswers, addTypoPattern, getWeakPatterns, updateTopbar } from './storage/db';
+import { saveSession, addWrongAnswer, getWrongAnswers, addTypoPattern, getWeakPatterns, updateTopbar, updatePatternMastery, getPatternMasteries } from './storage/db';
 import { initIcons } from './icons';
 import { appStore } from './store';
 
@@ -24,6 +24,16 @@ export function getTrainerAPI(): TrainerAPI | null {
   return _trainerAPI;
 }
 
+let _patternMasteries: Record<string, number> = {};
+
+async function loadPatternMasteries(): Promise<void> {
+  const patterns = await getPatternMasteries();
+  _patternMasteries = {};
+  for (const p of patterns) {
+    _patternMasteries[p.patternId] = p.mastery;
+  }
+}
+
 // 학습팩 ↔ 엔진. 사이드바 팝업 서브메뉴: 학습팩 → 레벨 → 문제(3단).
 // 버튼 클릭 시 팝업이 뜨고, 팩/레벨을 펼쳐 문제를 클릭하면 이동. 이전/다음은 전체를 가로질러 이어짐.
 export function initTrainer(): void {
@@ -42,14 +52,16 @@ export function initTrainer(): void {
 
   const PACK_KEYS = Object.keys(PACKS);
 
-  const PACK_GUIDES: Record<string, { desc: string; details: string }> = {
+  const PACK_GUIDES: Record<string, { desc: string; tips: string; details: string }> = {
     'spring-boot': {
-      desc: 'Spring Boot로 백엔드를 처음 배우는 분을 위한 실무 패턴 모음이에요.',
-      details: 'L1 Java Core → L2 Spring 기초·DI → L3 MVC → L4 DB(JPA/MyBatis) → L5 동시성 → L6 네트워크 → L7 Gateway → L8 메시징(Kafka) → L9 배치 → L10 보안(JWT/OAuth2) → L11 캐시(Redis) → L12 모니터링 → L13 테스트 → L14 아키텍처(DDD) → L15 디자인패턴 → L16 DevOps → L17 관측 → L18 데이터심화 → L19 Resilience4j → L20 WebFlux 순서로 익혀요.',
+      desc: 'Spring Boot로 백엔드 개발을 처음 배우는 분을 위한 20단계 실무 로드맵이에요.',
+      tips: '🔥 초보자 추천: L1~L4를 먼저 마스터하세요. L1 Java Core → L2 Spring 기초 → L3 MVC → L4 DB 순서로요. 이 4개만 알아도 기본적인 REST API 서버를 만들 수 있어요.',
+      details: 'L1 Java Core(class/record/stream/optional) → L2 Spring Core(DI/@Bean/AOP) → L3 MVC(@RestController/@Valid/ExceptionHandler) → L4 DB(JPA/@Entity/@Transactional/MyBatis) → L5 동시성(CompletableFuture/ThreadPool) → L6 네트워크(Socket/NIO/Netty) → L7 Gateway(RouteLocator/CircuitBreaker) → L8 메시징(Kafka/RabbitMQ/Spring Events) → L9 Batch(Job/Step/Chunk) → L10 Security(JWT/OAuth2/@PreAuthorize) → L11 Cache(Redis/Caffeine/@Cacheable) → L12 Monitoring(Actuator/Micrometer/Prometheus) → L13 Testing(JUnit5/Mockito/TestContainers) → L14 Architecture(Hexagonal/DDD/CQRS) → L15 Design Pattern(Singleton/Factory/Strategy) → L16 DevOps(Gradle/Docker/k8s/GitHub Actions) → L17 Observability(Logback/MDC/Sentry) → L18 Data(QueryDSL/Flyway/N+1) → L19 Resilience(@Retry/@CircuitBreaker/Eureka) → L20 Reactive(WebFlux/Mono/Flux/R2DBC)',
     },
     'python-ai': {
-      desc: 'Python으로 AI 개발을 처음 배우는 분을 위한 실무 패턴 모음이에요.',
-      details: 'L1 Python Core → L2 비동기(asyncio) → L3 데이터(NumPy/Pandas) → L4 ML(Scikit-learn) → L5 DL(PyTorch) → L6 LLM(Transformers) → L7 RAG(Chunking) → L8 AI Agent → L9 프레임워크(LangChain) → L10 프로덕션(FastAPI) → L11 VectorDB(pgvector) → L12 서빙(vLLM) → L13 프롬프트 → L14 Fine-tuning(LoRA) → L15 품질·보안 순서로 익혀요.',
+      desc: 'Python으로 AI/ML 개발을 처음 배우는 분을 위한 15단계 실무 로드맵이에요.',
+      tips: '🔥 초보자 추천: L1~L5를 먼저 마스터하세요. L1 Python Core → L2 비동기 → L3 데이터 → L4 ML → L5 DL 순서로요. 기본기 없이 LLM으로 바로 가면 이해가 어려워요.',
+      details: 'L1 Python Core(def/class/dataclass/typing) → L2 Async(asyncio/await/TaskGroup) → L3 Data(NumPy/Pandas/Matplotlib/Polars) → L4 ML(Scikit-learn/XGBoost/LightGBM) → L5 DL(PyTorch/TensorFlow/Dataset) → L6 LLM(Transformers/pipeline/Embedding) → L7 RAG(Chunking/VectorStore/Retriever/Reranker) → L8 Agent(Tool Calling/Memory/ReAct/Multi-Agent) → L9 Framework(LangChain/LCEL/LlamaIndex/CrewAI) → L10 Production(FastAPI/Pydantic/SQLAlchemy/Celery) → L11 VectorDB(pgvector/Qdrant/FAISS/HNSW) → L12 Serving(vLLM/Ollama/GGUF/SSE) → L13 Prompt(Few-shot/CoT/JSON Schema) → L14 Fine-tuning(LoRA/QLoRA/PEFT/MLflow) → L15 Quality(RAGAS/Langfuse/Guardrails/PII)',
     },
   };
 
@@ -66,14 +78,23 @@ export function initTrainer(): void {
 
     body.innerHTML = `
       <div style="font-size:.75rem;line-height:1.5;margin-bottom:4px">${guide.desc}</div>
+      <div style="font-size:.7rem;line-height:1.4;color:var(--accent,#f59e0b);margin-bottom:6px">${guide.tips}</div>
       <div style="font-size:.7rem;line-height:1.4;color:var(--muted);margin-bottom:6px">${guide.details}</div>
       <div style="display:flex;flex-wrap:wrap;gap:2px">
         ${pack.levels.map((l) => {
           const has = l.snippets.length > 0;
           const cur = l.no === curLevelNo;
-          return `<span style="font-size:.65rem;padding:1px 4px;border-radius:2px;
-            ${cur ? 'background:var(--accent,#3b82f6);color:#fff;font-weight:600' : has ? 'background:var(--bg2);color:var(--fg)' : 'opacity:.35;color:var(--muted)'}"
-            >L${l.no}</span>`;
+          const avg = has
+            ? l.snippets.reduce((s, sn) => s + (_patternMasteries[sn.id] ?? 0), 0) / l.snippets.length
+            : 0;
+          const chipBg = avg >= 80 ? '#22c55e' : avg >= 60 ? '#3b82f6' : avg >= 30 ? '#f59e0b' : '#ef4444';
+          const chipStyle = !has
+            ? 'opacity:.35;color:var(--muted)'
+            : cur
+              ? 'background:' + chipBg + ';color:#fff;font-weight:700;outline:2px solid var(--accent,#3b82f6);outline-offset:1px'
+              : 'background:' + chipBg + ';color:#fff';
+          return '<span style="font-size:.65rem;padding:1px 4px;border-radius:2px;' + chipStyle + '"'
+            + ' title="L' + l.no + ' 평균 숙련도 ' + Math.round(avg) + '%">L' + l.no + '</span>';
         }).join('')}
       </div>
     `;
@@ -127,6 +148,16 @@ export function initTrainer(): void {
       appStore.getState().recordCompletion(result.wpm);
       updateTopbar();
       syncBadges();
+      if (result.snippetId) {
+        void updatePatternMastery(result.snippetId, result.accuracy).then(() => {
+          void loadPatternMasteries().then(() => {
+            const p = pos();
+            const pack = p.packKey === PROJECT_PACK_KEY && _projectPack
+              ? _projectPack : PACKS[p.packKey];
+            if (pack) renderGuide(pack);
+          });
+        });
+      }
       if (appStore.getState().autoNext && !document.getElementById('nextBtn')?.matches(':disabled')) {
         setTimeout(() => step(1), 500);
       }
@@ -374,6 +405,7 @@ export function initTrainer(): void {
 
   function show(): void {
     if (FLAT.length === 0) return;
+    if (cur >= FLAT.length) cur = 0;
     const p = pos();
     const pack =
       p.packKey === PROJECT_PACK_KEY && _projectPack ? _projectPack : PACKS[p.packKey];
@@ -457,7 +489,70 @@ export function initTrainer(): void {
     show();
   });
 
+  function inferCategory(snip: Snippet): string {
+    const key = (snip.title + snip.file).toLowerCase();
+    if (key.includes('entity') || key.includes('model')) return 'entity';
+    if (key.includes('controller') || key.includes('resource')) return 'controller';
+    if (key.includes('service')) return 'service';
+    if (key.includes('repository') || key.includes('dao') || key.includes('mapper')) return 'repository';
+    if (key.includes('config') || key.includes('property')) return 'config';
+    if (key.includes('util') || key.includes('helper')) return 'util';
+    return 'general';
+  }
+
+  const categoryListEl = document.getElementById('categoryList');
+
+  document.getElementById('categoryLearnBtn')?.addEventListener('click', () => {
+    if (!categoryListEl) return;
+    const visible = categoryListEl.style.display !== 'none';
+    if (visible) {
+      categoryListEl.style.display = 'none';
+      return;
+    }
+
+    const p = pos();
+    const pack = p.packKey === PROJECT_PACK_KEY && _projectPack ? _projectPack : PACKS[p.packKey];
+    if (!pack) return;
+
+    const groups: Record<string, { index: number; snip: Snippet }[]> = {};
+
+    for (const lvl of pack.levels) {
+      for (let i = 0; i < lvl.snippets.length; i++) {
+        const snip = lvl.snippets[i];
+        const cat = inferCategory(snip);
+        if (!groups[cat]) groups[cat] = [];
+        groups[cat].push({ index: i, snip });
+      }
+    }
+
+    const allSnips: { packKey: string; levelNo: number; snipIndex: number; cat: string }[] = [];
+    for (const lvl of pack.levels) {
+      for (let i = 0; i < lvl.snippets.length; i++) {
+        const snip = lvl.snippets[i];
+        allSnips.push({ packKey: p.packKey, levelNo: lvl.no, snipIndex: i, cat: inferCategory(snip) });
+      }
+    }
+
+    const entries = Object.entries(groups).sort((a, b) => b[1].length - a[1].length);
+
+    categoryListEl.innerHTML = '';
+    for (const [cat, snips] of entries) {
+      const btn = document.createElement('button');
+      btn.className = 'sidebar-item';
+      btn.style.paddingLeft = '20px';
+      btn.style.fontSize = '0.73rem';
+      btn.innerHTML = `<span>${cat}</span><span class="badge">${snips.length}</span>`;
+      btn.addEventListener('click', () => {
+        const first = allSnips.find((s) => s.cat === cat);
+        if (first) select(first.packKey, first.levelNo, first.snipIndex);
+      });
+      categoryListEl.append(btn);
+    }
+    categoryListEl.style.display = '';
+  });
+
   document.querySelector('.resume-btn')?.addEventListener('click', () => {
+    if (FLAT.length === 0) return;
     const saved = loadResumePos();
     if (!saved) return;
     const i = FLAT.findIndex(
@@ -648,6 +743,11 @@ export function initTrainer(): void {
     if (cur >= FLAT.length) cur = Math.max(0, FLAT.length - 1);
     show();
     renderProjectSidebar();
+    if (FLAT.length > 0) {
+      const pack = FLAT[cur]?.packKey === PROJECT_PACK_KEY && _projectPack
+        ? _projectPack : PACKS[FLAT[cur]?.packKey];
+      if (pack) renderGuide(pack);
+    }
   }
 
   // 스토어 구독 — 외부에서 projectPack 변경 시 트레이너에 반영
@@ -661,6 +761,8 @@ export function initTrainer(): void {
 
   _trainerAPI = { loadProjectPack, loadBuiltinPack, clearProjectPack };
 
-  show();
-  syncBadges();
+  void loadPatternMasteries().then(() => {
+    show();
+    syncBadges();
+  });
 }

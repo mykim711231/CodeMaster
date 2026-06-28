@@ -150,6 +150,32 @@ export async function getWeakPatterns(limit = 10): Promise<TypoPatternRecord[]> 
   return all.sort((a, b) => b.count - a.count).slice(0, limit);
 }
 
+const MASTERY_ALPHA = 0.3;
+
+export async function updatePatternMastery(snippetId: string, accuracy: number): Promise<void> {
+  const db = await getDb();
+  const existing = await db.get('patterns', snippetId);
+  if (existing) {
+    existing.mastery = Math.round(MASTERY_ALPHA * accuracy + (1 - MASTERY_ALPHA) * existing.mastery);
+    existing.sessionCount += 1;
+    existing.lastPracticed = Date.now();
+    await db.put('patterns', existing);
+  } else {
+    await db.put('patterns', {
+      patternId: snippetId,
+      mastery: Math.round(accuracy),
+      box: 1,
+      lastPracticed: Date.now(),
+      sessionCount: 1,
+    });
+  }
+}
+
+export async function getPatternMasteries(): Promise<PatternRecord[]> {
+  const db = await getDb();
+  return await db.getAll('patterns');
+}
+
 export async function getStreak(): Promise<number> {
   const sessions = await getRecentSessions(365);
   if (sessions.length === 0) return 0;

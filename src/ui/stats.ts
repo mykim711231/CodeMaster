@@ -1,5 +1,5 @@
-import { getRecentSessions, getWrongAnswers } from '../storage/db';
-import type { SessionRecord, WrongAnswerRecord } from '../storage/db';
+import { getRecentSessions, getWrongAnswers, getPatternMasteries } from '../storage/db';
+import type { SessionRecord, WrongAnswerRecord, PatternRecord } from '../storage/db';
 import { PACKS } from '../content';
 
 function findSnippetTitle(snippetId: string): string {
@@ -135,14 +135,59 @@ function renderWrongAnswers(wrongAnswers: WrongAnswerRecord[]): void {
   `;
 }
 
+function masteryColor(m: number): string {
+  if (m >= 80) return '#22c55e';
+  if (m >= 60) return '#3b82f6';
+  if (m >= 30) return '#f59e0b';
+  return '#ef4444';
+}
+
+function renderPatternMastery(patterns: PatternRecord[]): void {
+  const el = document.getElementById('statsPatterns');
+  if (!el) return;
+
+  if (patterns.length === 0) {
+    el.innerHTML = `
+      <div class="rp-title"><i data-lucide="target"></i>패턴 숙련도</div>
+      <p class="explain-concept">아직 숙련도 데이터가 없습니다</p>
+    `;
+    return;
+  }
+
+  const sorted = [...patterns].sort((a, b) => b.mastery - a.mastery);
+  const top = sorted.slice(0, 5);
+  const bottom = sorted.slice(-5).reverse();
+
+  function renderItem(p: PatternRecord): string {
+    const title = findSnippetTitle(p.patternId);
+    const color = masteryColor(p.mastery);
+    return `
+      <div class="skill-row">
+        <span class="skill-label" style="width:auto;flex:1">${title}</span>
+        <span class="skill-pct" style="min-width:40px;text-align:right;color:${color};font-weight:600">${p.mastery}%</span>
+      </div>
+    `;
+  }
+
+  el.innerHTML = `
+    <div class="rp-title"><i data-lucide="target"></i>패턴 숙련도</div>
+    <div style="font-size:.7rem;color:var(--muted);margin:4px 0">상위 숙련도</div>
+    ${top.map(renderItem).join('')}
+    ${bottom.length > 0 ? '<div style="font-size:.7rem;color:var(--muted);margin:8px 0 4px">하위 숙련도</div>' : ''}
+    ${bottom.map(renderItem).join('')}
+  `;
+}
+
 async function loadStats(): Promise<void> {
   try {
     const sessions = await getRecentSessions(200);
     const wrongAnswers = await getWrongAnswers(50);
+    const patterns = await getPatternMasteries();
 
     renderSummary(sessions);
     renderRecentSessions(sessions);
     renderWrongAnswers(wrongAnswers);
+    renderPatternMastery(patterns);
   } catch (err) {
     console.error('stats load failed:', err);
     const el = document.getElementById('statsSummary');
