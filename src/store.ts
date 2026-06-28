@@ -24,6 +24,10 @@ export interface AppState {
   fontSize: number;
   setTabSize: (n: number) => void;
   setFontSize: (n: number) => void;
+
+  // 에디터 동작
+  overwriteMode: boolean;
+  setOverwriteMode: (v: boolean) => void;
 }
 
 export const appStore = createStore<AppState>((set) => ({
@@ -53,4 +57,7 @@ export const appStore = createStore<AppState>((set) => ({
   fontSize: 14,
   setTabSize: (n) => set({ tabSize: n }),
   setFontSize: (n) => set({ fontSize: n }),
+
+  overwriteMode: true,
+  setOverwriteMode: (v) => set({ overwriteMode: v }),
 }));

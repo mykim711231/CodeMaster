@@ -144,39 +144,70 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
     const en = input.selectionEnd ?? 0;
     const len = input.value.length;
 
+    // ── Insert: OVR 모드 토글 ──
+    if (e.key === 'Insert') {
+      e.preventDefault();
+      const cur = appStore.getState().overwriteMode;
+      appStore.getState().setOverwriteMode(!cur);
+      return;
+    }
+
+    // ── Enter: 자동 들여쓰기 ──
     if (e.key === 'Enter') {
       e.preventDefault();
       const next = li + 1;
       if (next >= inputs.length) return;
 
-      // 다음 줄의 선행 공백 자동 채우기 (에디터 자동 들여쓰기)
-      const nextTarget = LINES[next];
-      const lead = (nextTarget.match(/^[ \t]+/) || [''])[0];
+      // 현재 줄의 실제 입력값 기준 들여쓰기 (VS Code와 동일)
+      const curVal = input.value;
+      const curLead = (curVal.match(/^[ \t]+/) || [''])[0];
+      let indent = curLead;
 
-      // 현재 줄이 블록 열기면 한 단계 추가 들여쓰기
-      const curLine = LINES[li].trimEnd();
+      // 블록 열기 감지 (언어별)
+      const targetLine = LINES[li];
       const opensBlock =
-        curLine.endsWith('{') ||
-        /:\s*$/.test(curLine) ||
-        /\($/.test(curLine);
+        targetLine.trimEnd().endsWith('{') ||
+        (curLang === 'python' &&
+         /^\s*(def |class |if |elif |else|for |while |try |except |finally |with |match |case ).*:\s*$/.test(targetLine));
 
-      let indent = lead;
       if (opensBlock) {
         const ts = appStore.getState().tabSize;
         indent += ' '.repeat(ts);
       }
 
-      inputs[next].value = indent;
-      const cursorPos = indent.length;
-      focusLine(next, cursorPos);
+      // 닫는 중괄호 감지 → 아웃덴트
+      const nextTarget = LINES[next];
+      if (/^\s*\}/.test(nextTarget)) {
+        const ts = appStore.getState().tabSize;
+        indent = indent.slice(0, Math.max(0, indent.length - ts));
+      }
+
+      // 기존 입력이 있으면 덮어쓰지 않음
+      const existing = inputs[next].value;
+      if (existing === '' || existing.startsWith(indent)) {
+        inputs[next].value = indent;
+      }
+      focusLine(next, indent.length);
       renderLine(next);
       return;
     }
+
+    // ── Tab: 들여쓰기 / Shift+Tab: 언인덴트 ──
     if (e.key === 'Tab') {
       e.preventDefault();
       const ts = appStore.getState().tabSize;
       if (e.shiftKey) {
-        focusLine(li - 1, inputs[li - 1]?.value.length ?? 0);
+        // 언인덴트: 선행 공백을 tabSize만큼 제거
+        const val = input.value;
+        const leadMatch = val.match(/^ */);
+        const leadLen = leadMatch ? leadMatch[0].length : 0;
+        if (leadLen > 0) {
+          const remove = Math.min(ts, leadLen);
+          input.value = ' '.repeat(leadLen - remove) + val.slice(leadLen);
+          const newPos = Math.max(0, s - remove);
+          input.selectionStart = input.selectionEnd = newPos;
+          onInput(li);
+        }
       } else {
         input.value = input.value.slice(0, s) + ' '.repeat(ts) + input.value.slice(en);
         input.selectionStart = input.selectionEnd = s + ts;
@@ -239,7 +270,8 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
     }
     // 줄 안 중간 입력은 '삽입'이 아닌 '덮어쓰기' → 뒤 글자 밀림 방지
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-      if (s === en && s < len) {
+      const isOverwrite = appStore.getState().overwriteMode;
+      if (isOverwrite && s === en && s < len) {
         e.preventDefault();
         input.value = input.value.slice(0, s) + e.key + input.value.slice(s + 1);
         input.selectionStart = input.selectionEnd = s + 1;

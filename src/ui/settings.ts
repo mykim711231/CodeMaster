@@ -21,7 +21,6 @@ export function initSettings(): void {
 
   tabSelect?.addEventListener('change', () => {
     appStore.getState().setTabSize(Number(tabSelect.value));
-    applyTabSize(Number(tabSelect.value));
   });
   fontSelect?.addEventListener('change', () => {
     appStore.getState().setFontSize(Number(fontSelect.value));
@@ -39,12 +38,7 @@ export function initSettings(): void {
   });
 
   // 초기 적용
-  applyTabSize(appStore.getState().tabSize);
   applyFontSize(appStore.getState().fontSize);
-}
-
-export function applyTabSize(n: number): void {
-  document.documentElement.style.setProperty('--tab-size', String(n));
 }
 
 export function applyFontSize(n: number): void {
