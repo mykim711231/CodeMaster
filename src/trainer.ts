@@ -90,6 +90,9 @@ export function initTrainer(): void {
       appStore.getState().recordCompletion(result.wpm);
       updateTopbar();
       syncBadges();
+      if (appStore.getState().autoNext && !document.getElementById('nextBtn')?.matches(':disabled')) {
+        setTimeout(() => step(1), 500);
+      }
       if (result.accuracy < 80 && result.snippetId) {
         void addWrongAnswer(result.snippetId, result.accuracy);
         detectTypoPatterns(result);

@@ -164,7 +164,7 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
     }
 
     // ── Enter: 자동 들여쓰기 ──
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && appStore.getState().autoIndent) {
       e.preventDefault();
       const next = li + 1;
       if (next >= inputs.length) return;
@@ -252,7 +252,8 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
       return;
     }
     // 괄호 자동 닫기
-    const brackets: Record<string, string> = { '{': '}', '(': ')', '[': ']' };
+    if (appStore.getState().autoClose) {
+      const brackets: Record<string, string> = { '{': '}', '(': ')', '[': ']' };
     if (e.key in brackets && !e.ctrlKey && !e.metaKey && !e.altKey) {
       const tgt = LINES[li];
       const closeChar = brackets[e.key];
@@ -278,6 +279,7 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
         onInput(li);
         return;
       }
+    }
     }
     // 줄 안 중간 입력은 '삽입'이 아닌 '덮어쓰기' → 뒤 글자 밀림 방지
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {

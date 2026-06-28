@@ -28,6 +28,13 @@ export interface AppState {
   // 에디터 동작
   overwriteMode: boolean;
   setOverwriteMode: (v: boolean) => void;
+
+  autoIndent: boolean;
+  setAutoIndent: (v: boolean) => void;
+  autoClose: boolean;
+  setAutoClose: (v: boolean) => void;
+  autoNext: boolean;
+  setAutoNext: (v: boolean) => void;
 }
 
 export const appStore = createStore<AppState>((set) => ({
@@ -60,4 +67,11 @@ export const appStore = createStore<AppState>((set) => ({
 
   overwriteMode: true,
   setOverwriteMode: (v) => set({ overwriteMode: v }),
+
+  autoIndent: true,
+  setAutoIndent: (v) => set({ autoIndent: v }),
+  autoClose: true,
+  setAutoClose: (v) => set({ autoClose: v }),
+  autoNext: false,
+  setAutoNext: (v) => set({ autoNext: v }),
 }));
