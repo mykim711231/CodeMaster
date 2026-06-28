@@ -290,8 +290,6 @@ export function initTrainer(): void {
     acc.style.display = '';
     acc.classList.add('open');
     body.innerHTML = '';
-    body.style.maxHeight = '40vh';
-    body.style.overflowY = 'auto';
 
     const titleEl = document.getElementById('projectAccTitle');
     if (titleEl) titleEl.textContent = _projectPack.name;
@@ -355,21 +353,10 @@ export function initTrainer(): void {
         });
         container.append(row);
         if (active) {
-          // 부모 폴더 자동 펼치기 + 스크롤
-          let parent = container.parentElement;
-          while (parent) {
-            const sub = parent.querySelector(':scope > div') as HTMLElement | null;
-            if (sub && sub.style.display === 'none') {
-              sub.style.display = 'block';
-              const tgl = parent.querySelector(':scope > button.tree-folder');
-              if (tgl) tgl.textContent = tgl.textContent!.replace('▸', '▾');
-            }
-            parent = parent.parentElement;
-          }
           setTimeout(() => row.scrollIntoView({ block: 'nearest' }), 50);
         }
       }
-      // 폴더
+      // 폴더 — 항상 열린 상태
       for (const [, child] of node.children) {
         const wrap = document.createElement('div');
         const toggle = document.createElement('button');
@@ -385,9 +372,9 @@ export function initTrainer(): void {
         toggle.style.cursor = 'pointer';
         toggle.style.color = 'var(--fg)';
         const sub = document.createElement('div');
-        sub.style.display = 'none';
+        sub.style.display = 'block'; // 항상 열림
         renderTree(child, depth + 1, sub);
-        toggle.textContent = '▸ ' + child.name;
+        toggle.textContent = '▾ ' + child.name;
         toggle.addEventListener('click', () => {
           const open = sub.style.display !== 'none';
           sub.style.display = open ? 'none' : 'block';
