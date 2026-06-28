@@ -27,6 +27,17 @@ import { sqlAdapter } from './syntax/lang/sql';
 import { yamlAdapter } from './syntax/lang/yaml';
 import { propertiesAdapter } from './syntax/lang/properties';
 import { jsonAdapter } from './syntax/lang/json';
+import { kotlinAdapter } from './syntax/lang/kotlin';
+import { jsAdapter } from './syntax/lang/js';
+import { goAdapter } from './syntax/lang/go';
+import { dockerfileAdapter } from './syntax/lang/dockerfile';
+import { shellAdapter } from './syntax/lang/shell';
+import { markdownAdapter } from './syntax/lang/markdown';
+import { cssAdapter } from './syntax/lang/css';
+import { htmlAdapter } from './syntax/lang/html';
+import { rustAdapter } from './syntax/lang/rust';
+import { cAdapter } from './syntax/lang/c';
+import { rubyAdapter } from './syntax/lang/ruby';
 import { initTrainer } from './trainer';
 
 // 구문 강조 언어 어댑터 등록
@@ -39,6 +50,24 @@ registerLanguage('yml', yamlAdapter);
 registerLanguage('properties', propertiesAdapter);
 registerLanguage('gradle', propertiesAdapter);
 registerLanguage('json', jsonAdapter);
+registerLanguage('kotlin', kotlinAdapter);
+registerLanguage('js', jsAdapter);
+registerLanguage('ts', jsAdapter);
+registerLanguage('go', goAdapter);
+registerLanguage('dockerfile', dockerfileAdapter);
+registerLanguage('sh', shellAdapter);
+registerLanguage('markdown', markdownAdapter);
+registerLanguage('md', markdownAdapter);
+registerLanguage('css', cssAdapter);
+registerLanguage('html', htmlAdapter);
+registerLanguage('htm', htmlAdapter);
+registerLanguage('rust', rustAdapter);
+registerLanguage('rs', rustAdapter);
+registerLanguage('c', cAdapter);
+registerLanguage('cpp', cAdapter);
+registerLanguage('h', cAdapter);
+registerLanguage('ruby', rubyAdapter);
+registerLanguage('rb', rubyAdapter);
 
 // UI
 initIcons();
