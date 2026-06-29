@@ -2227,7 +2227,7 @@ body {
 .explain-panel-body .explain-terms li { padding:2px 0; }
 .explain-panel-body .explain-expected,
 .explain-panel-body .explain-realworld,
-.explain-panel-body .explain-why { font-size:.78rem; color:var(--muted); white-space:pre-line; }
+.explain-panel-body .explain-why { font-size:.78rem; color:var(--text); white-space:pre-line; }
 .explain-panel-body .explain-sub { font-size:.7rem; color:var(--accent,#3b82f6); font-weight:600; margin:6px 0 2px; }
 .explain-panel-body .explain-pitfall { font-size:.76rem; color:var(--gold); margin-top:6px; }
 .explain-panel.closed .explain-panel-body { display:none; }
