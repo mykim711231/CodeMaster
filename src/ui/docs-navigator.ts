@@ -19,8 +19,8 @@ export function initDocsNavigator() {
     if (!docsNavigator || !docsNavClose || !docsSearch || !docsTree) return;
 
     // State
-    let docsData = [];
-    let filteredData = [];
+    const docsData: any[] = [];
+    let filteredData: any[] = [];
 
     // Fetch documentation tree data
     async function loadDocsTree() {
@@ -28,38 +28,39 @@ export function initDocsNavigator() {
             // Fetch the docs structure from the docs directory
             const response = await fetch('/docs-tree.json');
             if (!response.ok) throw new Error('Failed to load docs tree');
-            docsData = await response.json();
+            const data = await response.json();
+            docsData.splice(0, docsData.length, ...data);
             filteredData = [...docsData];
             renderDocsTree();
         } catch (error) {
             console.warn('Could not load docs tree from JSON, using fallback:', error);
             // Fallback: hardcoded structure based on the docs folders
-            docsData = [
+            const fallbackData: any[] = [
                 {
                     type: 'folder',
                     label: 'Spring Boot 3.4.x',
                     path: 'docs/01.SpringBoot3.4.x',
                     children: [
-                        { type: 'file', label: '01.Spring Boot 3.x 개요', path: 'docs/01.SpringBoot3.4.x/01.Spring Boot 3.x 개요.md' },
-                        { type: 'file', label: '02.환경 설정 및 프로젝트 생성', path: 'docs/01.SpringBoot3.4.x/02.환경 설정 및 프로젝트 생성.md' },
-                        { type: 'file', label: '03.Spring Boot 프로젝트 구조 이해', path: 'docs/01.SpringBoot3.4.x/03.Spring Boot 프로젝트 구조 이해.md' },
-                        { type: 'file', label: '04.의존성 관리 (Dependency Management)', path: 'docs/01.SpringBoot3.4.x/04.의존성 관리 (Dependency Management).md' },
-                        { type: 'file', label: '05.자동 설정 (Auto-Configuration)', path: 'docs/01.SpringBoot3.4.x/05.자동 설정 (Auto-Configuration).md' },
-                        { type: 'file', label: '06.프로파일 (Profiles)', path: 'docs/01.SpringBoot3.4.x/06.프로파일 (Profiles).md' },
-                        { type: 'file', label: '07.외부화된 설정 (Externalized Configuration)', path: 'docs/01.SpringBoot3.4.x/07.외부화된 설정 (Externalized Configuration).md' },
-                        { type: 'file', label: '08.로깅 (Logging)', path: 'docs/01.SpringBoot3.4.x/08.로깅 (Logging).md' },
-                        { type: 'file', label: '09.Web MVC 기초', path: 'docs/01.SpringBoot3.4.x/09.Web MVC 기초.md' },
-                        { type: 'file', label: '10.RESTful API 개발', path: 'docs/01.SpringBoot3.4.x/10.RESTful API 개발.md' },
-                        { type: 'file', label: '11.View 템플릿 엔진 (Thymeleaf)', path: 'docs/01.SpringBoot3.4.x/11.View 템플릿 엔진 (Thymeleaf).md' },
-                        { type: 'file', label: '12.폼 처리 및 검증', path: 'docs/01.SpringBoot3.4.x/12.폼 처리 및 검증.md' },
-                        { type: 'file', label: '13.예외 처리', path: 'docs/01.SpringBoot3.4.x/13.예외 처리.md' },
-                        { type: 'file', label: '14.정적 리소스 처리', path: 'docs/01.SpringBoot3.4.x/14.정적 리소스 처리.md' },
-                        { type: 'file', label: '15.파일 업로드 및 다운로드', path: 'docs/01.SpringBoot3.4.x/15.파일 업로드 및 다운로드.md' },
-                        { type: 'file', label: '16.국제화 (i18n)와 지역화 (L10n)', path: 'docs/01.SpringBoot3.4.x/16.국제화 (i18n)와 지역화 (L10n).md' },
-                        { type: 'file', label: '17.캐싱 (Caching)', path: 'docs/01.SpringBoot3.4.x/17.캐싱 (Caching).md' },
-                        { type: 'file', label: '18.예약 작업 (Scheduling)', path: 'docs/01.SpringBoot3.4.x/18.예약 작업 (Scheduling).md' },
-                        { type: 'file', label: '19.이메일 발송 (Email)', path: 'docs/01.SpringBoot3.4.x/19.이메일 발송 (Email).md' },
-                        { type: 'file', label: '20.스케줄링 (Scheduling)', path: 'docs/01.SpringBoot3.4.x/20.스케줄링 (Scheduling).md' }
+                        { type: 'file', label: '01.Java Core', path: 'docs/01.SpringBoot3.4.x/01.Java_Core.md' },
+                        { type: 'file', label: '02.Spring Core', path: 'docs/01.SpringBoot3.4.x/02.Spring_Core.md' },
+                        { type: 'file', label: '03.Spring MVC', path: 'docs/01.SpringBoot3.4.x/03.Spring_MVC.md' },
+                        { type: 'file', label: '04.Database - JPA/MyBatis', path: 'docs/01.SpringBoot3.4.x/04.Database_-_JPAMyBatis.md' },
+                        { type: 'file', label: '05.Concurrency', path: 'docs/01.SpringBoot3.4.x/05.Concurrency.md' },
+                        { type: 'file', label: '06.Network', path: 'docs/01.SpringBoot3.4.x/06.Network.md' },
+                        { type: 'file', label: '07.Gateway', path: 'docs/01.SpringBoot3.4.x/07.Gateway.md' },
+                        { type: 'file', label: '08.Messaging', path: 'docs/01.SpringBoot3.4.x/08.Messaging.md' },
+                        { type: 'file', label: '09.Batch', path: 'docs/01.SpringBoot3.4.x/09.Batch.md' },
+                        { type: 'file', label: '10.Security', path: 'docs/01.SpringBoot3.4.x/10.Security.md' },
+                        { type: 'file', label: '11.Cache', path: 'docs/01.SpringBoot3.4.x/11.Cache.md' },
+                        { type: 'file', label: '12.Monitoring', path: 'docs/01.SpringBoot3.4.x/12.Monitoring.md' },
+                        { type: 'file', label: '13.Testing', path: 'docs/01.SpringBoot3.4.x/13.Testing.md' },
+                        { type: 'file', label: '14.Architecture', path: 'docs/01.SpringBoot3.4.x/14.Architecture.md' },
+                        { type: 'file', label: '15.Design Pattern', path: 'docs/01.SpringBoot3.4.x/15.Design_Pattern.md' },
+                        { type: 'file', label: '16.Build & DevOps', path: 'docs/01.SpringBoot3.4.x/16.Build_&_DevOps.md' },
+                        { type: 'file', label: '17.Observability', path: 'docs/01.SpringBoot3.4.x/17.Observability.md' },
+                        { type: 'file', label: '18.Data', path: 'docs/01.SpringBoot3.4.x/18.Data.md' },
+                        { type: 'file', label: '19.Resilience & Cloud-Native', path: 'docs/01.SpringBoot3.4.x/19.Resilience_&_Cloud-Native.md' },
+                        { type: 'file', label: '20.Reactive', path: 'docs/01.SpringBoot3.4.x/20.Reactive.md' }
                     ]
                 },
                 {
@@ -67,25 +68,25 @@ export function initDocsNavigator() {
                     label: 'Python 3.12',
                     path: 'docs/02.Python3.12',
                     children: [
-                        { type: 'file', label: '01.Python 3.x 개요', path: 'docs/02.Python3.12/01.Python 3.x 개요.md' },
-                        { type: 'file', label: '02.환경 설정 및 개발 도구', path: 'docs/02.Python3.12/02.환경 설정 및 개발 도구.md' },
-                        { type: 'file', label: '03.기본 문법 및 데이터 타입', path: 'docs/02.Python3.12/03.기본 문법 및 데이터 타입.md' },
-                        { type: 'file', label: '04.제어문 (제어 흐름)', path: 'docs/02.Python3.12/04.제어문 (제어 흐름).md' },
-                        { type: 'file', label: '05.함수 (Functions)', path: 'docs/02.Python3.12/05.함수 (Functions).md' },
-                        { type: 'file', label: '06.객체 지향 프로그래밍 (OOP)', path: 'docs/02.Python3.12/06.객체 지향 프로그래밍 (OOP).md' },
-                        { type: 'file', label: '07.예외 처리 (Exception Handling)', path: 'docs/02.Python3.12/07.예외 처리 (Exception Handling).md' },
-                        { type: 'file', label: '08.모듈과 패키지', path: 'docs/02.Python3.12/08.모듈과 패키지.md' },
-                        { type: 'file', label: '09.파일 입출력 (File I/O)', path: 'docs/02.Python3.12/09.파일 입출력 (File I/O).md' },
-                        { type: 'file', label: '10.고급 기능', path: 'docs/02.Python3.12/10.고급 기능.md' },
-                        { type: 'file', label: '11.표준 라이브러리 활용', path: 'docs/02.Python3.12/11.표준 라이브러리 활용.md' },
-                        { type: 'file', label: '12.가상 환경 (Virtual Environment)', path: 'docs/02.Python3.12/12.가상 환경 (Virtual Environment).md' },
-                        { type: 'file', label: '13.패키지 관리 (pip)', path: 'docs/02.Python3.12/13.패키지 관리 (pip).md' },
-                        { type: 'file', label: '14.디버깅과 테스트', path: 'docs/02.Python3.12/14.디버깅과 테스트.md' },
-                        { type: 'file', label: '15.FastAPI 입문', path: 'docs/02.Python3.12/15.FastAPI 입문.md' }
+                        { type: 'file', label: '01.Python Language Basics', path: 'docs/02.Python3.12/01.Python_Language_Basics.md' },
+                        { type: 'file', label: '02.Async', path: 'docs/02.Python3.12/02.Async.md' },
+                        { type: 'file', label: '03.Data', path: 'docs/02.Python3.12/03.Data.md' },
+                        { type: 'file', label: '04.Machine Learning', path: 'docs/02.Python3.12/04.Machine_Learning.md' },
+                        { type: 'file', label: '05.Deep Learning', path: 'docs/02.Python3.12/05.Deep_Learning.md' },
+                        { type: 'file', label: '06.LLM', path: 'docs/02.Python3.12/06.LLM.md' },
+                        { type: 'file', label: '07.RAG', path: 'docs/02.Python3.12/07.RAG.md' },
+                        { type: 'file', label: '08.AI Agent', path: 'docs/02.Python3.12/08.AI_Agent.md' },
+                        { type: 'file', label: '09.Framework', path: 'docs/02.Python3.12/09.Framework.md' },
+                        { type: 'file', label: '10.Production AI', path: 'docs/02.Python3.12/10.Production_AI.md' },
+                        { type: 'file', label: '11.Vector Store', path: 'docs/02.Python3.12/11.Vector_Store.md' },
+                        { type: 'file', label: '12.LLM Serving', path: 'docs/02.Python3.12/12.LLM_Serving.md' },
+                        { type: 'file', label: '13.Prompt Structured', path: 'docs/02.Python3.12/13.Prompt_Structured.md' },
+                        { type: 'file', label: '14.Fine Tuning & MLOps', path: 'docs/02.Python3.12/14.Fine_Tuning_MLOps.md' },
+                        { type: 'file', label: '15.AI Quality', path: 'docs/02.Python3.12/15.AI_Quality.md' }
                     ]
                 }
             ];
-            filteredData = [...docsData];
+            filteredData = [...(docsData.length > 0 ? docsData : fallbackData)];
             renderDocsTree();
         }
     }
@@ -108,7 +109,7 @@ export function initDocsNavigator() {
             if (item.type === 'file') {
                 itemElement.addEventListener('click', () => {
                     // Remove active class from all items
-                    docsTree.querySelectorAll('.docs-tree-item').forEach(el => {
+                    document.querySelectorAll('.docs-tree-item').forEach(el => {
                         el.classList.remove('active');
                     });
                     // Add active class to clicked item
@@ -118,23 +119,19 @@ export function initDocsNavigator() {
                 });
             }
 
-docsTree.appendChild(itemElement);
+            docsTree.appendChild(itemElement);
         });
 
         // Update lucide icons
+        // @ts-ignore - lucide is loaded globally via CDN
         if (window.lucide) {
-            window.lucide.refresh();
-        }
-    }
-
-        // Update lucide icons
-        if (window.lucide) {
+            // @ts-ignore - lucide is loaded globally via CDN
             window.lucide.refresh();
         }
     }
 
     // Load and display markdown content
-    async function loadAndDisplayMarkdown(filePath) {
+    async function loadAndDisplayMarkdown(filePath: string) {
         try {
             const response = await fetch(`/${filePath}`);
             if (!response.ok) {
@@ -144,12 +141,12 @@ docsTree.appendChild(itemElement);
             displayMarkdown(markdownContent);
         } catch (error) {
             console.error('Error loading markdown:', error);
-            displayMarkdown(`# Error loading document\n\nCould not load ${filePath}: ${error.message}`);
+            displayMarkdown(`# Error loading document\n\nCould not load ${filePath}: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
 
     // Display markdown content in the main area
-    function displayMarkdown(markdownContent) {
+    function displayMarkdown(markdownContent: string) {
         // Find the typing exercise area and replace it with markdown preview
         const practiceSection = document.querySelector('.practice');
         if (!practiceSection) return;
@@ -157,6 +154,7 @@ docsTree.appendChild(itemElement);
         // Create markdown container
         const markdownContainer = document.createElement('div');
         markdownContainer.className = 'markdown-preview';
+        // @ts-ignore - marked is loaded globally via CDN
         markdownContainer.innerHTML = marked.parse(markdownContent);
 
         // Clear the practice section and add markdown preview
@@ -179,23 +177,26 @@ docsTree.appendChild(itemElement);
         practiceSection.appendChild(buttonContainer);
 
         // Update lucide icons
+        // @ts-ignore - lucide is loaded globally via CDN
         if (window.lucide) {
+            // @ts-ignore - lucide is loaded globally via CDN
             window.lucide.refresh();
         }
     }
 
     // Search functionality
-    function filterDocs(query) {
+    function filterDocs(query: string) {
         const lowercaseQuery = query.toLowerCase().trim();
         if (!lowercaseQuery) {
             filteredData = [...docsData];
         } else {
-            filteredData = docsData.filter(item => {
+            filteredData = docsData.filter((item: any) => {
                 if (item.type === 'folder') {
-                    // For folder matches = item.children && item.children.some(child => 
+                    // For folders, check if any child matches
+                    return item.children && item.children.some((child: any) => 
                         child.label.toLowerCase().includes(lowercaseQuery));
-                    return matches;
                 } else {
+                    // For files, check the label directly
                     return item.label.toLowerCase().includes(lowercaseQuery);
                 }
             });
@@ -205,31 +206,36 @@ docsTree.appendChild(itemElement);
 
     // Event listeners
     docsNavClose.addEventListener('click', () => {
-        docsNavigator.classList.add('hidden');
-        sidebar.classList.remove('hidden');
-        sidebarToggle.classList.remove('hidden');
+        if (docsNavigator) docsNavigator.classList.add('hidden');
+        if (sidebar) sidebar.classList.remove('hidden');
+        if (sidebarToggle) sidebarToggle.classList.remove('hidden');
         if (overlay) overlay.classList.remove('active');
     });
 
-    docsSearch.addEventListener('input', (e) => {
-        filterDocs(e.target.value);
-    });
+    if (docsSearch) {
+        docsSearch.addEventListener('input', (e: Event) => {
+            const target = e.target as HTMLInputElement;
+            filterDocs(target.value);
+        });
+    }
 
     // Toggle docs navigator from sidebar toggle button
-    sidebarToggle.addEventListener('click', () => {
-        docsNavigator.classList.remove('hidden');
-        sidebar.classList.add('hidden');
-        sidebarToggle.classList.add('hidden');
-        if (overlay) overlay.classList.add('active');
-    });
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', () => {
+            if (docsNavigator) docsNavigator.classList.remove('hidden');
+            if (sidebar) sidebar.classList.add('hidden');
+            if (sidebarToggle) sidebarToggle.classList.add('hidden');
+            if (overlay) overlay.classList.add('active');
+        });
+    }
 
     // Clicking overlay closes the docs navigator
     if (overlay) {
         overlay.addEventListener('click', () => {
-            docsNavigator.classList.add('hidden');
-            sidebar.classList.remove('hidden');
-            sidebarToggle.classList.remove('hidden');
-            overlay.classList.remove('active');
+            if (docsNavigator) docsNavigator.classList.add('hidden');
+            if (sidebar) sidebar.classList.remove('hidden');
+            if (sidebarToggle) sidebarToggle.classList.remove('hidden');
+            if (overlay) overlay.classList.remove('active');
         });
     }
 
