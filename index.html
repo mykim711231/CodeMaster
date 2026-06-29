@@ -298,9 +298,8 @@
 
     if (!docBtn || !docPop || !docMenu) return;
 
-    // 문서 데이터: fetch로 가져오기 (basePath 대응)
     var docsData = null;
-    var basePath = (window.location.pathname.indexOf('/CodeMaster/') !== -1) ? '/CodeMaster/' : '/';
+    var basePath = (window.location.pathname.indexOf('/CodeMaster') !== -1) ? '/CodeMaster/' : '/';
 
     function loadDocsData(cb) {
         if (docsData) { cb(); return; }
@@ -308,22 +307,14 @@
         xhr.open('GET', basePath + 'docs-tree.json', true);
         xhr.onload = function() {
             if (xhr.status === 200) {
-                try {
-                    docsData = JSON.parse(xhr.responseText);
-                    cb();
-                } catch(e) {
-                    showError('JSON 파싱 오류');
-                }
+                try { docsData = JSON.parse(xhr.responseText); cb(); }
+                catch(e) { docPop.innerHTML = '<div style="padding:12px;color:var(--red)">JSON error</div>'; }
             } else {
-                showError('문서 데이터 로드 실패');
+                docPop.innerHTML = '<div style="padding:12px;color:var(--red)">Failed: ' + xhr.status + '</div>';
             }
         };
-        xhr.onerror = function() { showError('네트워크 오류'); };
+        xhr.onerror = function() { docPop.innerHTML = '<div style="padding:12px;color:var(--red)">Network error</div>'; };
         xhr.send();
-    }
-
-    function showError(msg) {
-        docPop.innerHTML = '<div style="padding:12px;color:var(--red);font-size:13px;">' + msg + '</div>';
     }
 
     function toggleMenu() {
@@ -339,55 +330,28 @@
     }
 
     function showCatList() {
-        if (!docsData || !docsData.length) { showError('문서 없음'); return; }
+        if (!docsData || !docsData.length) { docPop.innerHTML = '<div style="padding:12px">No docs</div>'; return; }
         if (docCur) docCur.textContent = '문서';
         var h = '<div class="doc-cat-list">';
         for (var i = 0; i < docsData.length; i++) {
-            var cat = docsData[i];
-            h += '<div class="doc-cat-item" data-idx="' + i + '"><span>' + escHtml(cat.label) + '</span></div>';
+            h += '<div class="doc-cat-item" data-idx="' + i + '"><span>' + esc(docsData[i].label) + '</span></div>';
         }
         h += '</div>';
         docPop.innerHTML = h;
-        bindClicks('.doc-cat-item', function(el) {
-            var idx = parseInt(el.getAttribute('data-idx'));
-            if (idx >= 0 && idx < docsData.length) {
-                selectCat(idx);
-            }
-        });
     }
 
     function selectCat(idx) {
         var cat = docsData[idx];
         if (!cat) return;
         if (docCur) docCur.textContent = cat.label;
-        showDocList(cat);
-    }
-
-    function showDocList(cat) {
         var children = cat.children || [];
-        var h = '<div class="doc-back" id="dbBack"><span>&larr; 뒤로</span></div>';
+        var h = '<div class="doc-back" data-act="back"><span>&larr; 뒤로</span></div>';
         h += '<div class="doc-list">';
         for (var i = 0; i < children.length; i++) {
-            var f = children[i];
-            h += '<div class="doc-item" data-path="' + escAttr(f.path) + '"><span>' + escHtml(f.label) + '</span></div>';
+            h += '<div class="doc-item" data-path="' + esc(children[i].path) + '"><span>' + esc(children[i].label) + '</span></div>';
         }
         h += '</div>';
         docPop.innerHTML = h;
-        bindClicks('#dbBack', function() { showCatList(); if(docCur) docCur.textContent = '문서'; });
-        bindClicks('.doc-item', function(el) {
-            var p = el.getAttribute('data-path');
-            if (p) { loadDoc(p); toggleMenu(); }
-        });
-    }
-
-    function bindClicks(sel, fn) {
-        var els = docPop.querySelectorAll(sel);
-        for (var i = 0; i < els.length; i++) {
-            els[i].addEventListener('click', function(e) {
-                e.stopPropagation();
-                fn(this);
-            });
-        }
     }
 
     function loadDoc(path) {
@@ -395,39 +359,49 @@
         xhr.open('GET', basePath + path, true);
         xhr.onload = function() {
             if (xhr.status === 200) {
-                showDoc(xhr.responseText, path);
+                var main = document.querySelector('.main');
+                if (!main) return;
+                var name = path.split('/').pop().replace('.md', '');
+                var html = marked.parse(xhr.responseText);
+                main.innerHTML = '<div class="doc-viewer"><div class="doc-viewer-head"><button onclick="location.reload()" class="btn-ghost btn-sm"><span>&larr; 연습으로 돌아가기</span></button><div class="doc-viewer-title">' + esc(name) + '</div></div><div class="doc-content markdown-body">' + html + '</div></div>';
             } else {
-                showDoc('# 오류\n\n문서 로드 실패: ' + path, path);
+                alert('Load error: ' + xhr.status);
             }
         };
-        xhr.onerror = function() { showDoc('# 오류\n\n네트워크 오류', path); };
+        xhr.onerror = function() { alert('Network error'); };
         xhr.send();
     }
 
-    function showDoc(md, path) {
-        var main = document.querySelector('.main');
-        if (!main) return;
-        var name = path.split('/').pop().replace('.md', '');
-        main.innerHTML = '<div class="doc-viewer">' +
-            '<div class="doc-viewer-head">' +
-                '<button class="doc-back-btn" id="docViewBack"><span>&larr; 연습으로 돌아가기</span></button>' +
-                '<div class="doc-viewer-title">' + escHtml(name) + '</div>' +
-            '</div>' +
-            '<div class="doc-content markdown-body">' + (typeof marked !== 'undefined' ? marked.parse(md) : '<pre>' + escHtml(md) + '</pre>') + '</div>' +
-        '</div>';
-        var back = document.getElementById('docViewBack');
-        if (back) back.addEventListener('click', function() { location.reload(); });
-    }
-
-    function escHtml(s) {
+    function esc(s) {
         var d = document.createElement('div');
         d.textContent = s;
         return d.innerHTML;
     }
 
-    function escAttr(s) {
-        return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
+    // 이벤트 위임 (delegation)
+    docPop.addEventListener('click', function(e) {
+        var t = e.target;
+        var back = t.closest('.doc-back');
+        if (back) {
+            showCatList();
+            if (docCur) docCur.textContent = '문서';
+            return;
+        }
+        var catItem = t.closest('.doc-cat-item');
+        if (catItem) {
+            var idx = parseInt(catItem.getAttribute('data-idx'));
+            if (!isNaN(idx) && idx >= 0 && idx < (docsData ? docsData.length : 0)) {
+                selectCat(idx);
+            }
+            return;
+        }
+        var docItem = t.closest('.doc-item');
+        if (docItem) {
+            var p = docItem.getAttribute('data-path');
+            if (p) { loadDoc(p); toggleMenu(); }
+            return;
+        }
+    });
 
     // 초기화
     docBtn.addEventListener('click', function(e) { e.stopPropagation(); toggleMenu(); });
