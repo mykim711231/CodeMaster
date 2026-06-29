@@ -568,6 +568,19 @@ body {
   color: var(--muted);
   font-family: var(--mono);
 }
+.snip-item.done {
+  border-left-color: var(--green);
+}
+.snip-item.done .snip-title::after {
+  content: '✓';
+  margin-left: 6px;
+  color: var(--green);
+  font-size: 0.85em;
+  font-weight: 700;
+}
+.snip-item.done .snip-file {
+  color: var(--green);
+}
 
 /* 학습팩 팝업 메뉴 (버거 스타일) */
 .pack-menu {

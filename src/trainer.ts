@@ -17,6 +17,29 @@ interface TrainerAPI {
 }
 
 const PROJECT_PACK_KEY = '__project__';
+const COMPLETED_KEY = 'cm-completed';
+
+function getCompletedIds(): Set<string> {
+  try {
+    const raw = localStorage.getItem(COMPLETED_KEY);
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function addCompleted(id: string): void {
+  try {
+    const set = getCompletedIds();
+    if (!set.has(id)) {
+      set.add(id);
+      localStorage.setItem(COMPLETED_KEY, JSON.stringify(Array.from(set)));
+    }
+  } catch {
+    // ignore
+  }
+}
+
 let _projectPack: Pack | null = null;
 let _trainerAPI: TrainerAPI | null = null;
 
@@ -98,6 +121,7 @@ export function initTrainer(): void {
     onComplete: (result) => {
       void saveSession({ ts: Date.now(), ...result });
       appStore.getState().recordCompletion(result.wpm);
+      if (result.snippetId) addCompleted(result.snippetId);
       updateTopbar();
       syncBadges();
       if (result.snippetId) {
@@ -136,6 +160,7 @@ export function initTrainer(): void {
     if (!pop) return;
     const p = pos();
     pop.innerHTML = '';
+    const completedIds = getCompletedIds();
 
     // --- 내장 학습팩 ---
     for (const packKey of PACK_KEYS) {
@@ -197,7 +222,8 @@ export function initTrainer(): void {
         lname.textContent = lvl.name;
         const lcnt = document.createElement('span');
         lcnt.className = 'pack-cnt';
-        lcnt.textContent = has ? String(lvl.snippets.length) : '준비중';
+        const completedInLevel = lvl.snippets.filter(s => completedIds.has(s.id)).length;
+        lcnt.textContent = has ? `${completedInLevel} / ${lvl.snippets.length}` : '준비중';
         lrow.append(lchev, lno, lname, lcnt);
         lrow.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -212,7 +238,8 @@ export function initTrainer(): void {
           lvl.snippets.forEach((snip, i) => {
             const btn = document.createElement('button');
             btn.type = 'button';
-            btn.className = 'snip-item' + (isCurLevel && i === p.snipIndex ? ' active' : '');
+            const isDone = completedIds.has(snip.id);
+            btn.className = 'snip-item' + (isCurLevel && i === p.snipIndex ? ' active' : '') + (isDone ? ' done' : '');
             const t = document.createElement('span');
             t.className = 'snip-title';
             t.textContent = snip.title;
@@ -321,10 +348,16 @@ export function initTrainer(): void {
     const pctEl = document.getElementById('resumePct');
     if (nameEl) nameEl.textContent = `${lvl.name} · ${snip.title}`;
     if (pctEl) {
-      // 레벨 내 진행률: 현재 스니펫 인덱스 기준
-      const total = lvl.snippets.length;
-      const idx = pos().snipIndex;
-      const pct = total > 0 ? Math.round(((idx + 1) / total) * 100) : 0;
+      const completedIds = getCompletedIds();
+      let totalSnips = 0;
+      let doneSnips = 0;
+      for (const level of _pack.levels) {
+        totalSnips += level.snippets.length;
+        for (const s of level.snippets) {
+          if (completedIds.has(s.id)) doneSnips++;
+        }
+      }
+      const pct = totalSnips > 0 ? Math.round((doneSnips / totalSnips) * 100) : 0;
       pctEl.textContent = `${pct}%`;
       const fill = document.querySelector('.resume-fill') as HTMLElement;
       if (fill) fill.style.width = `${pct}%`;
