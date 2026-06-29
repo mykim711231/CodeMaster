@@ -289,184 +289,154 @@
 <!-- 문서 메뉴 초기화 -->
 <script>
 (function() {
-    // 문서 구조 데이터
-    var docsStructure = {
-        'Spring Boot 3.4.x': [
-            { name: '01.Java Core', path: 'docs/01.SpringBoot3.4.x/01.Java_Core.md' },
-            { name: '02.Spring Core', path: 'docs/01.SpringBoot3.4.x/02.Spring_Core.md' },
-            { name: '03.Spring MVC', path: 'docs/01.SpringBoot3.4.x/03.Spring_MVC.md' },
-            { name: '04.Database - JPA/MyBatis', path: 'docs/01.SpringBoot3.4.x/04.Database_-_JPAMyBatis.md' },
-            { name: '05.Concurrency', path: 'docs/01.SpringBoot3.4.x/05.Concurrency.md' },
-            { name: '06.Network', path: 'docs/01.SpringBoot3.4.x/06.Network.md' },
-            { name: '07.Gateway', path: 'docs/01.SpringBoot3.4.x/07.Gateway.md' },
-            { name: '08.Messaging', path: 'docs/01.SpringBoot3.4.x/08.Messaging.md' },
-            { name: '09.Batch', path: 'docs/01.SpringBoot3.4.x/09.Batch.md' },
-            { name: '10.Security', path: 'docs/01.SpringBoot3.4.x/10.Security.md' },
-            { name: '11.Cache', path: 'docs/01.SpringBoot3.4.x/11.Cache.md' },
-            { name: '12.Monitoring', path: 'docs/01.SpringBoot3.4.x/12.Monitoring.md' },
-            { name: '13.Testing', path: 'docs/01.SpringBoot3.4.x/13.Testing.md' },
-            { name: '14.Architecture', path: 'docs/01.SpringBoot3.4.x/14.Architecture.md' },
-            { name: '15.Design Pattern', path: 'docs/01.SpringBoot3.4.x/15.Design_Pattern.md' },
-            { name: '16.Build & DevOps', path: 'docs/01.SpringBoot3.4.x/16.Build_&_DevOps.md' },
-            { name: '17.Observability', path: 'docs/01.SpringBoot3.4.x/17.Observability.md' },
-            { name: '18.Data', path: 'docs/01.SpringBoot3.4.x/18.Data.md' },
-            { name: '19.Resilience & Cloud-Native', path: 'docs/01.SpringBoot3.4.x/19.Resilience_&_Cloud-Native.md' },
-            { name: '20.Reactive', path: 'docs/01.SpringBoot3.4.x/20.Reactive.md' }
-        ],
-        'Python 3.12': [
-            { name: '01.Python Language Basics', path: 'docs/02.Python3.12/01.Python_Language_Basics.md' },
-            { name: '02.Async', path: 'docs/02.Python3.12/02.Async.md' },
-            { name: '03.Data', path: 'docs/02.Python3.12/03.Data.md' },
-            { name: '04.Machine Learning', path: 'docs/02.Python3.12/04.Machine_Learning.md' },
-            { name: '05.Deep Learning', path: 'docs/02.Python3.12/05.Deep_Learning.md' },
-            { name: '06.LLM', path: 'docs/02.Python3.12/06.LLM.md' },
-            { name: '07.RAG', path: 'docs/02.Python3.12/07.RAG.md' },
-            { name: '08.AI Agent', path: 'docs/02.Python3.12/08.AI_Agent.md' },
-            { name: '09.Framework', path: 'docs/02.Python3.12/09.Framework.md' },
-            { name: '10.Production AI', path: 'docs/02.Python3.12/10.Production_AI.md' },
-            { name: '11.Vector Store', path: 'docs/02.Python3.12/11.Vector_Store.md' },
-            { name: '12.LLM Serving', path: 'docs/02.Python3.12/12.LLM_Serving.md' },
-            { name: '13.Prompt Structured', path: 'docs/02.Python3.12/13.Prompt_Structured.md' },
-            { name: '14.Fine Tuning & MLOps', path: 'docs/02.Python3.12/14.Fine_Tuning_MLOps.md' },
-            { name: '15.AI Quality', path: 'docs/02.Python3.12/15.AI_Quality.md' }
-        ]
-    };
+    var docBtn = document.getElementById('docPackMenuBtn');
+    var docPop = document.getElementById('docPackMenuPop');
+    var docCur = document.getElementById('docPackMenuCur');
+    var docMenu = document.getElementById('docPackMenu');
+    var ov = document.getElementById('overlay');
+    var isOpen = false;
 
-    var isMenuOpen = false;
+    if (!docBtn || !docPop || !docMenu) return;
 
-    function getEl(id) {
-        return document.getElementById(id);
+    // 문서 데이터: fetch로 가져오기 (basePath 대응)
+    var docsData = null;
+    var basePath = (window.location.pathname.indexOf('/CodeMaster/') !== -1) ? '/CodeMaster/' : '/';
+
+    function loadDocsData(cb) {
+        if (docsData) { cb(); return; }
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', basePath + 'docs-tree.json', true);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                try {
+                    docsData = JSON.parse(xhr.responseText);
+                    cb();
+                } catch(e) {
+                    showError('JSON 파싱 오류');
+                }
+            } else {
+                showError('문서 데이터 로드 실패');
+            }
+        };
+        xhr.onerror = function() { showError('네트워크 오류'); };
+        xhr.send();
+    }
+
+    function showError(msg) {
+        docPop.innerHTML = '<div style="padding:12px;color:var(--red);font-size:13px;">' + msg + '</div>';
     }
 
     function toggleMenu() {
-        isMenuOpen = !isMenuOpen;
-        var menu = getEl('docPackMenu');
-        var pop = getEl('docPackMenuPop');
-        var ov = getEl('overlay');
-        if (menu) menu.classList.toggle('open', isMenuOpen);
-        if (isMenuOpen) {
-            showCategoryList();
+        isOpen = !isOpen;
+        docMenu.classList.toggle('open', isOpen);
+        if (isOpen) {
+            loadDocsData(showCatList);
             if (ov) ov.classList.add('active');
         } else {
-            if (pop) pop.innerHTML = '';
+            docPop.innerHTML = '';
             if (ov) ov.classList.remove('active');
         }
     }
 
-    function showCategoryList() {
-        var pop = getEl('docPackMenuPop');
-        if (!pop) return;
-        var cats = Object.keys(docsStructure);
-        var html = '<div class="doc-cat-list">';
-        for (var i = 0; i < cats.length; i++) {
-            html += '<div class="doc-cat-item" data-cat="' + cats[i] + '"><span>' + cats[i] + '</span></div>';
+    function showCatList() {
+        if (!docsData || !docsData.length) { showError('문서 없음'); return; }
+        if (docCur) docCur.textContent = '문서';
+        var h = '<div class="doc-cat-list">';
+        for (var i = 0; i < docsData.length; i++) {
+            var cat = docsData[i];
+            h += '<div class="doc-cat-item" data-idx="' + i + '"><span>' + escHtml(cat.label) + '</span></div>';
         }
-        html += '</div>';
-        pop.innerHTML = html;
-        var items = pop.querySelectorAll('.doc-cat-item');
-        for (var j = 0; j < items.length; j++) {
-            items[j].addEventListener('click', function() {
-                selectCategory(this.getAttribute('data-cat'));
-            });
-        }
+        h += '</div>';
+        docPop.innerHTML = h;
+        bindClicks('.doc-cat-item', function(el) {
+            var idx = parseInt(el.getAttribute('data-idx'));
+            if (idx >= 0 && idx < docsData.length) {
+                selectCat(idx);
+            }
+        });
     }
 
-    function selectCategory(cat) {
-        var cur = getEl('docPackMenuCur');
-        if (cur) cur.textContent = cat;
+    function selectCat(idx) {
+        var cat = docsData[idx];
+        if (!cat) return;
+        if (docCur) docCur.textContent = cat.label;
         showDocList(cat);
     }
 
     function showDocList(cat) {
-        var pop = getEl('docPackMenuPop');
-        if (!pop) return;
-        var docs = docsStructure[cat] || [];
-        var html = '<div class="doc-back" id="docBackBtn"><span>&larr; 뒤로</span></div>';
-        html += '<div class="doc-list">';
-        for (var i = 0; i < docs.length; i++) {
-            html += '<div class="doc-item" data-path="' + docs[i].path + '"><span>' + docs[i].name + '</span></div>';
+        var children = cat.children || [];
+        var h = '<div class="doc-back" id="dbBack"><span>&larr; 뒤로</span></div>';
+        h += '<div class="doc-list">';
+        for (var i = 0; i < children.length; i++) {
+            var f = children[i];
+            h += '<div class="doc-item" data-path="' + escAttr(f.path) + '"><span>' + escHtml(f.label) + '</span></div>';
         }
-        html += '</div>';
-        pop.innerHTML = html;
-        var backBtn = getEl('docBackBtn');
-        if (backBtn) {
-            backBtn.addEventListener('click', function() {
-                showCategoryList();
-                var cur = getEl('docPackMenuCur');
-                if (cur) cur.textContent = '문서';
-            });
-        }
-        var items = pop.querySelectorAll('.doc-item');
-        for (var j = 0; j < items.length; j++) {
-            items[j].addEventListener('click', function() {
-                loadDoc(this.getAttribute('data-path'));
-                toggleMenu();
+        h += '</div>';
+        docPop.innerHTML = h;
+        bindClicks('#dbBack', function() { showCatList(); if(docCur) docCur.textContent = '문서'; });
+        bindClicks('.doc-item', function(el) {
+            var p = el.getAttribute('data-path');
+            if (p) { loadDoc(p); toggleMenu(); }
+        });
+    }
+
+    function bindClicks(sel, fn) {
+        var els = docPop.querySelectorAll(sel);
+        for (var i = 0; i < els.length; i++) {
+            els[i].addEventListener('click', function(e) {
+                e.stopPropagation();
+                fn(this);
             });
         }
     }
 
     function loadDoc(path) {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', '/' + path, true);
+        xhr.open('GET', basePath + path, true);
         xhr.onload = function() {
             if (xhr.status === 200) {
-                showDocContent(xhr.responseText, path);
+                showDoc(xhr.responseText, path);
             } else {
-                showDocContent('# 오류\n\n문서를 불러올 수 없습니다: ' + path, path);
+                showDoc('# 오류\n\n문서 로드 실패: ' + path, path);
             }
         };
-        xhr.onerror = function() {
-            showDocContent('# 오류\n\n네트워크 오류가 발생했습니다', path);
-        };
+        xhr.onerror = function() { showDoc('# 오류\n\n네트워크 오류', path); };
         xhr.send();
     }
 
-    function showDocContent(mdText, path) {
+    function showDoc(md, path) {
         var main = document.querySelector('.main');
         if (!main) return;
         var name = path.split('/').pop().replace('.md', '');
         main.innerHTML = '<div class="doc-viewer">' +
             '<div class="doc-viewer-head">' +
-                '<button class="doc-back-btn"><span>&larr; 연습으로 돌아가기</span></button>' +
-                '<div class="doc-viewer-title">' + name + '</div>' +
+                '<button class="doc-back-btn" id="docViewBack"><span>&larr; 연습으로 돌아가기</span></button>' +
+                '<div class="doc-viewer-title">' + escHtml(name) + '</div>' +
             '</div>' +
-            '<div class="doc-content markdown-body">' + marked.parse(mdText) + '</div>' +
+            '<div class="doc-content markdown-body">' + (typeof marked !== 'undefined' ? marked.parse(md) : '<pre>' + escHtml(md) + '</pre>') + '</div>' +
         '</div>';
-        var backBtn = main.querySelector('.doc-back-btn');
-        if (backBtn) {
-            backBtn.addEventListener('click', function() {
-                location.reload();
-            });
-        }
+        var back = document.getElementById('docViewBack');
+        if (back) back.addEventListener('click', function() { location.reload(); });
     }
 
-    // DOM이 이미 준비되었으므로 직접 초기화
-    var btn = getEl('docPackMenuBtn');
-    if (btn) {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            toggleMenu();
-        });
+    function escHtml(s) {
+        var d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
     }
-    var ov = getEl('overlay');
-    if (ov) {
-        ov.addEventListener('click', function() {
-            if (isMenuOpen) toggleMenu();
-        });
+
+    function escAttr(s) {
+        return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
+
+    // 초기화
+    docBtn.addEventListener('click', function(e) { e.stopPropagation(); toggleMenu(); });
+    if (ov) ov.addEventListener('click', function() { if (isOpen) toggleMenu(); });
     document.addEventListener('click', function(e) {
-        if (isMenuOpen) {
-            var menu = getEl('docPackMenu');
-            var pop = getEl('docPackMenuPop');
-            if (menu && pop && !menu.contains(e.target) && !pop.contains(e.target)) {
-                toggleMenu();
-            }
-        }
+        if (isOpen && !docMenu.contains(e.target) && !docPop.contains(e.target)) toggleMenu();
     });
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && isMenuOpen) {
-            toggleMenu();
-        }
+        if (e.key === 'Escape' && isOpen) toggleMenu();
     });
 })();
 </script>
