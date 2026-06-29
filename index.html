@@ -283,10 +283,7 @@
   </div>
 </div>
 
-<!-- Marked 라이브러리 (마크다운 렌더링용) -->
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-<!-- 문서 메뉴 초기화 -->
+<!-- 문서 메뉴 초기화 (CDN 차단 방지를 위해 marked.js 보다 먼저) -->
 <script>
 (function() {
     var docBtn = document.getElementById('docPackMenuBtn');
@@ -297,7 +294,7 @@
     var isOpen = false;
     if (!docBtn || !docPop || !docMenu) return;
 
-    var basePath = (window.location.pathname.indexOf('/CodeMaster') !== -1) ? '/CodeMaster/' : '/';
+    var basePath = '/CodeMaster/';
 
     var docsData = [
         {label:'Spring Boot 3.4.x',children:[
@@ -351,34 +348,29 @@
     function showCatList() {
         if (docCur) docCur.textContent = '문서';
         docPop.innerHTML = '';
-        // test alert to verify this function runs
         for (var i = 0; i < docsData.length; i++) {
             var el = document.createElement('div');
             el.className = 'doc-cat-item';
             el.textContent = docsData[i].label;
             el.setAttribute('data-idx', i);
             el.style.cursor = 'pointer';
-            el.onclick = (function(idx) { return function() { console.log('cat clicked:',idx); selectCat(idx); }; })(i);
+            el.onclick = (function(idx) { return function() { selectCat(idx); }; })(i);
             docPop.appendChild(el);
         }
     }
 
     function selectCat(idx) {
-        console.log('selectCat called with idx:', idx);
         var cat = docsData[idx];
-        if (!cat) { console.log('no cat found'); return; }
+        if (!cat) return;
         if (docCur) docCur.textContent = cat.label;
         docPop.innerHTML = '';
-        // back
         var back = document.createElement('div');
         back.className = 'doc-back';
         back.textContent = '← 뒤로';
         back.style.cursor = 'pointer';
         back.onclick = function() { showCatList(); };
         docPop.appendChild(back);
-        // docs
         var children = cat.children || [];
-        console.log('children count:', children.length);
         for (var i = 0; i < children.length; i++) {
             var el = document.createElement('div');
             el.className = 'doc-item';
@@ -387,18 +379,18 @@
             el.onclick = (function(p) { return function() { loadDoc(p); toggleMenu(); }; })(children[i].path);
             docPop.appendChild(el);
         }
-        console.log('selectCat done, popup child count:', docPop.children.length);
     }
 
     function loadDoc(path) {
-        console.log('loadDoc:', path);
         var xhr = new XMLHttpRequest();
         xhr.open('GET', basePath + path, true);
         xhr.onload = function() {
             if (xhr.status === 200) {
                 var main = document.querySelector('.main');
                 if (!main) return;
-                main.innerHTML = '<div class="doc-viewer"><div class="doc-viewer-head"><button onclick="location.reload()" class="btn-ghost btn-sm"><span>← 타이핑 연습으로</span></button><div class="doc-viewer-title">' + path.split('/').pop().replace('.md','') + '</div></div><div class="doc-content markdown-body">' + marked.parse(xhr.responseText) + '</div></div>';
+                var md = xhr.responseText;
+                var html = (typeof marked !== 'undefined') ? marked.parse(md) : '<pre>' + md.replace(/</g,'&lt;') + '</pre>';
+                main.innerHTML = '<div class="doc-viewer"><div class="doc-viewer-head"><button onclick="location.reload()" class="btn-ghost btn-sm">← 타이핑 연습으로</button><div class="doc-viewer-title">' + path.split('/').pop().replace('.md','') + '</div></div><div class="doc-content markdown-body">' + html + '</div></div>';
             }
         };
         xhr.send();
@@ -412,9 +404,11 @@
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && isOpen) toggleMenu();
     });
-    console.log('Doc menu initialized, docPop:', docPop, 'docBtn:', docBtn);
 })();
 </script>
+
+<!-- Marked 라이브러리 (마크다운 렌더링용) -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <script type="module" src="/src/main.ts"></script>
 </body>
