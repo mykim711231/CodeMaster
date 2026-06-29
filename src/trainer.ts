@@ -127,6 +127,15 @@ export function initTrainer(): void {
       if (result.snippetId) {
         void updatePatternMastery(result.snippetId, result.accuracy);
       }
+      // 완료 후 트리 갱신 + 이어서 연습 카드 갱신
+      renderTree();
+      if (FLAT.length > 0) {
+        const p = pos();
+        const pack = p.packKey === PROJECT_PACK_KEY && _projectPack ? _projectPack : PACKS[p.packKey];
+        const lvl = levelOf(p);
+        const snip = snippetOf(p);
+        updateResumeCard(pack, lvl, snip);
+      }
       if (appStore.getState().autoNext && !document.getElementById('nextBtn')?.matches(':disabled')) {
         setTimeout(() => step(1), 500);
       }
@@ -333,14 +342,16 @@ export function initTrainer(): void {
     } catch { /* ignore */ }
   }
 
-  function loadResumePos(): Pos | null {
-    try {
-      const raw = localStorage.getItem('cm-resume');
-      if (!raw) return null;
-      const p: Pos = JSON.parse(raw);
-      if (p.packKey && typeof p.levelNo === 'number' && typeof p.snipIndex === 'number') return p;
-    } catch { /* ignore */ }
-    return null;
+  function findNextIncomplete(): number {
+    const completedIds = getCompletedIds();
+    for (let i = 0; i < FLAT.length; i++) {
+      const p = FLAT[i];
+      const pack = p.packKey === PROJECT_PACK_KEY && _projectPack ? _projectPack : PACKS[p.packKey];
+      const lvl = pack?.levels.find((l) => l.no === p.levelNo);
+      const snip = lvl?.snippets[p.snipIndex];
+      if (snip && !completedIds.has(snip.id)) return i;
+    }
+    return -1;
   }
 
   function updateResumeCard(_pack: Pack, lvl: Level, snip: Snippet): void {
@@ -530,32 +541,31 @@ export function initTrainer(): void {
 
   document.querySelector('.resume-btn')?.addEventListener('click', () => {
     if (FLAT.length === 0) return;
-    const saved = loadResumePos();
-    if (!saved) return;
-    const i = FLAT.findIndex(
-      (q) => q.packKey === saved.packKey && q.levelNo === saved.levelNo && q.snipIndex === saved.snipIndex,
-    );
-    if (i >= 0) { cur = i; show(); }
+    const next = findNextIncomplete();
+    if (next < 0) return;
+    cur = next;
+    show();
   });
 
   function initResumeCard(): void {
-    const saved = loadResumePos();
+    const next = findNextIncomplete();
     const nameEl = document.getElementById('resumeName');
     const pctEl = document.getElementById('resumePct');
     const btn = document.querySelector('.resume-btn') as HTMLElement | null;
 
-    if (!saved) {
+    if (next < 0) {
       if (nameEl) nameEl.textContent = '연습을 시작하면 이어서 할 수 있어요';
       if (pctEl) pctEl.textContent = '0%';
       if (btn) btn.style.opacity = '0.5';
       return;
     }
-    const pack = saved.packKey === PROJECT_PACK_KEY && _projectPack
-      ? _projectPack : PACKS[saved.packKey];
+    const pos = FLAT[next];
+    const pack = pos.packKey === PROJECT_PACK_KEY && _projectPack
+      ? _projectPack : PACKS[pos.packKey];
     if (!pack) return;
-    const lvl = pack.levels.find((l) => l.no === saved.levelNo);
-    if (!lvl || saved.snipIndex >= lvl.snippets.length) return;
-    const snip = lvl.snippets[saved.snipIndex];
+    const lvl = pack.levels.find((l) => l.no === pos.levelNo);
+    if (!lvl || pos.snipIndex >= lvl.snippets.length) return;
+    const snip = lvl.snippets[pos.snipIndex];
     if (btn) btn.style.opacity = '1';
     updateResumeCard(pack, lvl, snip);
   }
