@@ -69,21 +69,6 @@
 <!-- APP BODY -->
 <div class="app">
 
-    <!-- DOCS NAVIGATOR (LEFT PANEL) -->
-    <nav class="docs-navigator" id="docsNavigator">
-      <div class="docs-nav-header">
-        <span class="docs-nav-title"><i data-lucide="book-open"></i> 문서</span>
-        <button class="icon-btn docs-nav-close" id="docsNavClose" aria-label="닫기">
-          <i data-lucide="x"></i>
-        </button>
-      </div>
-      <div class="docs-nav-search">
-        <i data-lucide="search"></i>
-        <input type="text" id="docsSearch" placeholder="문서 검색..." aria-label="문서 검색">
-      </div>
-      <div class="docs-tree" id="docsTree"></div>
-    </nav>
-
     <!-- 기존 사이드바 (학습 콘텐츠 전용) -->
     <nav class="sidebar" id="sidebar">
     <!-- 진행 요약 + 이어서 연습 -->
@@ -98,19 +83,31 @@
     </div>
     <div class="sidebar-divider"></div>
 
-    <!-- 학습팩 메뉴 — 버튼 클릭 시 팝업 서브메뉴(팩 → 문제), trainer가 채움 -->
-    <div class="pack-menu" id="packMenu">
-      <button class="pack-menu-btn" id="packMenuBtn" type="button" aria-haspopup="true" aria-expanded="false">
-        <i data-lucide="layers"></i>
-        <span class="pack-menu-label">학습팩</span>
-        <span class="pack-menu-cur" id="packMenuCur"></span>
-        <i data-lucide="chevron-down" class="pack-menu-chev"></i>
-      </button>
-      <div class="pack-menu-pop" id="packMenuPop"></div>
-    </div>
-    <div class="sidebar-divider"></div>
+<!-- 학습팩 메뉴 — 버튼 클릭 시 팝업 서브메뉴(팩 → 문제), trainer가 채움 -->
+<div class="pack-menu" id="packMenu">
+  <button class="pack-menu-btn" id="packMenuBtn" type="button" aria-haspopup="true" aria-expanded="false">
+    <i data-lucide="layers"></i>
+    <span class="pack-menu-label">학습팩</span>
+    <span class="pack-menu-cur" id="packMenuCur"></span>
+    <i data-lucide="chevron-down" class="pack-menu-chev"></i>
+  </button>
+  <div class="pack-menu-pop" id="packMenuPop"></div>
+</div>
+<div class="sidebar-divider"></div>
 
-    <!-- 3) 빠른 학습 -->
+<!-- 문서 학습팩 -->
+<div class="pack-menu" id="docPackMenu">
+  <button class="pack-menu-btn" id="docPackMenuBtn" type="button" aria-haspopup="true" aria-expanded="false">
+    <i data-lucide="book-open"></i>
+    <span class="pack-menu-label">문서</span>
+    <span class="pack-menu-cur" id="docPackMenuCur"></span>
+    <i data-lucide="chevron-down" class="pack-menu-chev"></i>
+  </button>
+  <div class="pack-menu-pop" id="docPackMenuPop"></div>
+</div>
+<div class="sidebar-divider"></div>
+
+<!-- 3) 빠른 학습 -->
     <div class="accordion open">
       <button class="acc-header">
         <i data-lucide="zap"></i><span class="acc-title">빠른 학습</span><i data-lucide="chevron-down" class="acc-chevron"></i>
@@ -288,6 +285,192 @@
 
 <!-- Marked 라이브러리 (마크다운 렌더링용) -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<!-- 문서 메뉴 초기화 -->
+<script>
+(function() {
+    // 문서 구조 데이터
+    var docsStructure = {
+        'Spring Boot 3.4.x': [
+            { name: '01.Java Core', path: 'docs/01.SpringBoot3.4.x/01.Java_Core.md' },
+            { name: '02.Spring Core', path: 'docs/01.SpringBoot3.4.x/02.Spring_Core.md' },
+            { name: '03.Spring MVC', path: 'docs/01.SpringBoot3.4.x/03.Spring_MVC.md' },
+            { name: '04.Database - JPA/MyBatis', path: 'docs/01.SpringBoot3.4.x/04.Database_-_JPAMyBatis.md' },
+            { name: '05.Concurrency', path: 'docs/01.SpringBoot3.4.x/05.Concurrency.md' },
+            { name: '06.Network', path: 'docs/01.SpringBoot3.4.x/06.Network.md' },
+            { name: '07.Gateway', path: 'docs/01.SpringBoot3.4.x/07.Gateway.md' },
+            { name: '08.Messaging', path: 'docs/01.SpringBoot3.4.x/08.Messaging.md' },
+            { name: '09.Batch', path: 'docs/01.SpringBoot3.4.x/09.Batch.md' },
+            { name: '10.Security', path: 'docs/01.SpringBoot3.4.x/10.Security.md' },
+            { name: '11.Cache', path: 'docs/01.SpringBoot3.4.x/11.Cache.md' },
+            { name: '12.Monitoring', path: 'docs/01.SpringBoot3.4.x/12.Monitoring.md' },
+            { name: '13.Testing', path: 'docs/01.SpringBoot3.4.x/13.Testing.md' },
+            { name: '14.Architecture', path: 'docs/01.SpringBoot3.4.x/14.Architecture.md' },
+            { name: '15.Design Pattern', path: 'docs/01.SpringBoot3.4.x/15.Design_Pattern.md' },
+            { name: '16.Build & DevOps', path: 'docs/01.SpringBoot3.4.x/16.Build_&_DevOps.md' },
+            { name: '17.Observability', path: 'docs/01.SpringBoot3.4.x/17.Observability.md' },
+            { name: '18.Data', path: 'docs/01.SpringBoot3.4.x/18.Data.md' },
+            { name: '19.Resilience & Cloud-Native', path: 'docs/01.SpringBoot3.4.x/19.Resilience_&_Cloud-Native.md' },
+            { name: '20.Reactive', path: 'docs/01.SpringBoot3.4.x/20.Reactive.md' }
+        ],
+        'Python 3.12': [
+            { name: '01.Python Language Basics', path: 'docs/02.Python3.12/01.Python_Language_Basics.md' },
+            { name: '02.Async', path: 'docs/02.Python3.12/02.Async.md' },
+            { name: '03.Data', path: 'docs/02.Python3.12/03.Data.md' },
+            { name: '04.Machine Learning', path: 'docs/02.Python3.12/04.Machine_Learning.md' },
+            { name: '05.Deep Learning', path: 'docs/02.Python3.12/05.Deep_Learning.md' },
+            { name: '06.LLM', path: 'docs/02.Python3.12/06.LLM.md' },
+            { name: '07.RAG', path: 'docs/02.Python3.12/07.RAG.md' },
+            { name: '08.AI Agent', path: 'docs/02.Python3.12/08.AI_Agent.md' },
+            { name: '09.Framework', path: 'docs/02.Python3.12/09.Framework.md' },
+            { name: '10.Production AI', path: 'docs/02.Python3.12/10.Production_AI.md' },
+            { name: '11.Vector Store', path: 'docs/02.Python3.12/11.Vector_Store.md' },
+            { name: '12.LLM Serving', path: 'docs/02.Python3.12/12.LLM_Serving.md' },
+            { name: '13.Prompt Structured', path: 'docs/02.Python3.12/13.Prompt_Structured.md' },
+            { name: '14.Fine Tuning & MLOps', path: 'docs/02.Python3.12/14.Fine_Tuning_MLOps.md' },
+            { name: '15.AI Quality', path: 'docs/02.Python3.12/15.AI_Quality.md' }
+        ]
+    };
+
+    var isMenuOpen = false;
+
+    function getEl(id) {
+        return document.getElementById(id);
+    }
+
+    function toggleMenu() {
+        isMenuOpen = !isMenuOpen;
+        var btn = getEl('docPackMenuBtn');
+        var pop = getEl('docPackMenuPop');
+        var ov = getEl('overlay');
+        if (btn) btn.classList.toggle('active', isMenuOpen);
+        if (isMenuOpen) {
+            showCategoryList();
+            if (ov) ov.classList.add('active');
+        } else {
+            if (pop) pop.innerHTML = '';
+            if (ov) ov.classList.remove('active');
+        }
+    }
+
+    function showCategoryList() {
+        var pop = getEl('docPackMenuPop');
+        if (!pop) return;
+        var cats = Object.keys(docsStructure);
+        var html = '<div class="doc-cat-list">';
+        for (var i = 0; i < cats.length; i++) {
+            html += '<div class="doc-cat-item" data-cat="' + cats[i] + '"><span>' + cats[i] + '</span></div>';
+        }
+        html += '</div>';
+        pop.innerHTML = html;
+        var items = pop.querySelectorAll('.doc-cat-item');
+        for (var j = 0; j < items.length; j++) {
+            items[j].addEventListener('click', function() {
+                selectCategory(this.getAttribute('data-cat'));
+            });
+        }
+    }
+
+    function selectCategory(cat) {
+        var cur = getEl('docPackMenuCur');
+        if (cur) cur.textContent = cat;
+        showDocList(cat);
+    }
+
+    function showDocList(cat) {
+        var pop = getEl('docPackMenuPop');
+        if (!pop) return;
+        var docs = docsStructure[cat] || [];
+        var html = '<div class="doc-back" id="docBackBtn"><span>&larr; 뒤로</span></div>';
+        html += '<div class="doc-list">';
+        for (var i = 0; i < docs.length; i++) {
+            html += '<div class="doc-item" data-path="' + docs[i].path + '"><span>' + docs[i].name + '</span></div>';
+        }
+        html += '</div>';
+        pop.innerHTML = html;
+        var backBtn = getEl('docBackBtn');
+        if (backBtn) {
+            backBtn.addEventListener('click', function() {
+                showCategoryList();
+                var cur = getEl('docPackMenuCur');
+                if (cur) cur.textContent = '문서';
+            });
+        }
+        var items = pop.querySelectorAll('.doc-item');
+        for (var j = 0; j < items.length; j++) {
+            items[j].addEventListener('click', function() {
+                loadDoc(this.getAttribute('data-path'));
+                toggleMenu();
+            });
+        }
+    }
+
+    function loadDoc(path) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/' + path, true);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                showDocContent(xhr.responseText, path);
+            } else {
+                showDocContent('# 오류\n\n문서를 불러올 수 없습니다: ' + path, path);
+            }
+        };
+        xhr.onerror = function() {
+            showDocContent('# 오류\n\n네트워크 오류가 발생했습니다', path);
+        };
+        xhr.send();
+    }
+
+    function showDocContent(mdText, path) {
+        var main = document.querySelector('.main');
+        if (!main) return;
+        var name = path.split('/').pop().replace('.md', '');
+        main.innerHTML = '<div class="doc-viewer">' +
+            '<div class="doc-viewer-head">' +
+                '<button class="doc-back-btn"><span>&larr; 연습으로 돌아가기</span></button>' +
+                '<div class="doc-viewer-title">' + name + '</div>' +
+            '</div>' +
+            '<div class="doc-content markdown-body">' + marked.parse(mdText) + '</div>' +
+        '</div>';
+        var backBtn = main.querySelector('.doc-back-btn');
+        if (backBtn) {
+            backBtn.addEventListener('click', function() {
+                location.reload();
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var btn = getEl('docPackMenuBtn');
+        if (btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleMenu();
+            });
+        }
+        var ov = getEl('overlay');
+        if (ov) {
+            ov.addEventListener('click', function() {
+                if (isMenuOpen) toggleMenu();
+            });
+        }
+        document.addEventListener('click', function(e) {
+            if (isMenuOpen) {
+                var btn = getEl('docPackMenuBtn');
+                var pop = getEl('docPackMenuPop');
+                if (btn && pop && !btn.contains(e.target) && !pop.contains(e.target)) {
+                    toggleMenu();
+                }
+            }
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && isMenuOpen) {
+                toggleMenu();
+            }
+        });
+    });
+})();
+</script>
 
 <script type="module" src="/src/main.ts"></script>
 </body>

@@ -19,7 +19,6 @@ import { initMenu } from './ui/menu';
 import { initAccordion } from './ui/accordion';
 import { initStats } from './ui/stats';
 import { initSettings } from './ui/settings';
-import { initDocsNavigator } from './ui/docs-navigator';
 import { registerLanguage } from './syntax/registry';
 import { javaAdapter } from './syntax/lang/java';
 import { pythonAdapter } from './syntax/lang/python';
@@ -79,7 +78,6 @@ initMenu();
 initAccordion();
 initStats();
 initSettings();
-initDocsNavigator();
 
 // 타이핑 트레이너 (학습팩 → 엔진, "다음 문제"·팩 전환, 완료 시 세션 기록)
 initTrainer();
