@@ -249,20 +249,29 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
       focusLine(li - 1, inputs[li - 1].value.length);
       return;
     }
-    // 괄호 자동 닫기
+    // 괄호 자동 닫기 (열는 괄호 입력 시)
     if (appStore.getState().autoClose) {
       const brackets: Record<string, string> = { '{': '}', '(': ')', '[': ']' };
-    if (e.key in brackets && !e.ctrlKey && !e.metaKey && !e.altKey) {
-      const tgt = LINES[li];
-      const closeChar = brackets[e.key];
-      if (s === en && s < tgt.length && tgt[s] === e.key && tgt[s + 1] === closeChar) {
-        e.preventDefault();
-        input.value = input.value.slice(0, s) + e.key + closeChar + input.value.slice(s + 2);
-        input.selectionStart = input.selectionEnd = s + 2;
-        onInput(li);
-        return;
+      if (e.key in brackets && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const tgt = LINES[li];
+        const closeChar = brackets[e.key];
+        if (s === en && s < tgt.length && tgt[s] === e.key && tgt[s + 1] === closeChar) {
+          e.preventDefault();
+          input.value = input.value.slice(0, s) + e.key + closeChar + input.value.slice(s + 2);
+          input.selectionStart = input.selectionEnd = s + 2;
+          onInput(li);
+          return;
+        }
       }
-    }
+      // 닫는 괄호 입력 시 이미 같은 닫는 괄호가 다음에 있으면 건너뛰기 (overtype)
+      const closeBrackets = { ')': '(', '}': '{', ']': '[' };
+      if (e.key in closeBrackets && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (s === en && s < len && input.value[s] === e.key) {
+          e.preventDefault();
+          input.selectionStart = input.selectionEnd = s + 1;
+          return;
+        }
+      }
     // 따옴표 자동 닫기
     const quotes: Record<string, string> = { '"': '"', "'": "'", '`': '`' };
     if (e.key in quotes && !e.ctrlKey && !e.metaKey && !e.altKey) {
