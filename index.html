@@ -298,32 +298,64 @@
 
     if (!docBtn || !docPop || !docMenu) return;
 
-    var docsData = null;
     var basePath = (window.location.pathname.indexOf('/CodeMaster') !== -1) ? '/CodeMaster/' : '/';
 
-    function loadDocsData(cb) {
-        if (docsData) { cb(); return; }
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', basePath + 'docs-tree.json', true);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                try { docsData = JSON.parse(xhr.responseText); cb(); }
-                catch(e) { showErr('JSON error'); }
-            } else { showErr('HTTP ' + xhr.status); }
-        };
-        xhr.onerror = function() { showErr('Network error'); };
-        xhr.send();
-    }
-
-    function showErr(msg) {
-        docPop.innerHTML = '<div style="padding:12px;color:var(--red)">' + msg + '</div>';
-    }
+    // 문서 데이터 하드코딩 (fetch 실패 방지)
+    var docsData = [
+        {
+            type: 'folder',
+            label: 'Spring Boot 3.4.x',
+            children: [
+                { type:'file', label:'01.Java Core', path:'docs/01.SpringBoot3.4.x/01.Java_Core.md' },
+                { type:'file', label:'02.Spring Core', path:'docs/01.SpringBoot3.4.x/02.Spring_Core.md' },
+                { type:'file', label:'03.Spring MVC', path:'docs/01.SpringBoot3.4.x/03.Spring_MVC.md' },
+                { type:'file', label:'04.Database - JPA/MyBatis', path:'docs/01.SpringBoot3.4.x/04.Database_-_JPAMyBatis.md' },
+                { type:'file', label:'05.Concurrency', path:'docs/01.SpringBoot3.4.x/05.Concurrency.md' },
+                { type:'file', label:'06.Network', path:'docs/01.SpringBoot3.4.x/06.Network.md' },
+                { type:'file', label:'07.Gateway', path:'docs/01.SpringBoot3.4.x/07.Gateway.md' },
+                { type:'file', label:'08.Messaging', path:'docs/01.SpringBoot3.4.x/08.Messaging.md' },
+                { type:'file', label:'09.Batch', path:'docs/01.SpringBoot3.4.x/09.Batch.md' },
+                { type:'file', label:'10.Security', path:'docs/01.SpringBoot3.4.x/10.Security.md' },
+                { type:'file', label:'11.Cache', path:'docs/01.SpringBoot3.4.x/11.Cache.md' },
+                { type:'file', label:'12.Monitoring', path:'docs/01.SpringBoot3.4.x/12.Monitoring.md' },
+                { type:'file', label:'13.Testing', path:'docs/01.SpringBoot3.4.x/13.Testing.md' },
+                { type:'file', label:'14.Architecture', path:'docs/01.SpringBoot3.4.x/14.Architecture.md' },
+                { type:'file', label:'15.Design Pattern', path:'docs/01.SpringBoot3.4.x/15.Design_Pattern.md' },
+                { type:'file', label:'16.Build & DevOps', path:'docs/01.SpringBoot3.4.x/16.Build_&_DevOps.md' },
+                { type:'file', label:'17.Observability', path:'docs/01.SpringBoot3.4.x/17.Observability.md' },
+                { type:'file', label:'18.Data', path:'docs/01.SpringBoot3.4.x/18.Data.md' },
+                { type:'file', label:'19.Resilience & Cloud-Native', path:'docs/01.SpringBoot3.4.x/19.Resilience_&_Cloud-Native.md' },
+                { type:'file', label:'20.Reactive', path:'docs/01.SpringBoot3.4.x/20.Reactive.md' }
+            ]
+        },
+        {
+            type: 'folder',
+            label: 'Python 3.12',
+            children: [
+                { type:'file', label:'01.Python Language Basics', path:'docs/02.Python3.12/01.Python_Language_Basics.md' },
+                { type:'file', label:'02.Async', path:'docs/02.Python3.12/02.Async.md' },
+                { type:'file', label:'03.Data', path:'docs/02.Python3.12/03.Data.md' },
+                { type:'file', label:'04.Machine Learning', path:'docs/02.Python3.12/04.Machine_Learning.md' },
+                { type:'file', label:'05.Deep Learning', path:'docs/02.Python3.12/05.Deep_Learning.md' },
+                { type:'file', label:'06.LLM', path:'docs/02.Python3.12/06.LLM.md' },
+                { type:'file', label:'07.RAG', path:'docs/02.Python3.12/07.RAG.md' },
+                { type:'file', label:'08.AI Agent', path:'docs/02.Python3.12/08.AI_Agent.md' },
+                { type:'file', label:'09.Framework', path:'docs/02.Python3.12/09.Framework.md' },
+                { type:'file', label:'10.Production AI', path:'docs/02.Python3.12/10.Production_AI.md' },
+                { type:'file', label:'11.Vector Store', path:'docs/02.Python3.12/11.Vector_Store.md' },
+                { type:'file', label:'12.LLM Serving', path:'docs/02.Python3.12/12.LLM_Serving.md' },
+                { type:'file', label:'13.Prompt Structured', path:'docs/02.Python3.12/13.Prompt_Structured.md' },
+                { type:'file', label:'14.Fine Tuning & MLOps', path:'docs/02.Python3.12/14.Fine_Tuning_MLOps.md' },
+                { type:'file', label:'15.AI Quality', path:'docs/02.Python3.12/15.AI_Quality.md' }
+            ]
+        }
+    ];
 
     function toggleMenu() {
         isOpen = !isOpen;
         docMenu.classList.toggle('open', isOpen);
         if (isOpen) {
-            loadDocsData(showCatList);
+            showCatList();
             if (ov) ov.classList.add('active');
         } else {
             docPop.innerHTML = '';
@@ -332,18 +364,14 @@
     }
 
     function showCatList() {
-        if (!docsData || !docsData.length) { showErr('No docs'); return; }
         if (docCur) docCur.textContent = '문서';
         docPop.innerHTML = '';
         for (var i = 0; i < docsData.length; i++) {
             (function(idx) {
-                var cat = docsData[idx];
                 var el = document.createElement('div');
                 el.className = 'doc-cat-item';
-                el.textContent = cat.label;
-                el.addEventListener('click', function() {
-                    selectCat(idx);
-                });
+                el.textContent = docsData[idx].label;
+                el.addEventListener('click', function() { selectCat(idx); });
                 docPop.appendChild(el);
             })(i);
         }
@@ -355,7 +383,7 @@
         if (docCur) docCur.textContent = cat.label;
         docPop.innerHTML = '';
         var children = cat.children || [];
-        // back button
+        // back
         (function() {
             var el = document.createElement('div');
             el.className = 'doc-back';
@@ -366,7 +394,7 @@
             });
             docPop.appendChild(el);
         })();
-        // doc items
+        // docs
         for (var i = 0; i < children.length; i++) {
             (function(f) {
                 var el = document.createElement('div');
@@ -388,7 +416,7 @@
             if (xhr.status === 200) {
                 var main = document.querySelector('.main');
                 if (!main) return;
-                var name = path.split('/').pop().replace('.md', '');
+                var name = path.split('/').pop().replace('.md', '').replace(/_/g, ' ');
                 main.innerHTML = '<div class="doc-viewer">' +
                     '<div class="doc-viewer-head">' +
                         '<button onclick="location.reload()" class="btn-ghost btn-sm"><span>&larr; 타이핑 연습으로</span></button>' +
@@ -396,15 +424,12 @@
                     '</div>' +
                     '<div class="doc-content markdown-body">' + marked.parse(xhr.responseText) + '</div>' +
                 '</div>';
-            } else {
-                alert('Load failed: ' + xhr.status);
             }
         };
-        xhr.onerror = function() { alert('Network error'); };
+        xhr.onerror = function() {};
         xhr.send();
     }
 
-    // 초기화
     docBtn.addEventListener('click', function(e) { e.stopPropagation(); toggleMenu(); });
     if (ov) ov.addEventListener('click', function() { if (isOpen) toggleMenu(); });
     document.addEventListener('click', function(e) {
