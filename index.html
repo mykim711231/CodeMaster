@@ -308,13 +308,15 @@
         xhr.onload = function() {
             if (xhr.status === 200) {
                 try { docsData = JSON.parse(xhr.responseText); cb(); }
-                catch(e) { docPop.innerHTML = '<div style="padding:12px;color:var(--red)">JSON error</div>'; }
-            } else {
-                docPop.innerHTML = '<div style="padding:12px;color:var(--red)">Failed: ' + xhr.status + '</div>';
-            }
+                catch(e) { showErr('JSON error'); }
+            } else { showErr('HTTP ' + xhr.status); }
         };
-        xhr.onerror = function() { docPop.innerHTML = '<div style="padding:12px;color:var(--red)">Network error</div>'; };
+        xhr.onerror = function() { showErr('Network error'); };
         xhr.send();
+    }
+
+    function showErr(msg) {
+        docPop.innerHTML = '<div style="padding:12px;color:var(--red)">' + msg + '</div>';
     }
 
     function toggleMenu() {
@@ -330,28 +332,53 @@
     }
 
     function showCatList() {
-        if (!docsData || !docsData.length) { docPop.innerHTML = '<div style="padding:12px">No docs</div>'; return; }
+        if (!docsData || !docsData.length) { showErr('No docs'); return; }
         if (docCur) docCur.textContent = '문서';
-        var h = '<div class="doc-cat-list">';
+        docPop.innerHTML = '';
         for (var i = 0; i < docsData.length; i++) {
-            h += '<div class="doc-cat-item" data-idx="' + i + '"><span>' + esc(docsData[i].label) + '</span></div>';
+            (function(idx) {
+                var cat = docsData[idx];
+                var el = document.createElement('div');
+                el.className = 'doc-cat-item';
+                el.textContent = cat.label;
+                el.addEventListener('click', function() {
+                    selectCat(idx);
+                });
+                docPop.appendChild(el);
+            })(i);
         }
-        h += '</div>';
-        docPop.innerHTML = h;
     }
 
     function selectCat(idx) {
         var cat = docsData[idx];
         if (!cat) return;
         if (docCur) docCur.textContent = cat.label;
+        docPop.innerHTML = '';
         var children = cat.children || [];
-        var h = '<div class="doc-back" data-act="back"><span>&larr; 뒤로</span></div>';
-        h += '<div class="doc-list">';
+        // back button
+        (function() {
+            var el = document.createElement('div');
+            el.className = 'doc-back';
+            el.textContent = '\u2190 뒤로';
+            el.addEventListener('click', function() {
+                showCatList();
+                if (docCur) docCur.textContent = '문서';
+            });
+            docPop.appendChild(el);
+        })();
+        // doc items
         for (var i = 0; i < children.length; i++) {
-            h += '<div class="doc-item" data-path="' + esc(children[i].path) + '"><span>' + esc(children[i].label) + '</span></div>';
+            (function(f) {
+                var el = document.createElement('div');
+                el.className = 'doc-item';
+                el.textContent = f.label;
+                el.addEventListener('click', function() {
+                    loadDoc(f.path);
+                    toggleMenu();
+                });
+                docPop.appendChild(el);
+            })(children[i]);
         }
-        h += '</div>';
-        docPop.innerHTML = h;
     }
 
     function loadDoc(path) {
@@ -362,46 +389,20 @@
                 var main = document.querySelector('.main');
                 if (!main) return;
                 var name = path.split('/').pop().replace('.md', '');
-                var html = marked.parse(xhr.responseText);
-                main.innerHTML = '<div class="doc-viewer"><div class="doc-viewer-head"><button onclick="location.reload()" class="btn-ghost btn-sm"><span>&larr; 연습으로 돌아가기</span></button><div class="doc-viewer-title">' + esc(name) + '</div></div><div class="doc-content markdown-body">' + html + '</div></div>';
+                main.innerHTML = '<div class="doc-viewer">' +
+                    '<div class="doc-viewer-head">' +
+                        '<button onclick="location.reload()" class="btn-ghost btn-sm"><span>&larr; 타이핑 연습으로</span></button>' +
+                        '<div class="doc-viewer-title">' + name + '</div>' +
+                    '</div>' +
+                    '<div class="doc-content markdown-body">' + marked.parse(xhr.responseText) + '</div>' +
+                '</div>';
             } else {
-                alert('Load error: ' + xhr.status);
+                alert('Load failed: ' + xhr.status);
             }
         };
         xhr.onerror = function() { alert('Network error'); };
         xhr.send();
     }
-
-    function esc(s) {
-        var d = document.createElement('div');
-        d.textContent = s;
-        return d.innerHTML;
-    }
-
-    // 이벤트 위임 (delegation)
-    docPop.addEventListener('click', function(e) {
-        var t = e.target;
-        var back = t.closest('.doc-back');
-        if (back) {
-            showCatList();
-            if (docCur) docCur.textContent = '문서';
-            return;
-        }
-        var catItem = t.closest('.doc-cat-item');
-        if (catItem) {
-            var idx = parseInt(catItem.getAttribute('data-idx'));
-            if (!isNaN(idx) && idx >= 0 && idx < (docsData ? docsData.length : 0)) {
-                selectCat(idx);
-            }
-            return;
-        }
-        var docItem = t.closest('.doc-item');
-        if (docItem) {
-            var p = docItem.getAttribute('data-path');
-            if (p) { loadDoc(p); toggleMenu(); }
-            return;
-        }
-    });
 
     // 초기화
     docBtn.addEventListener('click', function(e) { e.stopPropagation(); toggleMenu(); });
