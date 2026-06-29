@@ -25,6 +25,51 @@ As you mark items as completed, you can manually update these counters:
 
 ---
 
+## ⚡ Rate Limiting & API Error Prevention
+**Prevent "ResourceExhausted: Worker local total request limit reached" errors:**
+
+### When Accessing Documentation URLs
+- **Add delays**: Wait 2-5 seconds between consecutive URL requests
+- **Use sessions**: Reuse HTTP connections (keep-alive) instead of new connections
+- **Set proper headers**: Include `User-Agent` with your project identifier
+- **Cache results**: Save downloaded HTML/content locally to avoid re-fetching
+- **Batch processing**: Process URLs in small batches (3-5 at a time) with pauses
+
+### Example Python Rate Limiter
+```python
+import time
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+session = requests.Session()
+retry_strategy = Retry(
+    total=3,
+    backoff_factor=2,
+    status_forcelist=[429, 500, 502, 503, 504],
+)
+adapter = HTTPAdapter(max_retries=retry_strategy)
+session.mount("http://", adapter)
+session.mount("https://", adapter)
+
+def fetch_with_rate_limit(url, delay=3):
+    time.sleep(delay)  # Respectful delay
+    response = session.get(url, headers={"User-Agent": "CodeMaster-DocMapper/1.0"})
+    response.raise_for_status()
+    return response.text
+```
+
+### Best Practices
+| Practice | Benefit |
+|----------|---------|
+| `time.sleep(3)` between requests | Avoids 429 Too Many Requests |
+| Exponential backoff on 429 | Auto-recovers from rate limits |
+| Local file cache (`docs/cache/`) | Zero network calls for repeats |
+| Process 5 URLs, then 30s pause | Stays within typical rate limits |
+| Use `requests.Session()` | Connection reuse, cookie persistence |
+
+---
+
 This document outlines the official documentation sources for each section of the Python AI learning pack.
 All URLs point to the official documentation of the respective projects or Python standard library.
 
