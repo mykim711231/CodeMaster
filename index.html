@@ -366,7 +366,8 @@
         if (!cat) return;
         if (docCur) docCur.textContent = cat.label;
         while (docPop.firstChild) docPop.removeChild(docPop.firstChild);
-        docPop.style.cssText = 'display:block!important;overflow-y:auto;background:#111827;border:1px solid #334155;border-radius:10px;padding:6px';
+        docPop.scrollTop = 0;
+        docPop.style.cssText = 'display:block!important;overflow-y:auto;background:#111827;border:1px solid #334155;border-radius:10px;padding:6px;min-height:100px;position:absolute;top:calc(100% + 4px);left:12px;right:12px;max-height:62vh;z-index:60';
         var back = document.createElement('div');
         back.textContent = '\u2190 \uB4A4\uB85C';
         back.style.cssText = 'display:flex;padding:6px 12px;margin-bottom:4px;border-radius:6px;cursor:pointer;font-size:12px;color:#94a3b8';
