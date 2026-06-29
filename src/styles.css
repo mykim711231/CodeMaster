@@ -1676,9 +1676,9 @@ body {
   padding: 1px 5px;
   margin-right: 5px;
 }
-.explain-terms .d {
-  color: var(--muted);
-}
+ .explain-terms .d {
+    color: var(--text);
+  }
 .explain-why {
   font-size: 12px;
   line-height: 1.55;
