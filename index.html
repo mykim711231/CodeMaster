@@ -366,26 +366,24 @@
         if (!cat) return;
         if (docCur) docCur.textContent = cat.label;
         while (docPop.firstChild) docPop.removeChild(docPop.firstChild);
-        docPop.style.display = 'block';
-        docPop.style.overflowY = 'auto';
+        docPop.style.cssText = 'display:block!important;overflow-y:auto;background:#111827;border:1px solid #334155;border-radius:10px;padding:6px';
         var back = document.createElement('div');
-        back.textContent = '← 뒤로';
-        back.style.cssText = 'display:flex;padding:6px 12px;margin-bottom:4px;border-radius:6px;cursor:pointer;font-size:12px;color:var(--muted,#aaa)';
-        back.addEventListener('mouseenter', function(){ this.style.background='var(--sub,#333)';this.style.color='var(--text,#fff)'; });
-        back.addEventListener('mouseleave', function(){ this.style.background='';this.style.color=''; });
+        back.textContent = '\u2190 \uB4A4\uB85C';
+        back.style.cssText = 'display:flex;padding:6px 12px;margin-bottom:4px;border-radius:6px;cursor:pointer;font-size:12px;color:#94a3b8';
+        back.onmouseenter = function(){ this.style.background='#1e293b';this.style.color='#e2e8f0'; };
+        back.onmouseleave = function(){ this.style.background='';this.style.color=''; };
         back.onclick = function() { showCatList(); };
         docPop.appendChild(back);
         var children = cat.children || [];
         for (var i = 0; i < children.length; i++) {
             var el = document.createElement('div');
             el.textContent = children[i].label;
-            el.style.cssText = 'display:flex;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--text,#fff);margin:2px 0';
-            el.addEventListener('mouseenter', function(){ this.style.background='var(--sub,#333)'; });
-            el.addEventListener('mouseleave', function(){ this.style.background=''; });
+            el.style.cssText = 'display:flex;padding:8px 12px;margin:2px 0;border-radius:6px;cursor:pointer;font-size:13px;color:#e2e8f0;background:transparent';
+            el.onmouseenter = function(){ this.style.background='#1e293b'; };
+            el.onmouseleave = function(){ this.style.background='transparent'; };
             el.onclick = (function(p) { return function() { loadDoc(p); toggleMenu(); }; })(children[i].path);
             docPop.appendChild(el);
         }
-        console.log('popup scrollH:', docPop.scrollHeight, 'clientH:', docPop.clientHeight, 'offsetH:', docPop.offsetHeight, 'children:', docPop.children.length);
     }
 
     function loadDoc(path) {
