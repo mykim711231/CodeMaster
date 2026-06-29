@@ -353,7 +353,9 @@
             el.className = 'doc-cat-item';
             el.textContent = docsData[i].label;
             el.setAttribute('data-idx', i);
-            el.style.cursor = 'pointer';
+            el.style.cssText = 'display:flex;align-items:center;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--text,#e2e8f0);margin:2px 0';
+            el.addEventListener('mouseenter', function(){ this.style.background='var(--sub,#1e293b)'; });
+            el.addEventListener('mouseleave', function(){ this.style.background=''; });
             el.onclick = (function(idx) { return function() { selectCat(idx); }; })(i);
             docPop.appendChild(el);
         }
@@ -367,7 +369,9 @@
         var back = document.createElement('div');
         back.className = 'doc-back';
         back.textContent = '← 뒤로';
-        back.style.cursor = 'pointer';
+        back.style.cssText = 'display:flex;align-items:center;padding:6px 12px;margin-bottom:4px;border-radius:6px;cursor:pointer;font-size:12px;color:var(--muted,#64748b)';
+        back.addEventListener('mouseenter', function(){ this.style.background='var(--sub,#1e293b)';this.style.color='var(--text,#e2e8f0)'; });
+        back.addEventListener('mouseleave', function(){ this.style.background='';this.style.color=''; });
         back.onclick = function() { showCatList(); };
         docPop.appendChild(back);
         var children = cat.children || [];
@@ -375,7 +379,9 @@
             var el = document.createElement('div');
             el.className = 'doc-item';
             el.textContent = children[i].label;
-            el.style.cursor = 'pointer';
+            el.style.cssText = 'display:flex;align-items:center;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--text,#e2e8f0);margin:2px 0';
+            el.addEventListener('mouseenter', function(){ this.style.background='var(--sub,#1e293b)'; });
+            el.addEventListener('mouseleave', function(){ this.style.background=''; });
             el.onclick = (function(p) { return function() { loadDoc(p); toggleMenu(); }; })(children[i].path);
             docPop.appendChild(el);
         }
