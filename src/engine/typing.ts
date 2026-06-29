@@ -263,15 +263,15 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
           return;
         }
       }
-      // 닫는 괄호 입력 시 이미 같은 닫는 괄호가 앞에 있으면 건너뛰기 (overtype)
-      const closeBrackets = { ')': '(', '}': '{', ']': '[' };
-      if (e.key in closeBrackets && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        if (s > 0 && s <= len && input.value[s - 1] === e.key) {
-          e.preventDefault();
-          input.selectionStart = input.selectionEnd = s + 1;
-          return;
-        }
-      }
+// 닫는 괄호 입력 시 이미 같은 닫는 괄호가 있으면 건너뛰기 (overtype)
+       const closeBrackets = { ')': '(', '}': '{', ']': '[' };
+       if (e.key in closeBrackets && !e.ctrlKey && !e.metaKey && !e.altKey) {
+         if (s === en && s < len && input.value[s] === e.key) {
+           e.preventDefault();
+           input.selectionStart = input.selectionEnd = s + 1;
+           return;
+         }
+       }
     // 따옴표 자동 닫기
     const quotes: Record<string, string> = { '"': '"', "'": "'", '`': '`' };
     if (e.key in quotes && !e.ctrlKey && !e.metaKey && !e.altKey) {
