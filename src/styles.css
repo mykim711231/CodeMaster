@@ -2236,3 +2236,11 @@ body {
 .btn-sm { font-size:.7rem; padding:3px 8px; min-width:unset; }
 .footer-nav { display:inline-flex; gap:2px; margin-left:auto; }
 .footer-nav .btn-sm { padding:3px 4px; }
+
+/* Disable font ligatures to prevent ghost text in monospaced fonts */
+* {
+  font-variant-ligatures: none;
+  -webkit-font-variant-ligatures: none;
+  -moz-font-variant-ligatures: none;
+  -ms-font-variant-ligatures: none;
+}
