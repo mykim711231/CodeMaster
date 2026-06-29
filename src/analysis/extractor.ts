@@ -11,6 +11,8 @@ export interface ExtractedPattern {
   lineCount: number;
   category: string;
   comment: string;
+  difficulty: 1 | 2 | 3;
+  tags: string[];
 }
 
 interface QueryDef {
@@ -19,17 +21,58 @@ interface QueryDef {
 }
 
 const JAVA_QUERIES: QueryDef[] = [
+  // 클래스/레코드/열거형/어노테이션
   { type: 'class', pattern: '(class_declaration name: (identifier) @name) @def' },
   { type: 'class', pattern: '(record_declaration name: (identifier) @name) @def' },
   { type: 'class', pattern: '(enum_declaration name: (identifier) @name) @def' },
   { type: 'method', pattern: '(method_declaration name: (identifier) @name) @def' },
   { type: 'interface', pattern: '(interface_declaration name: (identifier) @name) @def' },
   { type: 'annotation', pattern: '(annotation_type_declaration name: (identifier) @name) @def' },
+
+  // 제네릭 클래스/메서드
+  { type: 'class', pattern: '(class_declaration name: (identifier) @name type_parameters: (type_parameters) @generics) @def' },
+  { type: 'method', pattern: '(method_declaration name: (identifier) @name type_parameters: (type_parameters) @generics) @def' },
+
+  // 스트림/옵셔널 체이닝 패턴
+  { type: 'method', pattern: '(method_invocation name: (identifier) @name (#match? @name "^(stream|parallelStream|filter|map|flatMap|collect|reduce|forEach|findFirst|orElse|orElseGet|orElseThrow|ifPresent|mapMulti)$")) @def' },
+
+  // 어노테이션 프로세서 관련 (@Builder, @Data, @Value, @AllArgsConstructor 등)
+  { type: 'annotation', pattern: '(marker_annotation name: (type_identifier) @name (#match? @name "^(@Builder|@Data|@Value|@AllArgsConstructor|@NoArgsConstructor|@RequiredArgsConstructor|@Getter|@Setter|@ToString|@EqualsAndHashCode|@SuperBuilder)$")) @def' },
+
+  // 디자인 패턴: Builder, Factory, Singleton, Strategy, Observer
+  { type: 'method', pattern: '(method_declaration name: (identifier) @name (#match? @name "^(build|create|getInstance|of|newBuilder|with|apply|execute|handle|process|accept|visit)$")) @def' },
+
+  // 트랜잭션 경계 (@Transactional)
+  { type: 'method', pattern: '(method_declaration name: (identifier) @name annotation: (annotation argument_list: (value_argument) @args) #match? @args "^@Transactional") @def' },
+
+  // JPA 리포지토리 메서드 (findBy, save, delete, existsBy, countBy)
+  { type: 'method', pattern: '(method_declaration name: (identifier) @name (#match? @name "^(findBy|findAllBy|findTop|findFirst|existsBy|countBy|deleteBy|save|saveAll|flush)$")) @def' },
+
+  // 설정 클래스 (@Configuration, @Bean)
+  { type: 'method', pattern: '(method_declaration name: (identifier) @name annotation: (annotation) @ann (#match? @ann "^@Bean")) @def' },
 ];
 
 const PYTHON_QUERIES: QueryDef[] = [
   { type: 'class', pattern: '(class_definition name: (identifier) @name) @def' },
   { type: 'method', pattern: '(function_definition name: (identifier) @name) @def' },
+
+  // 데코레이터가 있는 메서드 (property, classmethod, staticmethod 등)
+  { type: 'method', pattern: '(decorated_definition definition: (function_definition name: (identifier) @name)) @def' },
+
+  // 비동기 함수
+  { type: 'method', pattern: '(function_definition name: (identifier) @name) @def' },
+
+  // 디자인 패턴 관련 함수 (build, create, get_instance, factory, singleton)
+  { type: 'method', pattern: '(function_definition name: (identifier) @name (#match? @name "^(build|create|get_instance|factory|singleton|with|apply|execute|handle|process|__call__)$")) @def' },
+
+  // Pydantic 모델 / 데이터 클래스
+  { type: 'class', pattern: '(class_definition name: (identifier) @name bases: (argument_list) @bases (#match? @bases "(BaseModel|dataclass|NamedTuple|TypedDict|Protocol)")) @def' },
+
+  // 트랜잭션/데코레이터 (@transactional, @atomic, @db_session)
+  { type: 'method', pattern: '(decorated_definition definition: (function_definition name: (identifier) @name) decorators: (decorator) @dec (#match? @dec "^@(transactional|atomic|db_session|commit_on_success)")) @def' },
+
+  // FastAPI/Flask 라우트 핸들러
+  { type: 'method', pattern: '(decorated_definition definition: (function_definition name: (identifier) @name) decorators: (decorator) @dec (#match? @dec "^@(app|router|api|bp)\\.(get|post|put|patch|delete|head|options)")) @def' },
 ];
 
 function extractComment(
@@ -138,6 +181,67 @@ function inferCategory(
   return 'general';
 }
 
+function inferDifficulty(
+  type: ExtractedPattern['type'],
+  code: string,
+): 1 | 2 | 3 {
+  // 클래스/인터페이스: 기본 1, 복잡도 높은 경우 2
+  if (type === 'class' || type === 'interface') {
+    const hasGenerics = /<.*>/.test(code);
+    const hasManyFields = (code.match(/private\s+\w+\s+\w+;/g) ?? []).length > 5;
+    const hasManyMethods = (code.match(/public|private|protected/g) ?? []).length > 8;
+    if (hasGenerics && (hasManyFields || hasManyMethods)) return 3;
+    if (hasGenerics || hasManyFields || hasManyMethods) return 2;
+    return 1;
+  }
+  // 메서드: 라인 수, 중첩 깊이, 복잡도 키워드
+  if (type === 'method') {
+    const lines = code.split('\n').length;
+    const hasStream = /\.stream\(\)|\.parallelStream\(\)|\.filter\(|\.map\(|\.flatMap\(|\.collect\(|\.reduce\(/.test(code);
+    const hasOptional = /Optional<|optional\.|orElse|orElseGet|orElseThrow|ifPresent/.test(code);
+    const hasTransaction = /@Transactional/.test(code);
+    const hasTryCatch = /try\s*\{|catch\s*\(/.test(code);
+    const hasGenerics = /<.*>/.test(code);
+    const nestedDepth = (code.match(/\{/g) ?? []).length;
+
+    if (lines > 30 || hasStream && hasOptional || hasTransaction && hasTryCatch) return 3;
+    if (lines > 15 || hasStream || hasOptional || hasTransaction || hasGenerics || nestedDepth > 3) return 2;
+    return 1;
+  }
+  // 어노테이션
+  return 1;
+}
+
+function inferTags(
+  code: string,
+  category: string,
+  fileName: string,
+): string[] {
+  const tags: string[] = [category];
+  const lower = (fileName + code).toLowerCase();
+
+  // 공통 태그
+  if (lower.includes('test') || lower.includes('spec')) tags.push('test');
+  if (lower.includes('async') || lower.includes('completablefuture') || lower.includes('await') || lower.includes('async def')) tags.push('async');
+  if (lower.includes('transaction') || lower.includes('@transactional') || lower.includes('@atomic') || lower.includes('@db_session')) tags.push('transaction');
+  if (lower.includes('stream') || lower.includes('.map(') || lower.includes('.filter(') || lower.includes('.collect(')) tags.push('stream');
+  if (lower.includes('optional') || lower.includes('optional<') || lower.includes('orelse') || lower.includes('ifpresent')) tags.push('optional');
+  if (lower.includes('builder') || lower.includes('@builder') || lower.includes('.build()')) tags.push('builder');
+  if (lower.includes('factory') || lower.includes('create') || lower.includes('getinstance') || lower.includes('of(')) tags.push('factory');
+  if (lower.includes('singleton') || lower.includes('getinstance')) tags.push('singleton');
+  if (lower.includes('strategy') || lower.includes('visitor') || lower.includes('observer')) tags.push('pattern');
+  if (lower.includes('jpa') || lower.includes('repository') || lower.includes('entitymanager') || lower.includes('findby') || lower.includes('save')) tags.push('jpa');
+  if (lower.includes('redis') || lower.includes('cache') || lower.includes('@cacheable')) tags.push('cache');
+  if (lower.includes('security') || lower.includes('auth') || lower.includes('preauthorize') || lower.includes('authentication')) tags.push('security');
+  if (lower.includes('config') || lower.includes('@configuration') || lower.includes('@bean')) tags.push('config');
+  if (lower.includes('dto') || lower.includes('request') || lower.includes('response')) tags.push('dto');
+  if (lower.includes('exception') || lower.includes('error') || lower.includes('handler')) tags.push('error-handling');
+  if (lower.includes('event') || lower.includes('listener') || lower.includes('publish') || lower.includes('kafka') || lower.includes('rabbit') || lower.includes('message')) tags.push('event');
+
+  // 중복 제거
+  return [...new Set(tags)];
+}
+
 function buildPatterns(
   lang: 'java' | 'python',
   queries: QueryDef[],
@@ -184,6 +288,8 @@ function buildPatterns(
           lineCount,
           category: inferCategory(fileName, qd.type, name),
           comment: extractComment(source, node.startPosition.row, lang),
+          difficulty: inferDifficulty(qd.type, code),
+          tags: inferTags(code, inferCategory(fileName, qd.type, name), fileName),
         });
       }
       query.delete();
@@ -224,6 +330,8 @@ function extractPatternsRegex(
       lineCount,
       category: inferCategory(fileName, type, name),
       comment: extractComment(source, startLine, lang),
+      difficulty: inferDifficulty(type, code.trim()),
+      tags: inferTags(code.trim(), inferCategory(fileName, type, name), fileName),
     });
   };
 

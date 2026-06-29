@@ -1,4 +1,4 @@
-import type { Snippet, Pack } from '../content/types';
+import type { Snippet, Pack, Level } from '../content/types';
 import type { ExtractedPattern } from './extractor';
 import type { ScannedFile } from './scanner';
 
@@ -288,6 +288,7 @@ export function generateSnippets(patterns: ExtractedPattern[]): Snippet[] {
         terms: extractTerms(p.code, p.lang),
         why: buildWhy(p),
         pitfall: buildPitfall(p),
+        realWorldUsage: `난이도: ${p.difficulty === 1 ? '초급' : p.difficulty === 2 ? '중급' : '고급'} | 태그: ${p.tags.join(', ')}`,
       },
     });
   }
@@ -321,16 +322,39 @@ export function generateFileSnippets(files: ScannedFile[]): Snippet[] {
 }
 
 export function generatePack(name: string, lang: 'java' | 'python', snippets: Snippet[]): Pack {
+  // 난이도별로 레벨 분할
+  const levelMap = new Map<number, Snippet[]>();
+  for (const s of snippets) {
+    const diff = s.explain?.realWorldUsage?.match(/난이도: (초급|중급|고급)/)?.[1];
+    let levelNo = 1;
+    if (diff === '중급') levelNo = 2;
+    else if (diff === '고급') levelNo = 3;
+    if (!levelMap.has(levelNo)) levelMap.set(levelNo, []);
+    levelMap.get(levelNo)!.push(s);
+  }
+
+  const levels: Level[] = [];
+  const levelNames: Record<number, string> = {
+    1: '기초 (Lv.1)',
+    2: '심화 (Lv.2)',
+    3: '고급 (Lv.3)',
+  };
+
+  for (const [no, snips] of levelMap.entries()) {
+    levels.push({
+      no,
+      name: levelNames[no],
+      snippets: snips,
+    });
+  }
+
+  // 레벨 번호 순으로 정렬
+  levels.sort((a, b) => a.no - b.no);
+
   return {
     id: `proj-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`,
     name,
     lang,
-    levels: [
-      {
-        no: 1,
-        name: '프로젝트 분석',
-        snippets,
-      },
-    ],
+    levels,
   };
 }

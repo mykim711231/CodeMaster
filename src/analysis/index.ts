@@ -5,6 +5,54 @@ import { initTreeSitter, parseSource, isTreeSitterReady } from './parser';
 import { extractPatterns } from './extractor';
 import type { ExtractedPattern } from './extractor';
 
+function simpleSimilarity(a: string, b: string): number {
+  const setA = new Set(a.toLowerCase().split(/\s+/).filter(w => w.length > 2));
+  const setB = new Set(b.toLowerCase().split(/\s+/).filter(w => w.length > 2));
+  let intersection = 0;
+  for (const w of setA) if (setB.has(w)) intersection++;
+  const union = setA.size + setB.size - intersection;
+  return union === 0 ? 0 : intersection / union;
+}
+
+function signatureSim(a: ExtractedPattern, b: ExtractedPattern): number {
+  if (a.type !== b.type) return 0;
+  // 메서드 시그니처 유사도 (이름 + 파라미터)
+  const nameA = a.name;
+  const nameB = b.name;
+  if (nameA === nameB) return 1;
+  // 레벤슈타인 유사도 근사
+  const maxLen = Math.max(nameA.length, nameB.length);
+  if (maxLen === 0) return 0;
+  let dist = 0;
+  for (let i = 0; i < maxLen; i++) {
+    if (nameA[i] !== nameB[i]) dist++;
+  }
+  return 1 - dist / maxLen;
+}
+
+function deduplicatePatterns(patterns: ExtractedPattern[]): ExtractedPattern[] {
+  const result: ExtractedPattern[] = [];
+  for (const p of patterns) {
+    let isDuplicate = false;
+    for (const existing of result) {
+      const sigSim = signatureSim(p, existing);
+      const bodySim = simpleSimilarity(p.code, existing.code);
+      // 시그니처 0.8 이상 AND 본문 0.7 이상이면 중복으로 판단
+      if (sigSim >= 0.8 && bodySim >= 0.7) {
+        isDuplicate = true;
+        // 더 긴/상세한 코드 유지
+        if (p.code.length > existing.code.length) {
+          const idx = result.indexOf(existing);
+          result[idx] = p;
+        }
+        break;
+      }
+    }
+    if (!isDuplicate) result.push(p);
+  }
+  return result;
+}
+
 export async function importProject(
   onProgress?: (msg: string) => void,
 ): Promise<Pack> {
@@ -66,6 +114,28 @@ export async function importPatterns(
   if (allPatterns.length === 0) {
     throw new Error('추출된 패턴이 없습니다. 다른 프로젝트를 선택해보세요.');
   }
-  const snippets = generateSnippets(allPatterns);
+
+  // 중복/유사 패턴 제거
+  const uniquePatterns = deduplicatePatterns(allPatterns);
+
+  // 구문 검증: 파싱이 성공하는 패턴만 남김
+  const validPatterns: ExtractedPattern[] = [];
+  for (const p of uniquePatterns) {
+    try {
+      const parsed = await parseSource(p.lang, p.code);
+      // 에러 노드가 있으면 버림
+      const hasError = parsed.tree.rootNode.hasError;
+      parsed.tree.delete();
+      if (!hasError) validPatterns.push(p);
+    } catch {
+      // 파싱 실패 시 버림
+    }
+  }
+
+  if (validPatterns.length === 0) {
+    throw new Error('유효한 패턴이 없습니다(구문 오류).');
+  }
+
+  const snippets = generateSnippets(validPatterns);
   return generatePack(scan.name + '-patterns', scan.lang, snippets);
 }
