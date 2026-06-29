@@ -683,7 +683,7 @@ body {
     margin-bottom: 4px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 12px;
+  font-size: 13px;
     color: var(--muted);
     transition: background 0.15s;
 }
@@ -758,7 +758,7 @@ body {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
