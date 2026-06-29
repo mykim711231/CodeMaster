@@ -340,10 +340,10 @@
 
     function toggleMenu() {
         isMenuOpen = !isMenuOpen;
-        var btn = getEl('docPackMenuBtn');
+        var menu = getEl('docPackMenu');
         var pop = getEl('docPackMenuPop');
         var ov = getEl('overlay');
-        if (btn) btn.classList.toggle('active', isMenuOpen);
+        if (menu) menu.classList.toggle('open', isMenuOpen);
         if (isMenuOpen) {
             showCategoryList();
             if (ov) ov.classList.add('active');
@@ -456,9 +456,9 @@
         }
         document.addEventListener('click', function(e) {
             if (isMenuOpen) {
-                var btn = getEl('docPackMenuBtn');
+                var menu = getEl('docPackMenu');
                 var pop = getEl('docPackMenuPop');
-                if (btn && pop && !btn.contains(e.target) && !pop.contains(e.target)) {
+                if (menu && pop && !menu.contains(e.target) && !pop.contains(e.target)) {
                     toggleMenu();
                 }
             }
