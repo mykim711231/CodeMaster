@@ -69,8 +69,23 @@
 <!-- APP BODY -->
 <div class="app">
 
-  <!-- SIDEBAR (학습 콘텐츠 전용) -->
-  <nav class="sidebar">
+    <!-- DOCS NAVIGATOR (LEFT PANEL) -->
+    <nav class="docs-navigator" id="docsNavigator">
+      <div class="docs-nav-header">
+        <span class="docs-nav-title"><i data-lucide="book-open"></i> 문서</span>
+        <button class="icon-btn docs-nav-close" id="docsNavClose" aria-label="닫기">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="docs-nav-search">
+        <i data-lucide="search"></i>
+        <input type="text" id="docsSearch" placeholder="문서 검색..." aria-label="문서 검색">
+      </div>
+      <div class="docs-tree" id="docsTree"></div>
+    </nav>
+
+    <!-- 기존 사이드바 (학습 콘텐츠 전용) -->
+    <nav class="sidebar" id="sidebar">
     <!-- 진행 요약 + 이어서 연습 -->
     <div class="resume-card">
       <div class="resume-top">
@@ -270,6 +285,9 @@
     </div>
   </div>
 </div>
+
+<!-- Marked 라이브러리 (마크다운 렌더링용) -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <script type="module" src="/src/main.ts"></script>
 </body>
