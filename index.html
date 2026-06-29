@@ -388,18 +388,44 @@
     }
 
     function loadDoc(path) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', basePath + path, true);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                var main = document.querySelector('.main');
-                if (!main) return;
-                var md = xhr.responseText;
-                var html = (typeof marked !== 'undefined') ? marked.parse(md) : '<pre>' + md.replace(/</g,'&lt;') + '</pre>';
-                main.innerHTML = '<div class="doc-viewer"><div class="doc-viewer-head"><button onclick="location.reload()" class="btn-ghost btn-sm">← 타이핑 연습으로</button><div class="doc-viewer-title">' + path.split('/').pop().replace('.md','') + '</div></div><div class="doc-content markdown-body">' + html + '</div></div>';
+        function render(md) {
+            var main = document.querySelector('.main');
+            if (!main) return;
+            var name = path.split('/').pop().replace('.md','').replace(/_/g,' ');
+            var html = (typeof marked !== 'undefined') ? marked.parse(md) : '<pre style="color:#e2e8f0;white-space:pre-wrap">' + md.replace(/</g,'&lt;') + '</pre>';
+            main.innerHTML = '<div style="padding:20px;max-width:900px;margin:0 auto">' +
+                '<button onclick="location.reload()" style="background:#1e293b;color:#94a3b8;border:1px solid #334155;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px;margin-bottom:16px">\u2190 \uD0C0\uC774\uD551 \uC5F0\uC2B5\uC73C\uB85C</button>' +
+                '<h2 style="color:#e2e8f0;margin-bottom:20px">' + name + '</h2>' +
+                '<div style="color:#cbd5e1;line-height:1.8;font-size:15px">' + html + '</div>' +
+            '</div>';
+        }
+        // ensure marked is loaded
+        if (typeof marked !== 'undefined') {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', basePath + path, true);
+            xhr.onload = function() { if (xhr.status === 200) render(xhr.responseText); };
+            xhr.send();
+        } else {
+            // wait for marked CDN then fetch
+            var script = document.querySelector('script[src*="marked"]');
+            if (script && script.getAttribute('data-loaded')) {
+                var xhr2 = new XMLHttpRequest();
+                xhr2.open('GET', basePath + path, true);
+                xhr2.onload = function() { if (xhr2.status === 200) render(xhr2.responseText); };
+                xhr2.send();
+            } else {
+                // load marked dynamically
+                var s = document.createElement('script');
+                s.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+                s.onload = function() {
+                    var xhr3 = new XMLHttpRequest();
+                    xhr3.open('GET', basePath + path, true);
+                    xhr3.onload = function() { if (xhr3.status === 200) render(xhr3.responseText); };
+                    xhr3.send();
+                };
+                document.head.appendChild(s);
             }
-        };
-        xhr.send();
+        }
     }
 
     docBtn.addEventListener('click', function(e) { e.stopPropagation(); toggleMenu(); });
