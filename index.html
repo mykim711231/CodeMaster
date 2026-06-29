@@ -9,6 +9,9 @@
 <link rel="apple-touch-icon" href="%BASE_URL%icon.svg">
 <link rel="icon" type="image/svg+xml" href="%BASE_URL%icon.svg">
 
+<!-- GitHub Markdown CSS (dark) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-dark.css">
+
 <script>
   /* 페인트 전 테마 적용 — 깜빡임 방지 */
   try { if (localStorage.getItem('cm-theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
@@ -95,15 +98,12 @@
 </div>
 <div class="sidebar-divider"></div>
 
-<!-- 문서 학습팩 -->
-<div class="pack-menu" id="docPackMenu">
-  <button class="pack-menu-btn" id="docPackMenuBtn" type="button" aria-haspopup="true" aria-expanded="false">
-    <i data-lucide="book-open"></i>
-    <span class="pack-menu-label">문서</span>
-    <span class="pack-menu-cur" id="docPackMenuCur"></span>
-    <i data-lucide="chevron-down" class="pack-menu-chev"></i>
+<!-- 문서 (트리 네비게이션) -->
+<div class="accordion" id="docAccordion">
+  <button class="acc-header" id="docAccHeader">
+    <i data-lucide="book-open"></i><span class="acc-title">문서</span><i data-lucide="chevron-down" class="acc-chevron"></i>
   </button>
-  <div class="pack-menu-pop" id="docPackMenuPop"></div>
+  <div class="acc-body" id="docTreeBody" style="display:none"></div>
 </div>
 <div class="sidebar-divider"></div>
 
@@ -283,16 +283,139 @@
   </div>
 </div>
 
-<!-- 문서 메뉴 초기화 (CDN 차단 방지를 위해 marked.js 보다 먼저) -->
+<!-- 문서 트리 초기화 -->
 <script>
 (function() {
-    var docBtn = document.getElementById('docPackMenuBtn');
-    var docPop = document.getElementById('docPackMenuPop');
-    var docCur = document.getElementById('docPackMenuCur');
-    var docMenu = document.getElementById('docPackMenu');
-    var ov = document.getElementById('overlay');
+    var docTree = document.getElementById('docTreeBody');
+    var docHeader = document.getElementById('docAccHeader');
+    var docAcc = document.getElementById('docAccordion');
+    if (!docTree || !docHeader || !docAcc) return;
+
+    var basePath = '/CodeMaster/';
+
+    var docsData = [
+        {label:'Spring Boot 3.4.x',children:[
+            {label:'01.Java Core',path:'docs/01.SpringBoot3.4.x/01.Java_Core.md'},
+            {label:'02.Spring Core',path:'docs/01.SpringBoot3.4.x/02.Spring_Core.md'},
+            {label:'03.Spring MVC',path:'docs/01.SpringBoot3.4.x/03.Spring_MVC.md'},
+            {label:'04.Database - JPA/MyBatis',path:'docs/01.SpringBoot3.4.x/04.Database_-_JPAMyBatis.md'},
+            {label:'05.Concurrency',path:'docs/01.SpringBoot3.4.x/05.Concurrency.md'},
+            {label:'06.Network',path:'docs/01.SpringBoot3.4.x/06.Network.md'},
+            {label:'07.Gateway',path:'docs/01.SpringBoot3.4.x/07.Gateway.md'},
+            {label:'08.Messaging',path:'docs/01.SpringBoot3.4.x/08.Messaging.md'},
+            {label:'09.Batch',path:'docs/01.SpringBoot3.4.x/09.Batch.md'},
+            {label:'10.Security',path:'docs/01.SpringBoot3.4.x/10.Security.md'},
+            {label:'11.Cache',path:'docs/01.SpringBoot3.4.x/11.Cache.md'},
+            {label:'12.Monitoring',path:'docs/01.SpringBoot3.4.x/12.Monitoring.md'},
+            {label:'13.Testing',path:'docs/01.SpringBoot3.4.x/13.Testing.md'},
+            {label:'14.Architecture',path:'docs/01.SpringBoot3.4.x/14.Architecture.md'},
+            {label:'15.Design Pattern',path:'docs/01.SpringBoot3.4.x/15.Design_Pattern.md'},
+            {label:'16.Build & DevOps',path:'docs/01.SpringBoot3.4.x/16.Build_&_DevOps.md'},
+            {label:'17.Observability',path:'docs/01.SpringBoot3.4.x/17.Observability.md'},
+            {label:'18.Data',path:'docs/01.SpringBoot3.4.x/18.Data.md'},
+            {label:'19.Resilience & Cloud-Native',path:'docs/01.SpringBoot3.4.x/19.Resilience_&_Cloud-Native.md'},
+            {label:'20.Reactive',path:'docs/01.SpringBoot3.4.x/20.Reactive.md'}
+        ]},
+        {label:'Python 3.12',children:[
+            {label:'01.Python Language Basics',path:'docs/02.Python3.12/01.Python_Language_Basics.md'},
+            {label:'02.Async',path:'docs/02.Python3.12/02.Async.md'},
+            {label:'03.Data',path:'docs/02.Python3.12/03.Data.md'},
+            {label:'04.Machine Learning',path:'docs/02.Python3.12/04.Machine_Learning.md'},
+            {label:'05.Deep Learning',path:'docs/02.Python3.12/05.Deep_Learning.md'},
+            {label:'06.LLM',path:'docs/02.Python3.12/06.LLM.md'},
+            {label:'07.RAG',path:'docs/02.Python3.12/07.RAG.md'},
+            {label:'08.AI Agent',path:'docs/02.Python3.12/08.AI_Agent.md'},
+            {label:'09.Framework',path:'docs/02.Python3.12/09.Framework.md'},
+            {label:'10.Production AI',path:'docs/02.Python3.12/10.Production_AI.md'},
+            {label:'11.Vector Store',path:'docs/02.Python3.12/11.Vector_Store.md'},
+            {label:'12.LLM Serving',path:'docs/02.Python3.12/12.LLM_Serving.md'},
+            {label:'13.Prompt Structured',path:'docs/02.Python3.12/13.Prompt_Structured.md'},
+            {label:'14.Fine Tuning & MLOps',path:'docs/02.Python3.12/14.Fine_Tuning_MLOps.md'},
+            {label:'15.AI Quality',path:'docs/02.Python3.12/15.AI_Quality.md'}
+        ]}
+    ];
+
     var isOpen = false;
-    if (!docBtn || !docPop || !docMenu) return;
+    docHeader.addEventListener('click', function() {
+        isOpen = !isOpen;
+        docAcc.classList.toggle('open', isOpen);
+        docTree.style.display = isOpen ? 'block' : 'none';
+        if (isOpen && !docTree.hasChildNodes()) buildTree();
+    });
+
+    function makeEl(tag, css, html) {
+        var el = document.createElement(tag);
+        if (css) el.style.cssText = css;
+        if (html) el.innerHTML = html;
+        return el;
+    }
+
+    function buildTree() {
+        docTree.innerHTML = '';
+        for (var i = 0; i < docsData.length; i++) {
+            (function(idx) {
+                var cat = docsData[idx];
+                var wrap = makeEl('div', 'margin-bottom:2px');
+
+                var row = makeEl('div', 'display:flex;align-items:center;gap:6px;padding:6px 10px 6px 4px;cursor:pointer;border-radius:6px;font-size:13px;color:#e2e8f0',
+                    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;color:#64748b"><path d="M5 12h14"/><path d="M12 5v14"/></svg> ' + cat.label);
+
+                var sub = makeEl('div', 'display:none;padding-left:18px');
+
+                var expanded = false;
+                row.addEventListener('click', function() {
+                    expanded = !expanded;
+                    sub.style.display = expanded ? 'block' : 'none';
+                    var svg = row.querySelector('svg');
+                    svg.innerHTML = expanded ? '<path d="M5 12h14"/>' : '<path d="M5 12h14"/><path d="M12 5v14"/>';
+                    if (expanded && !sub.hasChildNodes()) {
+                        for (var j = 0; j < cat.children.length; j++) {
+                            (function(f) {
+                                var docEl = makeEl('div', 'display:flex;align-items:center;gap:6px;padding:4px 10px;cursor:pointer;border-radius:6px;font-size:12px;color:#94a3b8',
+                                    '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg> ' + f.label);
+                                docEl.onmouseenter = function(){ this.style.background='#1e293b';this.style.color='#e2e8f0'; };
+                                docEl.onmouseleave = function(){ this.style.background='';this.style.color=''; };
+                                docEl.addEventListener('click', function(e) {
+                                    e.stopPropagation();
+                                    loadDoc(f.path);
+                                });
+                                sub.appendChild(docEl);
+                            })(cat.children[j]);
+                        }
+                    }
+                });
+                row.onmouseenter = function(){ this.style.background='#1e293b'; };
+                row.onmouseleave = function(){ this.style.background=''; };
+
+                wrap.appendChild(row);
+                wrap.appendChild(sub);
+                docTree.appendChild(wrap);
+            })(i);
+        }
+    }
+
+    function loadDoc(path) {
+        function render(md) {
+            var main = document.querySelector('.main');
+            if (!main) return;
+            var name = path.split('/').pop().replace('.md','').replace(/_/g,' ');
+            main.innerHTML = '<div style="padding:12px 20px;border-bottom:1px solid #334155;display:flex;align-items:center;gap:12px;background:#0d1117">' +
+                '<button onclick="location.reload()" style="background:#21262d;color:#8b949e;border:1px solid #30363d;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px">← 타이핑 연습으로</button>' +
+                '<span style="color:#8b949e;font-size:12px">' + path + '</span></div>' +
+                '<h1 style="color:#c9d1d9;margin:20px;font-size:24px">' + name + '</h1>' +
+                '<div class="markdown-body" style="padding:0 20px 40px">' + ((typeof marked!=='undefined')?marked.parse(md):'<pre>'+md.replace(/</g,'&lt;')+'</pre>') + '</div>';
+        }
+        function fetchAndRender() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', basePath + path, true);
+            xhr.onload = function() { if (xhr.status === 200) render(xhr.responseText); };
+            xhr.send();
+        }
+        if (typeof marked !== 'undefined') fetchAndRender();
+        else { var s = document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'; s.onload=fetchAndRender; document.head.appendChild(s); }
+    }
+})();
+</script>
 
     var basePath = '/CodeMaster/';
 
