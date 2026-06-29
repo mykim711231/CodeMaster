@@ -18,7 +18,6 @@ export function initSettings(): void {
     if (tabSelect) tabSelect.value = String(state.tabSize);
     if (fontSelect) fontSelect.value = String(state.fontSize);
     syncCheckbox('settingsAutoIndent', state.autoIndent);
-    syncCheckbox('settingsAutoClose', state.autoClose);
     syncCheckbox('settingsOverwrite', state.overwriteMode);
     syncCheckbox('settingsAutoNext', state.autoNext);
     syncCheckbox('settingsLineNum', state.lineNum);
@@ -32,7 +31,6 @@ export function initSettings(): void {
     cb?.addEventListener('change', () => setter(cb.checked));
   };
   bindCheckbox('settingsAutoIndent', appStore.getState().setAutoIndent);
-  bindCheckbox('settingsAutoClose', appStore.getState().setAutoClose);
   bindCheckbox('settingsOverwrite', appStore.getState().setOverwriteMode);
   bindCheckbox('settingsAutoNext', appStore.getState().setAutoNext);
   bindCheckbox('settingsLineNum', appStore.getState().setLineNum);

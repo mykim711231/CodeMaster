@@ -31,8 +31,6 @@ export interface AppState {
 
   autoIndent: boolean;
   setAutoIndent: (v: boolean) => void;
-  autoClose: boolean;
-  setAutoClose: (v: boolean) => void;
   autoNext: boolean;
   setAutoNext: (v: boolean) => void;
 
@@ -77,8 +75,6 @@ export const appStore = createStore<AppState>((set) => ({
 
   autoIndent: true,
   setAutoIndent: (v) => set({ autoIndent: v }),
-  autoClose: true,
-  setAutoClose: (v) => set({ autoClose: v }),
   autoNext: false,
   setAutoNext: (v) => set({ autoNext: v }),
 
