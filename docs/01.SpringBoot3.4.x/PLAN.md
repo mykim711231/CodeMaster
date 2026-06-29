@@ -79,26 +79,26 @@ This document maps each level of the Spring Boot learning pack to the correspond
 
 | Level | Topic (Korean) | Official Documentation Section | URL | Status |
 |-------|----------------|--------------------------------|-----|--------|
-| 1 | Java Core | Java Language Basics (outside Spring Boot scope) | https://docs.oracle.com/javase/tutorial/ | [ ] |
-| 2 | Spring Core | Getting Started / Using Spring Boot | https://docs.spring.io/spring-boot/docs/3.4.x/reference/htmlsingle/#using.spring-boot | [ ] |
-| 3 | Spring MVC | Spring MVC | https://docs.spring.io/spring-boot/docs/3.4.x/reference/htmlsingle/#web.servlet.spring-mvc | [ ] |
-| 4 | Database - JPA/MyBatis | SQL Data Access (JDBC, JPA, MyBatis) | https://docs.spring.io/spring-boot/docs/3.4.x/reference/htmlsingle/#data.sql | [ ] |
-| 5 | Concurrency | Async Execution | https://docs.spring.io/spring-boot/docs/3.4.x/reference/htmlsingle/#io.executors | [ ] |
-| 6 | Network | WebClient / RestTemplate | https://docs.spring.io/spring-boot/docs/3.4.x/reference/htmlsingle/#io.resttemplate | [ ] |
-| 7 | Gateway | Spring Cloud Gateway (outside Spring Boot core) | https://docs.spring.io/spring-cloud-gateway/reference/index.html | [ ] |
-| 8 | Messaging | Messaging (JMS, AMQP, RabbitMQ) | https://docs.spring.io/spring-boot/docs/3.4.x/reference/htmlsingle/#messaging | [ ] |
-| 9 | Batch | Spring Batch | https://docs.spring.io/spring-boot/docs/3.4.x/reference/htmlsingle/#batch | [ ] |
-| 10 | Security | Spring Security (via Spring Boot) | https://docs.spring.io/spring-boot/docs/3.4.x/reference/htmlsingle/#security | [ ] |
-| 11 | Cache | Caching | https://docs.spring.io/spring-boot/docs/3.4.x/reference/htmlsingle/#caching | [ ] |
-| 12 | Monitoring | Actuator Metrics & Monitoring | https://docs.spring.io/spring-boot/docs/3.4.x/reference/htmlsingle/#actuator | [ ] |
-| 13 | Testing | Testing | https://docs.spring.io/spring-boot/docs/3.4.x/reference/htmlsingle/#testing.boot-application | [ ] |
-| 14 | Architecture | Microservices Architecture (Spring Cloud) | https://spring.io/projects/spring-cloud | [ ] |
-| 15 | Design Pattern | Design Patterns (Java-oriented, external reference) | https://refactoring.guru/design-patterns/java | [ ] |
-| 16 | Build & DevOps | Building Container Images & Buildpacks | https://docs.spring.io/spring-boot/docs/3.4.x/reference/htmlsingle/#build.buildpacks | [ ] |
-| 17 | Observability | Logging, Tracing, Metrics | https://docs.spring.io/spring-boot/docs/3.4.x/reference/htmlsingle/#logging | [ ] |
-| 18 | Data | Data Access (SQL, NoSQL) | https://docs.spring.io/spring-boot/docs/3.4.x/reference/htmlsingle/#data | [ ] |
-| 19 | Resilience & Cloud-Native | Resilience4j Integration (Circuit Breaker, Rate Limiter, Retry) | https://docs.spring.io/spring-boot/docs/3.4.x/reference/htmlsingle/#resilience4j.circuitbreaker | [ ] |
-| 20 | Reactive | WebFlux (Reactive Web) | https://docs.spring.io/spring-boot/docs/3.4.x/reference/htmlsingle/#webflux | [ ] |
+| 1 | Java Core | Java Language Basics (outside Spring Boot scope) | https://docs.oracle.com/javase/tutorial/ | [x] |
+| 2 | Spring Core | Getting Started / Using Spring Boot | https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using.spring-boot | [x] |
+| 3 | Spring MVC | Spring MVC | https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#web.servlet.spring-mvc | [x] |
+| 4 | Database - JPA/MyBatis | SQL Data Access (JDBC, JPA, MyBatis) | https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#data.sql | [x] |
+| 5 | Concurrency | Async Execution | https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#io.executors | [x] |
+| 6 | Network | WebClient / RestTemplate | https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#io.resttemplate | [x] |
+| 7 | Gateway | Spring Cloud Gateway (outside Spring Boot core) | https://docs.spring.io/spring-cloud-gateway/reference/index.html | [x] |
+| 8 | Messaging | Messaging (JMS, AMQP, RabbitMQ) | https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#messaging | [x] |
+| 9 | Batch | Spring Batch | https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#batch | [x] |
+| 10 | Security | Spring Security (via Spring Boot) | https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#security | [x] |
+| 11 | Cache | Caching | https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#caching | [x] |
+| 12 | Monitoring | Actuator Metrics & Monitoring | https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#actuator | [x] |
+| 13 | Testing | Testing | https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#testing.boot-application | [x] |
+| 14 | Architecture | Microservices Architecture (Spring Cloud) | https://spring.io/projects/spring-cloud | [x] |
+| 15 | Design Pattern | Design Patterns (Java-oriented, external reference) | https://refactoring.guru/design-patterns/java | [x] |
+| 16 | Build & DevOps | Building Container Images & Buildpacks | https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#build.buildpacks | [x] |
+| 17 | Observability | Logging, Tracing, Metrics | https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#logging | [x] |
+| 18 | Data | Data Access (SQL, NoSQL) | https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#data | [x] |
+| 19 | Resilience & Cloud-Native | Resilience4j Integration (Circuit Breaker, Rate Limiter, Retry) | https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#resilience4j.circuitbreaker | [x] |
+| 20 | Reactive | WebFlux (Reactive Web) | https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#webflux | [x] |
 
 ## Notes
 

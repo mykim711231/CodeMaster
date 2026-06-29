@@ -19,7 +19,7 @@ jobs:
         run: Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
       - name: Run URL verification script
-        run: pwsh ./docs/verify-plan-urls.ps1
+        run: pwsh ./shell/verify-plan-urls.ps1
         shell: pwsh
 
       - name: Commit and push changes

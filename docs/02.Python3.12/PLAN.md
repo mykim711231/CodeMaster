@@ -100,7 +100,7 @@ All URLs point to the official documentation of the respective projects or Pytho
 | 3 - Data | Pandas Essentials | DataFrames, Series, GroupBy, Time Series | https://pandas.pydata.org/docs/ | [ ] |
 | 3 - Data | Pandas IO | CSV, Excel, SQL, Parquet, HDF5 | https://pandas.pydata.org/docs/user_guide/io.html | [ ] |
 | 3 - Data | Data Visualization | Matplotlib, Seaborn, Plotly Basics | https://matplotlib.org/stable/tutorials/introductory/pyplot.html | [ ] |
-| 4 - Machine Learning | Scikit-learn Overview | Estimators, Predictors, Transformers | https://scikit-learn.org/stable/tutorial/basic_tutorial.html | [ ] |
+| 4 - Machine Learning | Scikit-learn Overview | Estimators, Predictors, Transformers | https://scikit-learn.org/stable/tutorial/ | [ ] |
 | 4 - Machine Learning | Supervised Learning | Classification, Regression, Model Evaluation | https://scikit-learn.org/stable/supervised_learning.html | [ ] |
 | 4 - Machine Learning | Unsupervised Learning | Clustering, Dimensionality Reduction, Density Estimation | https://scikit-learn.org/stable/unsupervised_learning.html | [ ] |
 | 4 - Machine Learning | Model Persistence | Joblib, Pickle, ONNX Conversion | https://scikit-learn.org/stable/model_persistence.html | [ ] |
@@ -118,9 +118,9 @@ All URLs point to the official documentation of the respective projects or Pytho
 | 8 - AI Agent | LangGraph | State Graphs, Conditional Execution, Human-in-the-loop | https://langchain-ai.github.io/langgraph/ | [ ] |
 | 8 - AI Agent | AutoGPT / BabyAGI | Goal Decomposition, Task Management, Memory | https://github.com/Significant-Gravitas/AutoGPT | [ ] |
 | 9 - Framework | FastAPI Basics | Path Operations, Dependency Injection, Validation | https://fastapi.tiangolo.com/tutorial/ | [ ] |
-| 9 - FastAPI | Async Support | Background Tasks, WebSockets, Lifespan Events | https://fastapi.tiangolo.com/advanced/background-tasks/ | [ ] |
+| 9 - FastAPI | Async Support | Background Tasks, WebSockets, Lifespan Events | https://fastapi.tiangolo.com/tutorial/background-tasks/ | [ ] |
 | 9 - Framework | Django Essentials | Models, Views, Templates, ORM, Admin | https://docs.djangoproject.com/en/4.2/intro/tutorial01/ | [ ] |
-| 9 - Framework | Flask Basics | Routing, Templates, Extensions, Blueprints | https://flask.palletsprojects.com/en/3.0.x/quickstart/ | [ ] |
+| 9 - Framework | Flask Basics | Routing, Templates, Extensions, Blueprints | https://flask.palletsprojects.com/ | [ ] |
 | 10 - Production AI | Model Serving | TensorFlow Serving, TorchServe, Triton Inference Server | https://github.com/triton-inference-server/server | [ ] |
 | 10 - Production AI | MLflow | Experiment Tracking, Model Registry, Projects | https://mlflow.org/docs/latest/index.html | [ ] |
 | 10 - Production AI | Experiment Tracking | Weights & Biases, Comet.ml, Azure ML | https://wandb.ai/site | [ ] |

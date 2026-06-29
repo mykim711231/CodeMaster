@@ -4,7 +4,7 @@
 - [Python Tutorial](https://docs.python.org/3/tutorial/)
 
 ## Summary
-> Add a brief summary of Python basics (syntax, data types, control flow).
+> Python is an interpreted, high‑level language that emphasizes readability and simplicity. It supports dynamic typing, built‑in data structures (list, dict, set, tuple) and concise control‑flow statements (if/elif/else, for, while). This section covers the essential syntax to write and run basic Python programs.
 
 ## Example
 ```
