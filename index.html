@@ -364,26 +364,26 @@
     function selectCat(idx) {
         var cat = docsData[idx];
         if (!cat) return;
-        if (docCur) docCur.textContent = cat.label;
-        while (docPop.firstChild) docPop.removeChild(docPop.firstChild);
-        docPop.scrollTop = 0;
-        docPop.style.cssText = 'display:block!important;overflow-y:auto;background:#111827;border:1px solid #334155;border-radius:10px;padding:6px;min-height:100px;position:absolute;top:calc(100% + 4px);left:12px;right:12px;max-height:62vh;z-index:60';
-        var back = document.createElement('div');
-        back.textContent = '\u2190 \uB4A4\uB85C';
-        back.style.cssText = 'display:flex;padding:6px 12px;margin-bottom:4px;border-radius:6px;cursor:pointer;font-size:12px;color:#94a3b8';
-        back.onmouseenter = function(){ this.style.background='#1e293b';this.style.color='#e2e8f0'; };
-        back.onmouseleave = function(){ this.style.background='';this.style.color=''; };
-        back.onclick = function() { showCatList(); };
-        docPop.appendChild(back);
+        toggleMenu(); // close popup
+        // show doc list in main area
+        var main = document.querySelector('.main');
+        if (!main) return;
         var children = cat.children || [];
+        var h = '<div style="padding:16px"><h3 style="color:#e2e8f0;margin-bottom:12px">' + cat.label + '</h3>' +
+            '<div style="margin-bottom:8px"><button onclick="location.reload()" style="background:#1e293b;color:#94a3b8;border:1px solid #334155;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px">← 타이핑 연습으로</button></div>';
         for (var i = 0; i < children.length; i++) {
-            var el = document.createElement('div');
-            el.textContent = children[i].label;
-            el.style.cssText = 'display:flex;padding:8px 12px;margin:2px 0;border-radius:6px;cursor:pointer;font-size:13px;color:#e2e8f0;background:transparent';
-            el.onmouseenter = function(){ this.style.background='#1e293b'; };
-            el.onmouseleave = function(){ this.style.background='transparent'; };
-            el.onclick = (function(p) { return function() { loadDoc(p); toggleMenu(); }; })(children[i].path);
-            docPop.appendChild(el);
+            var f = children[i];
+            h += '<div class="doc-card" style="padding:14px 16px;margin:4px 0;background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:8px;cursor:pointer;font-size:14px" data-path="' + f.path.replace(/"/g,'&quot;') + '">' + f.label + '</div>';
+        }
+        h += '</div>';
+        main.innerHTML = h;
+        // click handlers for doc cards
+        var cards = main.querySelectorAll('.doc-card');
+        for (var j = 0; j < cards.length; j++) {
+            cards[j].addEventListener('click', function() {
+                var p = this.getAttribute('data-path');
+                if (p) loadDoc(p);
+            });
         }
     }
 
