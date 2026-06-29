@@ -440,34 +440,33 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        var btn = getEl('docPackMenuBtn');
-        if (btn) {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                toggleMenu();
-            });
-        }
-        var ov = getEl('overlay');
-        if (ov) {
-            ov.addEventListener('click', function() {
-                if (isMenuOpen) toggleMenu();
-            });
-        }
-        document.addEventListener('click', function(e) {
-            if (isMenuOpen) {
-                var menu = getEl('docPackMenu');
-                var pop = getEl('docPackMenuPop');
-                if (menu && pop && !menu.contains(e.target) && !pop.contains(e.target)) {
-                    toggleMenu();
-                }
-            }
+    // DOM이 이미 준비되었으므로 직접 초기화
+    var btn = getEl('docPackMenuBtn');
+    if (btn) {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleMenu();
         });
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && isMenuOpen) {
+    }
+    var ov = getEl('overlay');
+    if (ov) {
+        ov.addEventListener('click', function() {
+            if (isMenuOpen) toggleMenu();
+        });
+    }
+    document.addEventListener('click', function(e) {
+        if (isMenuOpen) {
+            var menu = getEl('docPackMenu');
+            var pop = getEl('docPackMenuPop');
+            if (menu && pop && !menu.contains(e.target) && !pop.contains(e.target)) {
                 toggleMenu();
             }
-        });
+        }
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isMenuOpen) {
+            toggleMenu();
+        }
     });
 })();
 </script>
