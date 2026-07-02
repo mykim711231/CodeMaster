@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>CodeMaster — Enterprise Developer Training</title>
+<title>CodeMaster ??Enterprise Developer Training</title>
 <link rel="manifest" href="%BASE_URL%manifest.json">
 <meta name="theme-color" content="#0A0E1A">
 <link rel="apple-touch-icon" href="%BASE_URL%icon.svg">
@@ -12,13 +12,13 @@
 <!-- GitHub Markdown CSS (dark) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-dark.css">
 
-<!-- Lucide Icons (완전한 세트) -->
+<!-- Lucide Icons (?꾩쟾???명듃) -->
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>
-  // 페인트 전 테마 적용 — 깜빡임 방지
+  // ?섏씤?????뚮쭏 ?곸슜 ??源쒕묀??諛⑹?
   try { if (localStorage.getItem('cm-theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
 
-  // Lucide 아이콘 초기화
+  // Lucide ?꾩씠肄?珥덇린??
   document.addEventListener('DOMContentLoaded', () => {
     if (window.lucide) {
       lucide.createIcons();
@@ -30,28 +30,28 @@
 
 <!-- TOPBAR -->
 <header class="topbar">
-  <!-- 메뉴 (버거 → 드롭다운) -->
+  <!-- 硫붾돱 (踰꾧굅 ???쒕∼?ㅼ슫) -->
   <div class="menu-wrap">
-    <button class="icon-btn" id="menuToggle" aria-label="메뉴" aria-haspopup="true">
+    <button class="icon-btn" id="menuToggle" aria-label="硫붾돱" aria-haspopup="true">
       <i data-lucide="menu"></i>
     </button>
     <div class="menu-dropdown" id="menuDropdown">
       <div class="menu-search">
         <i data-lucide="search"></i>
-        <input type="text" placeholder="검색" aria-label="검색">
+        <input type="text" placeholder="寃?? aria-label="寃??>
       </div>
-      <button class="menu-link active"><i data-lucide="keyboard"></i> 타이핑 연습</button>
-      <button class="menu-link"><i data-lucide="folder-open"></i> 폴더 열기</button>
-      <button class="menu-link"><i data-lucide="git-branch"></i> 패턴 추출</button>
-      <button class="menu-link"><i data-lucide="book-open"></i> 언어 공식 문서</button>
+      <button class="menu-link active"><i data-lucide="keyboard"></i> ??댄븨 ?곗뒿</button>
+      <button class="menu-link"><i data-lucide="folder-open"></i> ?대뜑 ?닿린</button>
+      <button class="menu-link"><i data-lucide="git-branch"></i> ?⑦꽩 異붿텧</button>
+      <button class="menu-link"><i data-lucide="book-open"></i> ?몄뼱 怨듭떇 臾몄꽌</button>
       <div class="menu-sep"></div>
-      <button class="menu-link" id="statsMenuItem"><i data-lucide="pie-chart"></i> 학습 통계</button>
-      <button class="menu-link"><i data-lucide="settings"></i> 설정</button>
+      <button class="menu-link" id="statsMenuItem"><i data-lucide="pie-chart"></i> ?숈뒿 ?듦퀎</button>
+      <button class="menu-link"><i data-lucide="settings"></i> ?ㅼ젙</button>
     </div>
   </div>
 
-  <!-- 왼쪽 사이드 패널 토글 (버거와 간격을 둠) -->
-  <button class="icon-btn sidebar-toggle" id="sidebarToggle" aria-label="왼쪽 패널 숨김/보임">
+  <!-- ?쇱そ ?ъ씠???⑤꼸 ?좉? (踰꾧굅? 媛꾧꺽???? -->
+  <button class="icon-btn sidebar-toggle" id="sidebarToggle" aria-label="?쇱そ ?⑤꼸 ?④?/蹂댁엫">
     <i data-lucide="panel-left"></i>
   </button>
 
@@ -63,16 +63,16 @@
   </a>
   <div class="topbar-right">
     <div class="streak-badge">
-      <i data-lucide="flame" style="width:12px;height:12px"></i> 14일 연속
+      <i data-lucide="flame" style="width:12px;height:12px"></i> 14???곗냽
     </div>
     <div class="xp-badge">
       <i data-lucide="zap" style="width:12px;height:12px"></i> 3,420 XP
     </div>
-    <button class="icon-btn" id="themeToggle" aria-label="라이트/다크 테마 전환">
+    <button class="icon-btn" id="themeToggle" aria-label="?쇱씠???ㅽ겕 ?뚮쭏 ?꾪솚">
       <i data-lucide="sun" class="ti-sun"></i>
       <i data-lucide="moon" class="ti-moon"></i>
     </button>
-    <button class="icon-btn" id="panelToggle" aria-label="오른쪽 패널 숨김/보임">
+    <button class="icon-btn" id="panelToggle" aria-label="?ㅻⅨ履??⑤꼸 ?④?/蹂댁엫">
       <i data-lucide="panel-right"></i>
     </button>
   </div>
@@ -81,25 +81,25 @@
 <!-- APP BODY -->
 <div class="app">
 
-    <!-- 기존 사이드바 (학습 콘텐츠 전용) -->
+    <!-- 湲곗〈 ?ъ씠?쒕컮 (?숈뒿 肄섑뀗痢??꾩슜) -->
     <nav class="sidebar" id="sidebar">
-    <!-- 진행 요약 + 이어서 연습 -->
+    <!-- 吏꾪뻾 ?붿빟 + ?댁뼱???곗뒿 -->
     <div class="resume-card">
       <div class="resume-top">
-        <span class="resume-label">이어서 연습</span>
+        <span class="resume-label">?댁뼱???곗뒿</span>
         <span class="resume-pct" id="resumePct">34%</span>
       </div>
-      <div class="resume-name" id="resumeName">Level 4 · Database — JPA</div>
+      <div class="resume-name" id="resumeName">Level 4 쨌 Database ??JPA</div>
       <div class="resume-track"><div class="resume-fill" style="width:34%"></div></div>
-      <button class="resume-btn"><i data-lucide="play"></i> 이어서 연습하기</button>
+      <button class="resume-btn"><i data-lucide="play"></i> ?댁뼱???곗뒿?섍린</button>
     </div>
     <div class="sidebar-divider"></div>
 
-<!-- 학습팩 메뉴 — 버튼 클릭 시 팝업 서브메뉴(팩 → 문제), trainer가 채움 -->
+<!-- ?숈뒿??硫붾돱 ??踰꾪듉 ?대┃ ???앹뾽 ?쒕툕硫붾돱(????臾몄젣), trainer媛 梨꾩? -->
 <div class="pack-menu" id="packMenu">
   <button class="pack-menu-btn" id="packMenuBtn" type="button" aria-haspopup="true" aria-expanded="false">
     <i data-lucide="layers"></i>
-    <span class="pack-menu-label">학습팩</span>
+    <span class="pack-menu-label">?숈뒿??/span>
     <span class="pack-menu-cur" id="packMenuCur"></span>
     <i data-lucide="chevron-down" class="pack-menu-chev"></i>
   </button>
@@ -107,44 +107,44 @@
 </div>
 <div class="sidebar-divider"></div>
 
-<!-- 문서 (트리 네비게이션) -->
+<!-- 臾몄꽌 (?몃━ ?ㅻ퉬寃뚯씠?? -->
 <div class="accordion" id="docAccordion">
   <button class="acc-header" id="docAccHeader">
-    <i data-lucide="book-open"></i><span class="acc-title">문서</span><i data-lucide="chevron-down" class="acc-chevron"></i>
+    <i data-lucide="book-open"></i><span class="acc-title">臾몄꽌</span><i data-lucide="chevron-down" class="acc-chevron"></i>
   </button>
   <div class="acc-body" id="docTreeBody" style="display:none"></div>
 </div>
 <div class="sidebar-divider"></div>
 
-<!-- 3) 빠른 학습 -->
+<!-- 3) 鍮좊Ⅸ ?숈뒿 -->
     <div class="accordion open">
       <button class="acc-header">
-        <i data-lucide="zap"></i><span class="acc-title">빠른 학습</span><i data-lucide="chevron-down" class="acc-chevron"></i>
+        <i data-lucide="zap"></i><span class="acc-title">鍮좊Ⅸ ?숈뒿</span><i data-lucide="chevron-down" class="acc-chevron"></i>
       </button>
       <div class="acc-body">
         <button class="sidebar-item" id="wrongAnswerBtn">
-          <i data-lucide="repeat-2"></i> 오답 반복
+          <i data-lucide="repeat-2"></i> ?ㅻ떟 諛섎났
           <span id="wrongAnswerBadge" class="badge" style="display:none">0</span>
         </button>
         <button class="sidebar-item" id="weakPatternBtn">
-          <i data-lucide="target"></i> 취약 패턴
+          <i data-lucide="target"></i> 痍⑥빟 ?⑦꽩
           <span id="weakPatternBadge" class="badge" style="display:none">0</span>
         </button>
         <button class="sidebar-item" id="randomQuizBtn">
-          <i data-lucide="shuffle"></i> 랜덤 출제
+          <i data-lucide="shuffle"></i> ?쒕뜡 異쒖젣
         </button>
         <button class="sidebar-item" id="categoryLearnBtn">
-          <i data-lucide="tags"></i> 카테고리별
+          <i data-lucide="tags"></i> 移댄뀒怨좊━蹂?
         </button>
         <div id="categoryList" style="display:none"></div>
       </div>
     </div>
     <div class="sidebar-divider"></div>
 
-    <!-- 4) 내 프로젝트 — 분석된 프로젝트 파일 트리 -->
+    <!-- 4) ???꾨줈?앺듃 ??遺꾩꽍???꾨줈?앺듃 ?뚯씪 ?몃━ -->
     <div class="accordion" id="projectAccordion" style="display:none">
       <button class="acc-header">
-        <i data-lucide="folder"></i><span class="acc-title" id="projectAccTitle">프로젝트</span><i data-lucide="chevron-down" class="acc-chevron"></i>
+        <i data-lucide="folder"></i><span class="acc-title" id="projectAccTitle">?꾨줈?앺듃</span><i data-lucide="chevron-down" class="acc-chevron"></i>
       </button>
       <div class="acc-body" id="projectAccBody">
       </div>
@@ -159,13 +159,13 @@
       <div class="practice-head">
         <div class="section-title" style="margin-bottom:0">
           <i data-lucide="keyboard" style="width:12px;height:12px;color:var(--muted)"></i>
-          현재 연습 중 — <span id="practiceTitle">Spring Boot · JPA Entity</span>
+          ?꾩옱 ?곗뒿 以???<span id="practiceTitle">Spring Boot 쨌 JPA Entity</span>
         </div>
         <div class="head-right">
           <span class="tt-legend">
-            <b><i class="lg-ok"></i>정타</b>
-            <b><i class="lg-case"></i>대소문자</b>
-            <b><i class="lg-bad"></i>오타</b>
+            <b><i class="lg-ok"></i>?뺥?</b>
+            <b><i class="lg-case"></i>??뚮Ц??/b>
+            <b><i class="lg-bad"></i>?ㅽ?</b>
           </span>
         </div>
       </div>
@@ -183,7 +183,7 @@
           <div class="typing-meta" id="practiceMeta"></div>
         </div>
 
-        <!-- 따라치기 영역(라인 단위) — 엔진이 줄별 입력 행을 생성 -->
+        <!-- ?곕씪移섍린 ?곸뿭(?쇱씤 ?⑥쐞) ???붿쭊??以꾨퀎 ?낅젰 ?됱쓣 ?앹꽦 -->
         <div class="tt-wrap" id="ttWrap"></div>
 
         <div class="typing-footer">
@@ -201,11 +201,11 @@
         </div>
       </div>
 
-      <!-- 설명 패널 (접이식) -->
+      <!-- ?ㅻ챸 ?⑤꼸 (?묒씠?? -->
       <div class="explain-panel closed" id="explainPanel">
         <div class="explain-panel-head">
-          <span><i data-lucide="book-open"></i> 문제 설명</span>
-          <button class="explain-panel-toggle" id="explainPanelToggle" title="접기/펼치기">
+          <span><i data-lucide="book-open"></i> 臾몄젣 ?ㅻ챸</span>
+          <button class="explain-panel-toggle" id="explainPanelToggle" title="?묎린/?쇱튂湲?>
             <i data-lucide="chevron-down"></i>
             <i data-lucide="chevron-up"></i>
           </button>
@@ -213,19 +213,19 @@
         <div class="explain-panel-body">
           <div class="explain-concept" id="explainConcept"></div>
           <div class="explain-row" id="explainExpectedOutputWrap">
-            <div class="explain-sub">실행 결과 예상</div>
+            <div class="explain-sub">?ㅽ뻾 寃곌낵 ?덉긽</div>
             <div class="explain-expected" id="explainExpectedOutput"></div>
           </div>
           <div class="explain-row" id="explainTermsWrap">
-            <div class="explain-sub">코드 뜯어보기</div>
+            <div class="explain-sub">肄붾뱶 ??뼱蹂닿린</div>
             <ul class="explain-terms" id="explainTerms"></ul>
           </div>
           <div class="explain-row" id="explainWhyWrap">
-            <div class="explain-sub">왜 쓰나요?</div>
+            <div class="explain-sub">???곕굹??</div>
             <div class="explain-why" id="explainWhy"></div>
           </div>
           <div class="explain-row" id="explainRealWorldWrap">
-            <div class="explain-sub">실무에서는</div>
+            <div class="explain-sub">?ㅻТ?먯꽌??/div>
             <div class="explain-realworld" id="explainRealWorld"></div>
           </div>
           <div class="explain-pitfall" id="explainPitfall"></div>
@@ -235,18 +235,18 @@
 
   </main>
 
-  <!-- 드로어 오버레이 -->
+  <!-- ?쒕줈???ㅻ쾭?덉씠 -->
   <div class="overlay" id="overlay"></div>
 
 </div>
 
-<!-- 학습 통계 모달 (버거 메뉴 → 학습 통계) -->
+<!-- ?숈뒿 ?듦퀎 紐⑤떖 (踰꾧굅 硫붾돱 ???숈뒿 ?듦퀎) -->
 <div class="modal" id="statsModal">
   <div class="modal-backdrop" data-close></div>
   <div class="modal-card">
     <div class="modal-head">
-      <span class="modal-title"><i data-lucide="pie-chart"></i> 학습 통계</span>
-      <button class="modal-close" id="statsClose" aria-label="닫기">✕</button>
+      <span class="modal-title"><i data-lucide="pie-chart"></i> ?숈뒿 ?듦퀎</span>
+      <button class="modal-close" id="statsClose" aria-label="?リ린">??/button>
     </div>
     <div class="modal-body">
       <div class="rp-block" id="statsSummary"></div>
@@ -258,23 +258,23 @@
 </div>
 
 
-<!-- 설정 모달 -->
+<!-- ?ㅼ젙 紐⑤떖 -->
 <div id="settingsModal" class="settings-modal" style="display:none">
   <div class="settings-modal-bg"></div>
   <div class="settings-modal-box">
     <div class="settings-modal-head">
-      <b>에디터 설정</b>
+      <b>?먮뵒???ㅼ젙</b>
       <button id="settingsModalClose">&times;</button>
     </div>
     <div class="settings-modal-body">
-      <label>탭 크기 (들여쓰기 간격)
+      <label>???ш린 (?ㅼ뿬?곌린 媛꾧꺽)
         <select id="settingsTabSize">
-          <option value="2">2칸</option>
-          <option value="4" selected>4칸</option>
-          <option value="8">8칸</option>
+          <option value="2">2移?/option>
+          <option value="4" selected>4移?/option>
+          <option value="8">8移?/option>
         </select>
       </label>
-      <label>코드 글자 크기
+      <label>肄붾뱶 湲???ш린
         <select id="settingsFontSize">
           <option value="12">12px</option>
           <option value="14" selected>14px</option>
@@ -282,17 +282,17 @@
           <option value="18">18px</option>
         </select>
       </label>
-      <label><input type="checkbox" id="settingsAutoIndent" checked> 자동 들여쓰기 (Enter)</label>
-      <label><input type="checkbox" id="settingsOverwrite" checked> 덮어쓰기 모드 (OVR)</label>
-      <label><input type="checkbox" id="settingsAutoNext"> 완료 후 자동 다음</label>
-      <label><input type="checkbox" id="settingsLineNum" checked> 라인 번호 표시</label>
-      <label><input type="checkbox" id="settingsIndentGuide"> 들여쓰기 가이드</label>
-      <label><input type="checkbox" id="settingsTabChar"> 탭 문자 사용 (\\t)</label>
+      <label><input type="checkbox" id="settingsAutoIndent" checked> ?먮룞 ?ㅼ뿬?곌린 (Enter)</label>
+      <label><input type="checkbox" id="settingsOverwrite" checked> ??뼱?곌린 紐⑤뱶 (OVR)</label>
+      <label><input type="checkbox" id="settingsAutoNext"> ?꾨즺 ???먮룞 ?ㅼ쓬</label>
+      <label><input type="checkbox" id="settingsLineNum" checked> ?쇱씤 踰덊샇 ?쒖떆</label>
+      <label><input type="checkbox" id="settingsIndentGuide"> ?ㅼ뿬?곌린 媛?대뱶</label>
+      <label><input type="checkbox" id="settingsTabChar"> ??臾몄옄 ?ъ슜 (\\t)</label>
     </div>
   </div>
 </div>
 
-<!-- 문서 트리 초기화 -->
+<!-- 臾몄꽌 ?몃━ 珥덇린??-->
 <script>
 (function() {
     var docTree = document.getElementById('docTreeBody');
@@ -410,7 +410,7 @@
             if (!main) return;
             var name = path.split('/').pop().replace('.md','').replace(/_/g,' ');
             main.innerHTML = '<div style="padding:12px 20px;border-bottom:1px solid #334155;display:flex;align-items:center;gap:12px;background:#0d1117">' +
-                '<button onclick="location.reload()" style="background:#21262d;color:#8b949e;border:1px solid #30363d;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px">← 타이핑 연습으로</button>' +
+                '<button onclick="location.reload()" style="background:#21262d;color:#8b949e;border:1px solid #30363d;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px">????댄븨 ?곗뒿?쇰줈</button>' +
                 '<span style="color:#8b949e;font-size:12px">' + path + '</span></div>' +
                 '<h1 style="color:#c9d1d9;margin:20px;font-size:24px">' + name + '</h1>' +
                 '<div class="markdown-body" style="padding:0 20px 40px">' + ((typeof marked!=='undefined')?marked.parse(md):'<pre>'+md.replace(/</g,'&lt;')+'</pre>') + '</div>';
@@ -426,200 +426,7 @@
     }
 })();
 </script>
-
-    var basePath = '/CodeMaster/';
-
-    var docsData = [
-        {label:'Spring Boot 3.4.x',children:[
-            {label:'01.Java Core',path:'docs/01.SpringBoot3.4.x/01.Java_Core.md'},
-            {label:'02.Spring Core',path:'docs/01.SpringBoot3.4.x/02.Spring_Core.md'},
-            {label:'03.Spring MVC',path:'docs/01.SpringBoot3.4.x/03.Spring_MVC.md'},
-            {label:'04.Database - JPA/MyBatis',path:'docs/01.SpringBoot3.4.x/04.Database_-_JPAMyBatis.md'},
-            {label:'05.Concurrency',path:'docs/01.SpringBoot3.4.x/05.Concurrency.md'},
-            {label:'06.Network',path:'docs/01.SpringBoot3.4.x/06.Network.md'},
-            {label:'07.Gateway',path:'docs/01.SpringBoot3.4.x/07.Gateway.md'},
-            {label:'08.Messaging',path:'docs/01.SpringBoot3.4.x/08.Messaging.md'},
-            {label:'09.Batch',path:'docs/01.SpringBoot3.4.x/09.Batch.md'},
-            {label:'10.Security',path:'docs/01.SpringBoot3.4.x/10.Security.md'},
-            {label:'11.Cache',path:'docs/01.SpringBoot3.4.x/11.Cache.md'},
-            {label:'12.Monitoring',path:'docs/01.SpringBoot3.4.x/12.Monitoring.md'},
-            {label:'13.Testing',path:'docs/01.SpringBoot3.4.x/13.Testing.md'},
-            {label:'14.Architecture',path:'docs/01.SpringBoot3.4.x/14.Architecture.md'},
-            {label:'15.Design Pattern',path:'docs/01.SpringBoot3.4.x/15.Design_Pattern.md'},
-            {label:'16.Build & DevOps',path:'docs/01.SpringBoot3.4.x/16.Build_&_DevOps.md'},
-            {label:'17.Observability',path:'docs/01.SpringBoot3.4.x/17.Observability.md'},
-            {label:'18.Data',path:'docs/01.SpringBoot3.4.x/18.Data.md'},
-            {label:'19.Resilience & Cloud-Native',path:'docs/01.SpringBoot3.4.x/19.Resilience_&_Cloud-Native.md'},
-            {label:'20.Reactive',path:'docs/01.SpringBoot3.4.x/20.Reactive.md'}
-        ]},
-        {label:'Python 3.12',children:[
-            {label:'01.Python Language Basics',path:'docs/02.Python3.12/01.Python_Language_Basics.md'},
-            {label:'02.Async',path:'docs/02.Python3.12/02.Async.md'},
-            {label:'03.Data',path:'docs/02.Python3.12/03.Data.md'},
-            {label:'04.Machine Learning',path:'docs/02.Python3.12/04.Machine_Learning.md'},
-            {label:'05.Deep Learning',path:'docs/02.Python3.12/05.Deep_Learning.md'},
-            {label:'06.LLM',path:'docs/02.Python3.12/06.LLM.md'},
-            {label:'07.RAG',path:'docs/02.Python3.12/07.RAG.md'},
-            {label:'08.AI Agent',path:'docs/02.Python3.12/08.AI_Agent.md'},
-            {label:'09.Framework',path:'docs/02.Python3.12/09.Framework.md'},
-            {label:'10.Production AI',path:'docs/02.Python3.12/10.Production_AI.md'},
-            {label:'11.Vector Store',path:'docs/02.Python3.12/11.Vector_Store.md'},
-            {label:'12.LLM Serving',path:'docs/02.Python3.12/12.LLM_Serving.md'},
-            {label:'13.Prompt Structured',path:'docs/02.Python3.12/13.Prompt_Structured.md'},
-            {label:'14.Fine Tuning & MLOps',path:'docs/02.Python3.12/14.Fine_Tuning_MLOps.md'},
-            {label:'15.AI Quality',path:'docs/02.Python3.12/15.AI_Quality.md'}
-        ]}
-    ];
-
-    function toggleMenu() {
-        isOpen = !isOpen;
-        docMenu.classList.toggle('open', isOpen);
-        if (isOpen) { showCatList(); if (ov) ov.classList.add('active'); }
-        else { docPop.innerHTML = ''; if (ov) ov.classList.remove('active'); }
-    }
-
-    function showCatList() {
-        if (docCur) docCur.textContent = '문서';
-        docPop.innerHTML = '';
-        for (var i = 0; i < docsData.length; i++) {
-            var el = document.createElement('div');
-            el.className = 'doc-cat-item';
-            el.textContent = docsData[i].label;
-            el.setAttribute('data-idx', i);
-            el.style.cssText = 'display:flex;align-items:center;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--text,#e2e8f0);margin:2px 0';
-            el.addEventListener('mouseenter', function(){ this.style.background='var(--sub,#1e293b)'; });
-            el.addEventListener('mouseleave', function(){ this.style.background=''; });
-            el.onclick = (function(idx) { return function() { selectCat(idx); }; })(i);
-            docPop.appendChild(el);
-        }
-    }
-
-    function selectCat(idx) {
-        var cat = docsData[idx];
-        if (!cat) return;
-        toggleMenu(); // close popup
-        // show doc list in main area
-        var main = document.querySelector('.main');
-        if (!main) return;
-        var children = cat.children || [];
-        var h = '<div style="padding:16px"><h3 style="color:#e2e8f0;margin-bottom:12px">' + cat.label + '</h3>' +
-            '<div style="margin-bottom:8px"><button onclick="location.reload()" style="background:#1e293b;color:#94a3b8;border:1px solid #334155;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px">← 타이핑 연습으로</button></div>';
-        for (var i = 0; i < children.length; i++) {
-            var f = children[i];
-            h += '<div class="doc-card" style="padding:14px 16px;margin:4px 0;background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:8px;cursor:pointer;font-size:14px" data-path="' + f.path.replace(/"/g,'&quot;') + '">' + f.label + '</div>';
-        }
-        h += '</div>';
-        main.innerHTML = h;
-        // click handlers for doc cards
-        var cards = main.querySelectorAll('.doc-card');
-        for (var j = 0; j < cards.length; j++) {
-            cards[j].addEventListener('click', function() {
-                var p = this.getAttribute('data-path');
-                if (p) loadDoc(p);
-            });
-        }
-    }
-
-    function loadDoc(path) {
-        function render(md) {
-            var main = document.querySelector('.main');
-            if (!main) return;
-            // inject markdown styles once (more specific selectors to beat existing CSS)
-            if (!document.getElementById('md-styles')) {
-                var st = document.createElement('style');
-                st.id = 'md-styles';
-                st.textContent = 
-                    '#md-body,#md-body *{font-family:var(--sans,Inter),sans-serif}' +
-                    '#md-body{color:#cbd5e1;line-height:1.8;font-size:15px;max-width:900px;margin:0 auto;padding:20px;word-break:break-word}' +
-                    '#md-body h1,#md-body h2,#md-body h3,#md-body h4,#md-body h5,#md-body h6{color:#e2e8f0;margin:28px 0 14px;font-weight:600;line-height:1.35}' +
-                    '#md-body h1{font-size:28px;border-bottom:1px solid #334155;padding-bottom:10px}' +
-                    '#md-body h2{font-size:22px;border-bottom:1px solid #334155;padding-bottom:8px}' +
-                    '#md-body h3{font-size:18px}' +
-                    '#md-body h4{font-size:16px}' +
-                    '#md-body p{margin:0 0 14px}' +
-                    '#md-body a{color:#60a5fa;text-decoration:none}' +
-                    '#md-body a:hover{color:#93c5fd;text-decoration:underline}' +
-                    '#md-body strong{color:#f1f5f9;font-weight:600}' +
-                    '#md-body em{color:#cbd5e1;font-style:italic}' +
-                    '#md-body del{color:#64748b}' +
-                    // inline code
-                    '#md-body code{background:#1e293b;color:#e2e8f0;padding:2px 7px;border-radius:4px;font-size:13.5px;font-family:var(--mono,"JetBrains Mono"),monospace;border:1px solid #334155;white-space:nowrap}' +
-                    '#md-body a code{color:#60a5fa}' +
-                    // code blocks
-                    '#md-body pre{position:relative;background:#0f172a;color:#e2e8f0;padding:20px 16px 16px;border-radius:10px;overflow-x:auto;margin:16px 0;font-size:13.5px;line-height:1.7;border:1px solid #1e293b;box-shadow:inset 0 1px 3px rgba(0,0,0,.3)}' +
-                    '#md-body pre code{background:none;padding:0;border:none;font-size:13.5px;white-space:pre;display:block;color:#cbd5e1;font-family:var(--mono,"JetBrains Mono"),monospace}' +
-                    // code block language label via data-lang
-                    '#md-body pre[class*="language-"]::before{content:attr(class);position:absolute;top:0;right:12px;padding:2px 8px;font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.05em;background:#1e293b;border-radius:0 0 4px 4px}' +
-                    // lists
-                    '#md-body ul,#md-body ol{padding-left:24px;margin:0 0 14px}' +
-                    '#md-body li{margin:4px 0}' +
-                    '#md-body li::marker{color:#64748b}' +
-                    '#md-body ul ul,#md-body ol ol,#md-body ul ol,#md-body ol ul{margin-bottom:0}' +
-                    // blockquote
-                    '#md-body blockquote{border-left:4px solid #3b82f6;padding:10px 18px;margin:16px 0;color:#94a3b8;background:#1e293b;border-radius:0 8px 8px 0}' +
-                    '#md-body blockquote p{margin:0}' +
-                    '#md-body blockquote code{background:#0f172a}' +
-                    // table
-                    '#md-body table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px}' +
-                    '#md-body thead{border-bottom:2px solid #475569}' +
-                    '#md-body th,#md-body td{border:1px solid #334155;padding:10px 14px;text-align:left}' +
-                    '#md-body th{background:#1e293b;color:#e2e8f0;font-weight:600;white-space:nowrap}' +
-                    '#md-body td{background:#0f172a}' +
-                    '#md-body tr:nth-child(even) td{background:#111827}' +
-                    // hr
-                    '#md-body hr{border:none;border-top:1px solid #334155;margin:28px 0}' +
-                    // images
-                    '#md-body img{max-width:100%;border-radius:8px;border:1px solid #334155}' +
-                    // detail/summary
-                    '#md-body details{margin:12px 0;background:#1e293b;border-radius:8px;padding:12px 16px;border:1px solid #334155}' +
-                    '#md-body summary{cursor:pointer;color:#e2e8f0;font-weight:500}' +
-                    '#md-body details[open] summary{margin-bottom:10px}' +
-                    // checkbox
-                    '#md-body input[type=checkbox]{margin-right:8px;accent-color:#3b82f6;transform:scale(1.1)}' +
-                    // kbd
-                    '#md-body kbd{background:#1e293b;border:1px solid #475569;border-radius:4px;padding:1px 6px;font-size:12px;font-family:var(--mono),monospace;color:#e2e8f0;box-shadow:0 1px 0 #475569}';
-                document.head.appendChild(st);
-            }
-            var name = path.split('/').pop().replace('.md','').replace(/_/g,' ');
-            var html = (typeof marked !== 'undefined') ? marked.parse(md) : '<pre>' + md.replace(/</g,'&lt;') + '</pre>';
-            main.innerHTML = 
-                '<div style="padding:12px 20px;border-bottom:1px solid #334155;display:flex;align-items:center;gap:12px">' +
-                    '<button onclick="location.reload()" style="background:#1e293b;color:#94a3b8;border:1px solid #334155;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px">\u2190 \uD0C0\uC774\uD551 \uC5F0\uC2B5\uC73C\uB85C</button>' +
-                    '<span style="color:#64748b;font-size:12px">' + path + '</span>' +
-                '</div>' +
-                '<h1 style="color:#e2e8f0;margin:20px;font-size:24px">' + name + '</h1>' +
-                '<div id="md-body">' + html + '</div>';
-        }
-        if (typeof marked !== 'undefined') {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', basePath + path, true);
-            xhr.onload = function() { if (xhr.status === 200) render(xhr.responseText); };
-            xhr.send();
-        } else {
-            var s = document.createElement('script');
-            s.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
-            s.onload = function() {
-                var xhr2 = new XMLHttpRequest();
-                xhr2.open('GET', basePath + path, true);
-                xhr2.onload = function() { if (xhr2.status === 200) render(xhr2.responseText); };
-                xhr2.send();
-            };
-            document.head.appendChild(s);
-        }
-    }
-
-    docBtn.addEventListener('click', function(e) { e.stopPropagation(); toggleMenu(); });
-    if (ov) ov.addEventListener('click', function() { if (isOpen) toggleMenu(); });
-    document.addEventListener('click', function(e) {
-        if (isOpen && !docMenu.contains(e.target) && !docPop.contains(e.target)) toggleMenu();
-    });
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && isOpen) toggleMenu();
-    });
-})();
-</script>
-
-<!-- Marked 라이브러리 (마크다운 렌더링용) -->
+<!-- Marked ?쇱씠釉뚮윭由?(留덊겕?ㅼ슫 ?뚮뜑留곸슜) -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <script type="module" src="/src/main.ts"></script>
