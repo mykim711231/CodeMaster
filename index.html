@@ -12,9 +12,18 @@
 <!-- GitHub Markdown CSS (dark) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-dark.css">
 
+<!-- Lucide Icons (완전한 세트) -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>
-  /* 페인트 전 테마 적용 — 깜빡임 방지 */
+  // 페인트 전 테마 적용 — 깜빡임 방지
   try { if (localStorage.getItem('cm-theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
+
+  // Lucide 아이콘 초기화
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  });
 </script>
 </head>
 <body>
