@@ -1,5 +1,5 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
-import { createIcons, Flame, Zap } from 'lucide';
+
 
 // 학습 기록(타이핑 세션). 소스코드 원문은 저장하지 않는다(PRD §13.5).
 export interface SessionRecord {
@@ -213,6 +213,4 @@ export async function updateTopbar(): Promise<void> {
   const xpEl = document.querySelector('.xp-badge');
   if (streakEl) streakEl.innerHTML = `<i data-lucide="flame"></i> ${streak}일 연속`;
   if (xpEl) xpEl.innerHTML = `<i data-lucide="zap"></i> ${xp.toLocaleString()} XP`;
-
-  createIcons({ icons: { Flame, Zap } });
 }
