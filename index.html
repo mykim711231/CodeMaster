@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>CodeMaster ??Enterprise Developer Training</title>
+<title>CodeMaster — Enterprise Developer Training</title>
 <link rel="manifest" href="%BASE_URL%manifest.json">
 <meta name="theme-color" content="#0A0E1A">
 <link rel="apple-touch-icon" href="%BASE_URL%icon.svg">
@@ -12,144 +12,157 @@
 <!-- GitHub Markdown CSS (dark) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-dark.css">
 
-<!-- Lucide Icons (?꾩쟾???명듃) -->
+<!-- Lucide Icons (완전한 세트) -->
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>
-  // ?섏씤?????뚮쭏 ?곸슜 ??源쒕묀??諛⑹?
-  try { if (localStorage.getItem('cm-theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
+   // Paint before theme application — prevent flickering
+   try { if (localStorage.getItem('cm-theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
 
-  // Lucide ?꾩씠肄?珥덇린??
-  document.addEventListener('DOMContentLoaded', () => {
-    if (window.lucide) {
-      lucide.createIcons();
-    }
-  });
+   // Initialize Lucide icons
+   document.addEventListener('DOMContentLoaded', () => {
+     if (window.lucide) {
+       lucide.createIcons();
+     }
+   });
 </script>
 </head>
 <body>
 
 <!-- TOPBAR -->
 <header class="topbar">
-  <!-- 硫붾돱 (踰꾧굅 ???쒕∼?ㅼ슫) -->
+  <!-- Menu (Burger → Dropdown) -->
   <div class="menu-wrap">
-    <button class="icon-btn" id="menuToggle" aria-label="硫붾돱" aria-haspopup="true">
+    <button class="icon-btn" id="menuToggle" aria-label="Menu" aria-haspopup="true">
       <i data-lucide="menu"></i>
     </button>
     <div class="menu-dropdown" id="menuDropdown">
       <div class="menu-search">
         <i data-lucide="search"></i>
-        <input type="text" placeholder="寃?? aria-label="寃??>
+        <input type="text" placeholder="Search" aria-label="Search">
       </div>
-      <button class="menu-link active"><i data-lucide="keyboard"></i> ??댄븨 ?곗뒿</button>
-      <button class="menu-link"><i data-lucide="folder-open"></i> ?대뜑 ?닿린</button>
-      <button class="menu-link"><i data-lucide="git-branch"></i> ?⑦꽩 異붿텧</button>
-      <button class="menu-link"><i data-lucide="book-open"></i> ?몄뼱 怨듭떇 臾몄꽌</button>
+      <button class="menu-link active"><i data-lucide="keyboard"></i> Typing Practice</button>
+      <button class="menu-link"><i data-lucide="folder-open"></i> Open Folder</button>
+      <button class="menu-link"><i data-lucide="git-branch"></i> Pattern Extraction</button>
+      <button class="menu-link"><i data-lucide="book-open"></i> Official Documentation</button>
       <div class="menu-sep"></div>
-      <button class="menu-link" id="statsMenuItem"><i data-lucide="pie-chart"></i> ?숈뒿 ?듦퀎</button>
-      <button class="menu-link"><i data-lucide="settings"></i> ?ㅼ젙</button>
+      <button class="menu-link" id="statsMenuItem"><i data-lucide="pie-chart"></i> Learning Statistics</button>
+      <button class="menu-link"><i data-lucide="settings"></i> Settings</button>
     </div>
   </div>
+</header>
 
-  <!-- ?쇱そ ?ъ씠???⑤꼸 ?좉? (踰꾧굅? 媛꾧꺽???? -->
-  <button class="icon-btn sidebar-toggle" id="sidebarToggle" aria-label="?쇱そ ?⑤꼸 ?④?/蹂댁엫">
-    <i data-lucide="panel-left"></i>
+<!-- Left sidebar panel toggle (burger and spacing) -->
+<button class="icon-btn sidebar-toggle" id="sidebarToggle" aria-label="Toggle left panel">
+  <i data-lucide="panel-left"></i>
+</button>
+
+<a class="topbar-logo" href="#">
+  <div class="logo-icon">
+    <i data-lucide="terminal" style="width:14px;height:14px;color:#fff"></i>
+  </div>
+  <span class="logo-text">Code<span>Master</span></span>
+</a>
+<div class="topbar-right">
+  <div class="streak-badge">
+    <i data-lucide="flame" style="width:12px;height:12px"></i> 14일 연속
+  </div>
+  <div class="xp-badge">
+    <i data-lucide="zap" style="width:12px;height:12px"></i> 3,420 XP
+  </div>
+  <button class="icon-btn" id="themeToggle" aria-label="라이트/다크 테마 전환">
+    <i data-lucide="sun" class="ti-sun"></i>
+    <i data-lucide="moon" class="ti-moon"></i>
   </button>
-
-  <a class="topbar-logo" href="#">
-    <div class="logo-icon">
-      <i data-lucide="terminal" style="width:14px;height:14px;color:#fff"></i>
-    </div>
-    <span class="logo-text">Code<span>Master</span></span>
-  </a>
-  <div class="topbar-right">
-    <div class="streak-badge">
-      <i data-lucide="flame" style="width:12px;height:12px"></i> 14???곗냽
-    </div>
-    <div class="xp-badge">
-      <i data-lucide="zap" style="width:12px;height:12px"></i> 3,420 XP
-    </div>
-    <button class="icon-btn" id="themeToggle" aria-label="?쇱씠???ㅽ겕 ?뚮쭏 ?꾪솚">
-      <i data-lucide="sun" class="ti-sun"></i>
-      <i data-lucide="moon" class="ti-moon"></i>
-    </button>
-    <button class="icon-btn" id="panelToggle" aria-label="?ㅻⅨ履??⑤꼸 ?④?/蹂댁엫">
-      <i data-lucide="panel-right"></i>
-    </button>
-  </div>
+  <button class="icon-btn" id="panelToggle" aria-label="오른쪽 패널 숨김/보임">
+    <i data-lucide="panel-right"></i>
+  </button>
+</div>
 </header>
 
 <!-- APP BODY -->
 <div class="app">
 
-    <!-- 湲곗〈 ?ъ씠?쒕컮 (?숈뒿 肄섑뀗痢??꾩슜) -->
-    <nav class="sidebar" id="sidebar">
-    <!-- 吏꾪뻾 ?붿빟 + ?댁뼱???곗뒿 -->
+  <!-- Sidebar (learning content dedicated) -->
+  <nav class="sidebar" id="sidebar">
+    <!-- Resume + Continue Practice -->
     <div class="resume-card">
       <div class="resume-top">
-        <span class="resume-label">?댁뼱???곗뒿</span>
+        <span class="resume-label">Continue Practice</span>
         <span class="resume-pct" id="resumePct">34%</span>
       </div>
-      <div class="resume-name" id="resumeName">Level 4 쨌 Database ??JPA</div>
+      <div class="resume-name" id="resumeName">Level 4 · Database — JPA</div>
       <div class="resume-track"><div class="resume-fill" style="width:34%"></div></div>
-      <button class="resume-btn"><i data-lucide="play"></i> ?댁뼱???곗뒿?섍린</button>
+      <button class="resume-btn"><i data-lucide="play"></i> Continue Practicing</button>
     </div>
     <div class="sidebar-divider"></div>
 
-<!-- ?숈뒿??硫붾돱 ??踰꾪듉 ?대┃ ???앹뾽 ?쒕툕硫붾돱(????臾몄젣), trainer媛 梨꾩? -->
-<div class="pack-menu" id="packMenu">
-  <button class="pack-menu-btn" id="packMenuBtn" type="button" aria-haspopup="true" aria-expanded="false">
-    <i data-lucide="layers"></i>
-    <span class="pack-menu-label">?숈뒿??/span>
-    <span class="pack-menu-cur" id="packMenuCur"></span>
-    <i data-lucide="chevron-down" class="pack-menu-chev"></i>
-  </button>
-  <div class="pack-menu-pop" id="packMenuPop"></div>
-</div>
-<div class="sidebar-divider"></div>
+  <!-- Learning Pack button - click to open popup submenu (pack → problem), trainer fills -->
+  <div class="pack-menu" id="packMenu">
+    <button class="pack-menu-btn" id="packMenuBtn" type="button" aria-haspopup="true" aria-expanded="false">
+      <i data-lucide="layers"></i>
+      <span class="pack-menu-label">Learning Pack</span>
+      <span class="pack-menu-cur" id="packMenuCur"></span>
+      <i data-lucide="chevron-down" class="pack-menu-chev"></i>
+    </button>
+    <div class="pack-menu-pop" id="packMenuPop"></div>
+  </div>
+  <div class="sidebar-divider"></div>
 
-<!-- 臾몄꽌 (?몃━ ?ㅻ퉬寃뚯씠?? -->
-<div class="accordion" id="docAccordion">
-  <button class="acc-header" id="docAccHeader">
-    <i data-lucide="book-open"></i><span class="acc-title">臾몄꽌</span><i data-lucide="chevron-down" class="acc-chevron"></i>
-  </button>
-  <div class="acc-body" id="docTreeBody" style="display:none"></div>
-</div>
-<div class="sidebar-divider"></div>
+  <!-- Document Tree -->
+  <div class="accordion" id="docAccordion">
+    <button class="acc-header" id="docAccHeader">
+      <i data-lucide="book-open"></i><span class="acc-title">Documents</span><i data-lucide="chevron-down" class="acc-chevron"></i>
+    </button>
+    <div class="acc-body" id="docTreeBody" style="display:none"></div>
+  </div>
+  <div class="sidebar-divider"></div>
 
-<!-- 3) 鍮좊Ⅸ ?숈뒿 -->
-    <div class="accordion open">
-      <button class="acc-header">
-        <i data-lucide="zap"></i><span class="acc-title">鍮좊Ⅸ ?숈뒿</span><i data-lucide="chevron-down" class="acc-chevron"></i>
+  <!-- 3) Lightning Talk -->
+  <div class="accordion open">
+    <button class="acc-header">
+      <i data-lucide="zap"></i><span class="acc-title">Lightning Talk</span><i data-lucide="chevron-down" class="acc-chevron"></i>
+    </button>
+    <div class="acc-body">
+      <button class="sidebar-item" id="wrongAnswerBtn">
+        <i data-lucide="repeat-2"></i> Wrong Answer
+        <span id="wrongAnswerBadge" class="badge" style="display:none">0</span>
       </button>
-      <div class="acc-body">
-        <button class="sidebar-item" id="wrongAnswerBtn">
-          <i data-lucide="repeat-2"></i> ?ㅻ떟 諛섎났
-          <span id="wrongAnswerBadge" class="badge" style="display:none">0</span>
-        </button>
-        <button class="sidebar-item" id="weakPatternBtn">
-          <i data-lucide="target"></i> 痍⑥빟 ?⑦꽩
-          <span id="weakPatternBadge" class="badge" style="display:none">0</span>
-        </button>
-        <button class="sidebar-item" id="randomQuizBtn">
-          <i data-lucide="shuffle"></i> ?쒕뜡 異쒖젣
-        </button>
-        <button class="sidebar-item" id="categoryLearnBtn">
-          <i data-lucide="tags"></i> 移댄뀒怨좊━蹂?
-        </button>
-        <div id="categoryList" style="display:none"></div>
-      </div>
-    </div>
-    <div class="sidebar-divider"></div>
-
-    <!-- 4) ???꾨줈?앺듃 ??遺꾩꽍???꾨줈?앺듃 ?뚯씪 ?몃━ -->
-    <div class="accordion" id="projectAccordion" style="display:none">
-      <button class="acc-header">
-        <i data-lucide="folder"></i><span class="acc-title" id="projectAccTitle">?꾨줈?앺듃</span><i data-lucide="chevron-down" class="acc-chevron"></i>
+      <button class="sidebar-item" id="weakPatternBtn">
+        <i data-lucide="target"></i> Weak Pattern
+        <span id="weakPatternBadge" class="badge" style="display:none">0</span>
       </button>
-      <div class="acc-body" id="projectAccBody">
-      </div>
+      <button class="sidebar-item" id="randomQuizBtn">
+        <i data-lucide="shuffle"></i> Random Quiz
+        <span id="randomQuizBadge" class="badge" style="display:none">0</span>
+      </button>
+      <button class="sidebar-item" id="categoryLearnBtn">
+        <i data-lucide="tags"></i> Category Study
+        <span id="categoryStudyBadge" class="badge" style="display:none">0</span>
+      </button>
+      <div id="categoryList" style="display:none"></div>
     </div>
-  </nav>
+  </div>
+  <div class="sidebar-divider"></div>
+
+  <!-- 4) My Projects -- Analyzed Project File Tree -->
+  <div class="accordion" id="projectAccordion" style="display:none">
+    <button class="acc-header">
+      <i data-lucide="folder"></i><span class="acc-title" id="projectAccTitle">Project</span><i data-lucide="chevron-down" class="acc-chevron"></i>
+    </button>
+    <div class="acc-body" id="projectAccBody">
+    </div>
+  </div>
+  <div class="sidebar-divider"></div>
+
+  <!-- 5) Settings -->
+  <div class="accordion">
+    <button class="acc-header">
+      <i data-lucide="settings"></i><span class="acc-title">Settings</span><i data-lucide="chevron-down" class="acc-chevron"></i>
+    </button>
+    <div class="acc-body">
+    </div>
+  </div>
+</nav>
 
   <!-- MAIN -->
   <main class="main">
@@ -159,13 +172,13 @@
       <div class="practice-head">
         <div class="section-title" style="margin-bottom:0">
           <i data-lucide="keyboard" style="width:12px;height:12px;color:var(--muted)"></i>
-          ?꾩옱 ?곗뒿 以???<span id="practiceTitle">Spring Boot 쨌 JPA Entity</span>
+          Current Practice — <span id="practiceTitle">Spring Boot - JPA Entity</span>
         </div>
         <div class="head-right">
           <span class="tt-legend">
-            <b><i class="lg-ok"></i>?뺥?</b>
-            <b><i class="lg-case"></i>??뚮Ц??/b>
-            <b><i class="lg-bad"></i>?ㅽ?</b>
+            <b><i class="lg-ok"></i>Correct</b>
+            <b><i class="lg-case"></i>Case Sensitive</b>
+            <b><i class="lg-bad"></i>Wrong</b>
           </span>
         </div>
       </div>
@@ -183,7 +196,7 @@
           <div class="typing-meta" id="practiceMeta"></div>
         </div>
 
-        <!-- ?곕씪移섍린 ?곸뿭(?쇱씤 ?⑥쐞) ???붿쭊??以꾨퀎 ?낅젰 ?됱쓣 ?앹꽦 -->
+        <!-- Follow-along area (line by line) — engine creates input rows -->
         <div class="tt-wrap" id="ttWrap"></div>
 
         <div class="typing-footer">
@@ -201,11 +214,11 @@
         </div>
       </div>
 
-      <!-- ?ㅻ챸 ?⑤꼸 (?묒씠?? -->
+      <!-- Explanation Panel (Collapsible) -->
       <div class="explain-panel closed" id="explainPanel">
         <div class="explain-panel-head">
-          <span><i data-lucide="book-open"></i> 臾몄젣 ?ㅻ챸</span>
-          <button class="explain-panel-toggle" id="explainPanelToggle" title="?묎린/?쇱튂湲?>
+          <span><i data-lucide="book-open"></i> Explanation</span>
+          <button class="explain-panel-toggle" id="explainPanelToggle" title="Collapse/Expand">
             <i data-lucide="chevron-down"></i>
             <i data-lucide="chevron-up"></i>
           </button>
@@ -213,19 +226,21 @@
         <div class="explain-panel-body">
           <div class="explain-concept" id="explainConcept"></div>
           <div class="explain-row" id="explainExpectedOutputWrap">
-            <div class="explain-sub">?ㅽ뻾 寃곌낵 ?덉긽</div>
+            <div class="explain-sub">Expected Output</span>
             <div class="explain-expected" id="explainExpectedOutput"></div>
           </div>
           <div class="explain-row" id="explainTermsWrap">
-            <div class="explain-sub">肄붾뱶 ??뼱蹂닿린</div>
+            <div class="explain-sub">Key Concepts</span>
             <ul class="explain-terms" id="explainTerms"></ul>
           </div>
           <div class="explain-row" id="explainWhyWrap">
-            <div class="explain-sub">???곕굹??</div>
+            <div class="explain-sub">Why This Matters</span>
             <div class="explain-why" id="explainWhy"></div>
           </div>
           <div class="explain-row" id="explainRealWorldWrap">
-            <div class="explain-sub">?ㅻТ?먯꽌??/div>
+            <div class="explain-sub">Real World Usage</span>
+            <div class="explain-realworld" id="explainRealWorld"></div>
+            <div class="explain-sub">Real World Usage</span>
             <div class="explain-realworld" id="explainRealWorld"></div>
           </div>
           <div class="explain-pitfall" id="explainPitfall"></div>
@@ -235,18 +250,18 @@
 
   </main>
 
-  <!-- ?쒕줈???ㅻ쾭?덉씠 -->
+  <!-- Drawer Overlay -->
   <div class="overlay" id="overlay"></div>
 
 </div>
 
-<!-- ?숈뒿 ?듦퀎 紐⑤떖 (踰꾧굅 硫붾돱 ???숈뒿 ?듦퀎) -->
+<!-- Learning Statistics Modal (Button → Drawer → Statistics Modal) -->
 <div class="modal" id="statsModal">
   <div class="modal-backdrop" data-close></div>
   <div class="modal-card">
     <div class="modal-head">
-      <span class="modal-title"><i data-lucide="pie-chart"></i> ?숈뒿 ?듦퀎</span>
-      <button class="modal-close" id="statsClose" aria-label="?リ린">??/button>
+      <span class="modal-title"><i data-lucide="pie-chart"></i> Study Statistics</span>
+      <button class="modal-close" id="statsClose" aria-label="Close">✕</button>
     </div>
     <div class="modal-body">
       <div class="rp-block" id="statsSummary"></div>
@@ -257,24 +272,23 @@
   </div>
 </div>
 
-
-<!-- ?ㅼ젙 紐⑤떖 -->
+<!-- Settings Modal -->
 <div id="settingsModal" class="settings-modal" style="display:none">
   <div class="settings-modal-bg"></div>
   <div class="settings-modal-box">
     <div class="settings-modal-head">
-      <b>?먮뵒???ㅼ젙</b>
+      <b>Editor Settings</b>
       <button id="settingsModalClose">&times;</button>
     </div>
     <div class="settings-modal-body">
-      <label>???ш린 (?ㅼ뿬?곌린 媛꾧꺽)
+      <label>Tab Size (Indentation Width)
         <select id="settingsTabSize">
-          <option value="2">2移?/option>
-          <option value="4" selected>4移?/option>
-          <option value="8">8移?/option>
+          <option value="2">2</option>
+          <option value="4" selected>4</option>
+          <option value="8">8</option>
         </select>
       </label>
-      <label>肄붾뱶 湲???ш린
+      <label>Font Size
         <select id="settingsFontSize">
           <option value="12">12px</option>
           <option value="14" selected>14px</option>
@@ -282,17 +296,17 @@
           <option value="18">18px</option>
         </select>
       </label>
-      <label><input type="checkbox" id="settingsAutoIndent" checked> ?먮룞 ?ㅼ뿬?곌린 (Enter)</label>
-      <label><input type="checkbox" id="settingsOverwrite" checked> ??뼱?곌린 紐⑤뱶 (OVR)</label>
-      <label><input type="checkbox" id="settingsAutoNext"> ?꾨즺 ???먮룞 ?ㅼ쓬</label>
-      <label><input type="checkbox" id="settingsLineNum" checked> ?쇱씤 踰덊샇 ?쒖떆</label>
-      <label><input type="checkbox" id="settingsIndentGuide"> ?ㅼ뿬?곌린 媛?대뱶</label>
-      <label><input type="checkbox" id="settingsTabChar"> ??臾몄옄 ?ъ슜 (\\t)</label>
+      <label><input type="checkbox" id="settingsAutoIndent" checked> Auto Indent (Enter)</label>
+      <label><input type="checkbox" id="settingsOverwrite" checked> Overwrite Mode (OVR)</label>
+      <label><input type="checkbox" id="settingsAutoNext"> Continue After Complete</label>
+      <label><input type="checkbox" id="settingsLineNum" checked> Show Line Numbers</label>
+      <label><input type="checkbox" id="settingsIndentGuide"> Indent Guide</label>
+      <label><input type="checkbox" id="settingsTabChar"> Tab Character (\t)</label>
     </div>
   </div>
 </div>
 
-<!-- 臾몄꽌 ?몃━ 珥덇린??-->
+<!-- Document Tree Initialization -->
 <script>
 (function() {
     var docTree = document.getElementById('docTreeBody');
@@ -410,23 +424,98 @@
             if (!main) return;
             var name = path.split('/').pop().replace('.md','').replace(/_/g,' ');
             main.innerHTML = '<div style="padding:12px 20px;border-bottom:1px solid #334155;display:flex;align-items:center;gap:12px;background:#0d1117">' +
-                '<button onclick="location.reload()" style="background:#21262d;color:#8b949e;border:1px solid #30363d;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px">????댄븨 ?곗뒿?쇰줈</button>' +
-                '<span style="color:#8b949e;font-size:12px">' + path + '</span></div>' +
-                '<h1 style="color:#c9d1d9;margin:20px;font-size:24px">' + name + '</h1>' +
-                '<div class="markdown-body" style="padding:0 20px 40px">' + ((typeof marked!=='undefined')?marked.parse(md):'<pre>'+md.replace(/</g,'&lt;')+'</pre>') + '</div>';
+                '<button onclick="location.reload()" style="background:#21262d;color:#8b949e;border:1px solid #30363d;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px">← Typing Practice</button>' +
+                '<span style="color:#64748b;font-size:12px">' + path + '</span>' +
+                '</div>' +
+                '<h1 style="color:#e2e8f0;margin:20px;font-size:24px">' + name + '</h1>' +
+                '<div id="md-body">' + ((typeof marked !== 'undefined')?marked.parse(md):'<pre>'+md.replace(/</g,'<')+'</pre>') + '</div>';
         }
+        if (typeof marked !== 'undefined') fetchAndRender();
+        else { var s = document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'; s.onload=fetchAndRender; document.head.appendChild(s); }
+
         function fetchAndRender() {
             var xhr = new XMLHttpRequest();
             xhr.open('GET', basePath + path, true);
             xhr.onload = function() { if (xhr.status === 200) render(xhr.responseText); };
             xhr.send();
         }
-        if (typeof marked !== 'undefined') fetchAndRender();
-        else { var s = document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'; s.onload=fetchAndRender; document.head.appendChild(s); }
     }
+
+    // Initialize menu button
+    var docBtn = document.getElementById('docAccHeader');
+    var docMenu = document.getElementById('menuDropdown');
+    var ov = document.getElementById('overlay');
+    var isOpen = false;
+    var docPop = document.createElement('div');
+    docPop.className = 'doc-popup';
+    docPop.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;z-index:1000;';
+    document.body.appendChild(docPop);
+    var docCur = document.createElement('span');
+    docCur.className = 'doc-current';
+    docCur.style.cssText = 'display:block;width:100%;text-align:center;padding:8px 0;background:#1e293b;color:#e2e8f0;font-size:14px;';
+    docPop.appendChild(docCur);
+
+    function toggleMenu() {
+        isOpen = !isOpen;
+        docMenu.classList.toggle('open', isOpen);
+        if (isOpen) { showCatList(); if (ov) ov.classList.add('active'); }
+        else { docPop.innerHTML = ''; if (ov) ov.classList.remove('active'); }
+    }
+
+    function showCatList() {
+        if (docCur) docCur.textContent = 'Documents';
+        docPop.innerHTML = '';
+        for (var i = 0; i < docsData.length; i++) {
+            var el = document.createElement('div');
+            el.className = 'doc-cat-item';
+            el.textContent = docsData[i].label;
+            el.setAttribute('data-idx', i);
+            el.style.cssText = 'display:flex;align-items:center;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--text,#e2e8f0);margin:2px 0';
+            el.addEventListener('mouseenter', function(){ this.style.background='var(--sub,#1e293b)'; });
+            el.addEventListener('mouseleave', function(){ this.style.background=''; });
+            onclick = (function(idx) { return function() { selectCat(idx); }; })(i);
+            docPop.appendChild(el);
+        }
+    }
+
+    function selectCat(idx) {
+        var cat = docsData[idx];
+        if (!cat) return;
+        toggleMenu(); // close popup
+        // show doc list in main area
+        var main = document.querySelector('.main');
+        if (!main) return;
+        var children = cat.children || [];
+        var h = '<div style="padding:16px"><h3 style="color:#e2e8f0;margin-bottom:12px">' + cat.label + '</h3>' +
+            '<div style="margin-bottom:8px"><button onclick="location.reload()" style="background:#1e293b;color:#94a3b8;border:1px solid #334155;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px">← Typing Practice</button></div>';
+        for (var i = 0; i < children.length; i++) {
+            var f = children[i];
+            h += '<div class="doc-card" style="padding:14px 16px;margin:4px 0;background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:8px;cursor:pointer;font-size:14px" data-path="' + f.path.replace(/"/g,'"') + '">' + f.label + '</div>';
+        }
+        h += '</div>';
+        main.innerHTML = h;
+        // click handlers for doc cards
+        var cards = main.querySelectorAll('.doc-card');
+        for (var j = 0; j < cards.length; j++) {
+            cards[j].addEventListener('click', function() {
+                var p = this.getAttribute('data-path');
+                if (p) loadDoc(p);
+            });
+        }
+    }
+
+    docBtn.addEventListener('click', function(e) { e.stopPropagation(); toggleMenu(); });
+    if (ov) ov.addEventListener('click', function() { if (isOpen) toggleMenu(); });
+    document.addEventListener('click', function(e) {
+        if (isOpen && !docMenu.contains(e.target) && !docPop.contains(e.target)) toggleMenu();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isOpen) toggleMenu();
+    });
 })();
 </script>
-<!-- Marked ?쇱씠釉뚮윭由?(留덊겕?ㅼ슫 ?뚮뜑留곸슜) -->
+
+<!-- Marked Library (Markdown Rendering) -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <script type="module" src="/src/main.ts"></script>
