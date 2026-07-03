@@ -11,8 +11,8 @@
 
 <!-- GitHub Markdown CSS (dark) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-dark.css">
-<!-- Highlight.js theme (dark) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/github-dark.min.css">
+<!-- Highlight.js (코드 구문 강조) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
 
 <!-- Lucide Icons (완전한 세트) -->
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -416,12 +416,6 @@
                 '<span style="color:#8b949e;font-size:12px">' + path + '</span></div>' +
                 '<h1 style="color:#c9d1d9;margin:20px;font-size:24px">' + name + '</h1>' +
                 '<div class="markdown-body" style="padding:0 20px 40px">' + ((typeof marked!=='undefined')?marked.parse(md):'<pre>'+md.replace(/</g,'&lt;')+'</pre>') + '</div>';
-            // Apply syntax highlighting to code blocks
-            if (typeof hljs !== 'undefined') {
-              main.querySelectorAll('pre code').forEach(function(block) {
-                hljs.highlightElement(block);
-              });
-            }
          }
         function fetchAndRender() {
             var xhr = new XMLHttpRequest();
@@ -435,9 +429,23 @@
 })();
 </script>
 <!-- Highlight.js (코드 구문 강조) -->
-<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <!-- Marked 라이브러리 (마크다운 렌더링용) -->
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+<script>
+  // Marked + Highlight.js 통합 설정
+  if (typeof marked !== 'undefined' && typeof hljs !== 'undefined') {
+    marked.setOptions({
+      highlight: function(code, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          try { return hljs.highlight(code, { language: lang }).value; }
+          catch(e) {}
+        }
+        return code;
+      }
+    });
+  }
+</script>
 
 <script type="module" src="/src/main.ts"></script>
 </body>
