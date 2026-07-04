@@ -89,7 +89,7 @@ print(f"[결과] 생성된 프롬프트:\\n{prompt}")`,
         'Chain-of-Thought(CoT, 생각의 사슬)은 모델이 최종 답변을 바로 내놓지 않고, 중간 추론 과정을 단계별로 먼저 적게 만드는 프롬프팅 기법이에요. ' +
         '수학 숙제에서 "답: 42"만 적는 대신 풀이 과정을 함께 적도록 하는 것과 같아요. ' +
         '모델에게 "생각:" 이라는 중간 단계를 먼저 출력하도록 유도하면, 복잡한 추론이 필요한 문제(수학, 논리 퍼즐, 다단계 추론)에서 정답률이 크게 올라가요. ' +
-        '예시에서 "생각:" → "A:" 순서로 답변 구조를 보여주면, 모델도 같은 순서로 추론 단계를 따르게 돼요.',
+        '예시에서 "생각:" -> "A:" 순서로 답변 구조를 보여주면, 모델도 같은 순서로 추론 단계를 따르게 돼요.',
       terms: [
         { t: '"생각:"', d: '중간 추론 과정을 적는 구역 표시예요. 모델이 여기에 단계별 사고를 풀어써요.' },
         { t: '"A:"', d: '최종 정답을 적는 구역 표시예요. 생각을 다 쓴 뒤에 여기에 답을 써요.' },
@@ -410,7 +410,7 @@ print(f"[정보] 검증 통과 - 타입: {type(item).__name__}")`,
     explain: {
       concept:
         'model_validate_json()은 LLM이 반환한 JSON 문자열을 한 번에 Pydantic 객체로 변환하면서 동시에 타입 검증까지 수행하는 편리한 메서드예요. ' +
-        '수동으로 json.loads() → Feeling(**data) 두 단계를 거칠 필요 없이, 한 번의 호출로 변환+검증이 완료돼요. ' +
+        '수동으로 json.loads() -> Feeling(**data) 두 단계를 거칠 필요 없이, 한 번의 호출로 변환+검증이 완료돼요. ' +
         'Pydantic v2에서 도입된 이 메서드는 JSON 문자열을 직접 받아서 내부적으로 파싱과 검증을 순차 실행해줘요. ' +
         '변환에 성공하면 모든 필드가 올바른 타입으로 채워진 Pydantic 객체가 반환돼서, 이후 로직에서 안전하게 사용할 수 있어요.',
       terms: [
@@ -545,7 +545,7 @@ print(json.dumps(tools, ensure_ascii=False, indent=2))`,
       expectedOutput:
         '[결과] 정의된 도구 목록:\n[\n  {\n    "type": "function",\n    "function": {\n      "name": "get_weather",\n      "description": "도시의 날씨를 알려줘요",\n      "parameters": {\n        "type": "object",\n        "properties": {\n          "도시": {"type": "string"}\n        },\n        "required": ["도시"]\n      }\n    }\n  }\n]',
       realWorldUsage:
-        '날씨 챗봇에서 get_weather, get_forecast, get_air_quality 등 여러 함수를 tools로 등록해두면, 모델이 "내일 날씨 어때?" → get_forecast, "미세먼지 어때?" → get_air_quality 같이 질문 의도에 맞는 함수를 스스로 선택해서 호출해요.',
+        '날씨 챗봇에서 get_weather, get_forecast, get_air_quality 등 여러 함수를 tools로 등록해두면, 모델이 "내일 날씨 어때?" -> get_forecast, "미세먼지 어때?" -> get_air_quality 같이 질문 의도에 맞는 함수를 스스로 선택해서 호출해요.',
       pitfall:
         '모델이 함수 호출을 요청했을 때, 응답에 tool_calls가 포함되었는지 반드시 확인해야 해요. tool_calls가 없는데 함수 호출을 기다리면 무한 대기에 빠질 수 있어요.',
     },
@@ -571,7 +571,7 @@ print(f"[결과] 도시: {args['도시']}")`,
       concept:
         '모델이 Function Calling 응답으로 "get_weather 함수를 호출하고, 인자는 도시=서울로 해줘"라고 JSON으로 알려주면, 우리 코드는 그걸 파싱해서 실제 함수를 실행해요. ' +
         'func_call["name"]으로 어떤 함수를 호출해야 하는지 확인하고, func_call["arguments"] 안의 JSON 문자열을 json.loads()로 딕셔너리로 바꾼 뒤 인자값을 꺼내 실제 함수에 전달해요. ' +
-        '이 전체 흐름이 "계획(모델) → 실행(코드) → 결과 반환(모델에게)"으로 이어지는 AI 에이전트의 기본 사이클이에요.',
+        '이 전체 흐름이 "계획(모델) -> 실행(코드) -> 결과 반환(모델에게)"으로 이어지는 AI 에이전트의 기본 사이클이에요.',
       terms: [
         { t: "func_call['name']", d: '모델이 호출하기로 결정한 함수의 이름을 꺼내요.' },
         { t: "func_call['arguments']", d: '함수에 전달할 인자들이 JSON 문자열로 담겨 있어요.' },
@@ -611,7 +611,7 @@ for m in messages:
         '사용자 메시지(user)와 달리 system 메시지는 대화 내내 지속적으로 적용되는 기준으로 작동해요.',
       terms: [
         { t: '"role": "system"', d: '대화의 기본 규칙과 행동 지침을 설정하는 특수 역할이에요.' },
-        { t: 'messages', d: 'system → user → assistant 순서로 쌓여가는 대화 기록 리스트예요.' },
+        { t: 'messages', d: 'system -> user -> assistant 순서로 쌓여가는 대화 기록 리스트예요.' },
         { t: '"content"', d: '해당 역할의 실제 텍스트 내용이에요. system은 지시, user는 질문, assistant는 응답을 담아요.' },
         { t: 'for m in messages', d: '모든 메시지를 순회하며 역할과 내용을 출력하는 반복문이에요.' },
       ],

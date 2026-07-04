@@ -4,7 +4,7 @@
 
 export type TokenType = 'kw' | 'fn' | 'str' | 'ann' | 'tp' | 'num' | 'op' | 'cm' | 'id';
 
-/** 소스 문자열 → 각 글자(index)의 토큰 클래스(null = 공백/미분류) */
+/** 소스 문자열 -> 각 글자(index)의 토큰 클래스(null = 공백/미분류) */
 export type LangAdapter = (source: string) => (TokenType | null)[];
 
 const registry = new Map<string, LangAdapter>();

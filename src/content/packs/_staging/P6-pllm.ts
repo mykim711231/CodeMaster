@@ -94,7 +94,7 @@ print(f"[결과] decode: {tok.decode(ids)}")`,
       terms: [
         { t: 'tok.decode(ids)', d: '토큰 번호 리스트를 받아 원래 문자열로 합쳐주는 메서드예요.' },
         { t: 'ids', d: '앞서 tok()으로 얻은 input_ids 리스트를 담은 변수예요.' },
-        { t: "tok('hello world')['input_ids']", d: '문장 → 토큰 번호 리스트로 변환하는 한 줄짜리 파이프라인이에요.' },
+        { t: "tok('hello world')['input_ids']", d: '문장 -> 토큰 번호 리스트로 변환하는 한 줄짜리 파이프라인이에요.' },
         { t: 'AutoTokenizer.from_pretrained', d: '모델에 맞는 토크나이저를 불러오는 정적 메서드예요.' },
       ],
       why:
@@ -337,7 +337,7 @@ result = clf('I love this!')
 print(f"[결과] {result}")`,
     explain: {
       concept:
-        'pipeline은 토큰화 → 모델 추론 → 결과 해석까지 한 번에 해주는 만능 도구예요. ' +
+        'pipeline은 토큰화 -> 모델 추론 -> 결과 해석까지 한 번에 해주는 만능 도구예요. ' +
         '버튼 하나 누르면 커피가 나오는 자판기처럼, 텍스트만 넣으면 분류 결과를 바로 받을 수 있어요. ' +
         '내부적으로는 AutoTokenizer, AutoModelForSequenceClassification, 후처리까지 자동으로 실행돼요. ' +
         '실무에서는 빠른 프로토타입이나 간단한 분류 작업에 pipeline을 쓰고, 성능이 중요한 서비스는 각 단계를 분리해서 최적화해요. ' +
@@ -548,7 +548,7 @@ print(f"[결과] labels: {r['labels']}")`,
     file: 'pipeline_tr.py',
     code: `from transformers import pipeline
 
-print("[실행] en→fr 번역 시작")
+print("[실행] en->fr 번역 시작")
 tr = pipeline('translation_en_to_fr')
 r = tr('good morning')
 print(f"[결과] {r[0]['translation_text']}")`,
@@ -556,7 +556,7 @@ print(f"[결과] {r[0]['translation_text']}")`,
       concept:
         '번역(translation) 파이프라인은 한 언어의 텍스트를 다른 언어로 자동 변환해줘요. ' +
         '사전을 찾아가며 직접 번역할 필요 없이, 신경망 기반 모델이 문맥까지 고려한 자연스러운 번역을 생성해요. ' +
-        '파이프라인 이름에 번역 방향(en_to_fr: 영어→프랑스어)이 포함되어 있어서, 원하는 언어쌍에 맞는 파이프라인을 선택해야 해요. ' +
+        '파이프라인 이름에 번역 방향(en_to_fr: 영어->프랑스어)이 포함되어 있어서, 원하는 언어쌍에 맞는 파이프라인을 선택해야 해요. ' +
         '실무에서는 다국어 고객 지원, 글로벌 콘텐츠 현지화, 실시간 채팅 번역 등에 사용되고 있어요.',
       terms: [
         { t: "pipeline('translation_en_to_fr')", d: '영어에서 프랑스어로 번역하는 파이프라인이에요. 언어 방향이 이름에 포함돼 있어요.' },
@@ -568,7 +568,7 @@ print(f"[결과] {r[0]['translation_text']}")`,
         '글로벌 서비스를 운영하려면 다국어 지원이 필수예요. ' +
         '사람 번역가는 비용이 크고 느리지만, 기계 번역은 실시간에 가깝고 비용이 거의 들지 않아요.',
       expectedOutput:
-        '[실행] en→fr 번역 시작\n' +
+        '[실행] en->fr 번역 시작\n' +
         '[결과] bonjour',
       realWorldUsage:
         '해외 쇼핑몰에서 한국 소비자가 영어 상품 설명을 볼 때, 실시간으로 번역 파이프라인이 한글로 바꿔서 보여줘요. ' +

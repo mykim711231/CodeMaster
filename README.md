@@ -39,7 +39,7 @@ NOTICE          # 저작권·서드파티 귀속
 ### 빠른 시작 (개발 서버)
 ```bash
 npm ci          # 의존성 설치 (최초 1회)
-npm run dev     # Vite 개발 서버 실행 → http://localhost:5173
+npm run dev     # Vite 개발 서버 실행 -> http://localhost:5173
 ```
 
 ### 프로덕션 빌드 검증
@@ -49,14 +49,14 @@ npm run preview # 빌드 결과 미리보기
 ```
 
 ### PowerShell 자동화 스크립트 (Windows 권장)
-| 스크립트 | 설명 |
-|----------|------|
-| `00-git-cli-setup.ps1` | **최초 1회** — Git/gh CLI 설치, Git 사용자 설정, GitHub 브라우저 인증 |
-| `01-build.ps1` | 로컬 프로덕션 빌드 검증 (`npm ci && npm run build`) |
-| `01-deploy.ps1` | **일체형** — 빌드 → 커밋 → 푸시 → GitHub Actions 배포 대기까지 한 번에 |
-| `02-build.ps1` | (별도) 빌드만 수행 |
-| `03-commit.ps1` | (별도) 커밋/푸시만 수행 |
-| `04-deploy-wait.ps1` | (별도) 배포 상태만 대기/확인 |
+| 스크립트               | 설명                                                                      |
+| ---------------------- | ------------------------------------------------------------------------- |
+| `00-git-cli-setup.ps1` | **최초 1회** — Git/gh CLI 설치, Git 사용자 설정, GitHub 브라우저 인증     |
+| `01-build.ps1`         | 로컬 프로덕션 빌드 검증 (`npm ci && npm run build`)                       |
+| `01-deploy.ps1`        | **일체형** — 빌드 -> 커밋 -> 푸시 -> GitHub Actions 배포 대기까지 한 번에 |
+| `02-build.ps1`         | (별도) 빌드만 수행                                                        |
+| `03-commit.ps1`        | (별도) 커밋/푸시만 수행                                                   |
+| `04-deploy-wait.ps1`   | (별도) 배포 상태만 대기/확인                                              |
 
 ```powershell
 # 최초 설정 (관리자 PowerShell)
@@ -70,7 +70,7 @@ npm run preview # 빌드 결과 미리보기
 
 ## 배포
 
-`main` 브랜치에 push하면 **GitHub Pages** 가 자동 재배포합니다. (GitHub Actions → Deploy to GitHub Pages)
+`main` 브랜치에 push하면 **GitHub Pages** 가 자동 재배포합니다. (GitHub Actions -> Deploy to GitHub Pages)
 
 ```bash
 git add -A
@@ -88,20 +88,20 @@ git push
 
 단일 HTML 유지 단계 없이 처음부터 **Vite + TypeScript 풀스택**으로 구성한다. (적대적 검토 완료 — [`prd.md` §13](prd.md))
 
-| 레이어 | 선택 |
-|--------|------|
-| **언어/빌드** | TypeScript · Vite 5 · ESLint/Prettier |
-| **프레임워크** | Vanilla TS (No-VDOM, 타이핑 루프 성능 우선) |
-| **타이핑 엔진** | 자체 엔진 (글자별 span 오버레이 · rAF throttle · span 가상화) |
-| **구문 강조** | 3-Tier 하이브리드 — Lezer 어댑터(Java·Python·XML) · 최소 regex(SQL·YAML·Bash·Dockerfile·TOML·Properties) · Prism.js(JSON) |
-| **코드 분석** *(PC 전용)* | web-tree-sitter (Worker Pool) + regex 경량 폴백 |
-| **상태 관리** | Zustand (vanilla store) |
-| **저장** | idb · IndexedDB · OPFS · **학습팩 Cache Storage**(온디맨드) |
-| **PWA/오프라인** | vite-plugin-pwa (Workbox) · Web App Manifest |
-| **폰트/아이콘** | self-host woff2(JetBrains Mono·Inter) · lucide(npm ESM) |
-| **테스트** | Vitest(단위) · Playwright WebKit(E2E) · BrowserStack(실기기) |
-| **콘텐츠 파이프라인** | 팩 JSON 스키마 · 언어별 CI 린트 게이트 · OSS 추출(Tree-Sitter) · sha256/semver |
-| **배포** | Cloudflare Pages(COEP/COOP/CSP) · Lighthouse CI — *현재는 GitHub Pages + GitHub Actions 빌드* |
+| 레이어                    | 선택                                                                                                                      |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **언어/빌드**             | TypeScript · Vite 5 · ESLint/Prettier                                                                                     |
+| **프레임워크**            | Vanilla TS (No-VDOM, 타이핑 루프 성능 우선)                                                                               |
+| **타이핑 엔진**           | 자체 엔진 (글자별 span 오버레이 · rAF throttle · span 가상화)                                                             |
+| **구문 강조**             | 3-Tier 하이브리드 — Lezer 어댑터(Java·Python·XML) · 최소 regex(SQL·YAML·Bash·Dockerfile·TOML·Properties) · Prism.js(JSON) |
+| **코드 분석** *(PC 전용)* | web-tree-sitter (Worker Pool) + regex 경량 폴백                                                                           |
+| **상태 관리**             | Zustand (vanilla store)                                                                                                   |
+| **저장**                  | idb · IndexedDB · OPFS · **학습팩 Cache Storage**(온디맨드)                                                               |
+| **PWA/오프라인**          | vite-plugin-pwa (Workbox) · Web App Manifest                                                                              |
+| **폰트/아이콘**           | self-host woff2(JetBrains Mono·Inter) · lucide(npm ESM)                                                                   |
+| **테스트**                | Vitest(단위) · Playwright WebKit(E2E) · BrowserStack(실기기)                                                              |
+| **콘텐츠 파이프라인**     | 팩 JSON 스키마 · 언어별 CI 린트 게이트 · OSS 추출(Tree-Sitter) · sha256/semver                                            |
+| **배포**                  | Cloudflare Pages(COEP/COOP/CSP) · Lighthouse CI — *현재는 GitHub Pages + GitHub Actions 빌드*                             |
 
 > 현 `index.html` 프로토타입을 위 풀스택으로 이식한다. 권장 빌드 순서·NFR·리스크는 [`prd.md` §13](prd.md) 참조.
 
@@ -109,24 +109,24 @@ git push
 
 **런타임 · 툴체인**
 
-| 항목 | 버전 |
-|------|------|
-| Node.js | **24 LTS** (`.nvmrc` · engines `>=22.12`) |
-| Vite | 8.x |
-| TypeScript | 6.x |
-| ESLint / Prettier | 10.x / 3.x |
-| lucide / @fontsource | 1.x / 5.x |
+| 항목                 | 버전                                      |
+| -------------------- | ----------------------------------------- |
+| Node.js              | **24 LTS** (`.nvmrc` · engines `>=22.12`) |
+| Vite                 | 8.x                                       |
+| TypeScript           | 6.x                                       |
+| ESLint / Prettier    | 10.x / 3.x                                |
+| lucide / @fontsource | 1.x / 5.x                                 |
 
 **학습팩 콘텐츠** (LTS 기준 — [`prd.md` §8.1](prd.md))
 
-| 대상 | 버전 |
-|------|------|
-| Java | **21 (LTS)** |
-| Spring Boot | **3.4.x** |
-| Python | **3.12** |
-| Gradle | 8.x |
+| 대상        | 버전         |
+| ----------- | ------------ |
+| Java        | **21 (LTS)** |
+| Spring Boot | **3.4.x**    |
+| Python      | **3.12**     |
+| Gradle      | 8.x          |
 
-> 향후 LTS 상향 시 **자동 추적 → 검증 → 일괄 갱신** 유지보수 절차: [`prd.md` §13.7](prd.md).
+> 향후 LTS 상향 시 **자동 추적 -> 검증 -> 일괄 갱신** 유지보수 절차: [`prd.md` §13.7](prd.md).
 > 버전 단일 출처(SSOT): `.nvmrc` · `package.json` · CI `node-version` · 본 표.
 
 ## 구현 진행 (Phase 3 빌드 — §13.2)
@@ -137,10 +137,10 @@ git push
 - [x] GitHub `workflow` 스코프 재인증 (Actions 배포용)
 - [x] 콘텐츠 버전 정책 (Java 21 · Spring Boot 3.4 · Python 3.12)
 - [x] 설정 파일 (vite.config · tsconfig · eslint · prettier)
-- [x] index.html → `src/main.ts` + `src/styles.css` 분리 · 외부 CDN 전면 제거
+- [x] index.html -> `src/main.ts` + `src/styles.css` 분리 · 외부 CDN 전면 제거
 - [x] 폰트 self-host(@fontsource) + lucide npm(33 아이콘 트리셰이킹)
 - [x] GitHub Actions 배포 워크플로우 + Pages를 Actions 소스로 전환
-- [x] 빌드 검증 → 배포 (https://mykim711231.github.io/CodeMaster/ · JS gzip 6KB)
+- [x] 빌드 검증 -> 배포 (https://mykim711231.github.io/CodeMaster/ · JS gzip 6KB)
 
 **다음 — Step 2** (§13.2): 엔진 TS 모듈화·타입화(`@ts-nocheck` 제거), `registerLanguage` 골격, Zustand·idb, 학습팩 Cache Storage
 

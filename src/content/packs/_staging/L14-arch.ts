@@ -34,7 +34,7 @@ public class UserController {
         '컨트롤러는 식당의 웨이터와 같은 역할이에요. 손님(클라이언트)의 주문(HTTP 요청)을 받아서 주방(Service)으로 전달하고, 완성된 요리(응답)를 다시 손님에게 가져다줘요. ' +
         '컨트롤러는 "무엇이 들어왔고 무엇을 내보내는지"만 신경 쓰고, 비즈니스 로직은 절대 직접 처리하지 않는 게 핵심 원칙이에요. ' +
         '@RestController는 이 클래스의 모든 메서드 반환값을 JSON으로 자동 변환해주고, @RequestMapping은 이 컨트롤러의 기본 URL을 /api/users로 고정해줘요. ' +
-        '계층 구조(Controller → Service → Repository)의 가장 바깥쪽 담당자로서, 요청 데이터를 깔끔하게 정리해서 다음 계층으로 넘기는 일을 해요.',
+        '계층 구조(Controller -> Service -> Repository)의 가장 바깥쪽 담당자로서, 요청 데이터를 깔끔하게 정리해서 다음 계층으로 넘기는 일을 해요.',
       terms: [
         { t: '@RestController', d: '이 컨트롤러가 REST API임을 표시해요. 모든 메서드의 반환값이 JSON으로 직렬화돼요.' },
         { t: '@RequestMapping("/api/users")', d: '이 컨트롤러의 모든 엔드포인트 URL 앞에 /api/users가 붙어요. 공통 경로를 한 번에 관리할 수 있어요.' },
@@ -133,7 +133,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
       expectedOutput:
         '리포지토리는 인터페이스라 직접 실행되지 않아요. 스프링이 런타임에 구현체를 자동 생성해요:\n' +
         '[실행] findByEmail("kim@test.com")\n' +
-        '→ SELECT u FROM User u WHERE u.email = ?\n' +
+        '-> SELECT u FROM User u WHERE u.email = ?\n' +
         '[결과] Optional[User[id=1, name=kim]]',
       realWorldUsage:
         '실제 프로젝트에서 리포지토리는 데이터 접근의 단일 창구예요. "DB가 MySQL에서 PostgreSQL로 바뀌어도 서비스 코드는 한 줄도 안 고친다"는 게 리포지토리 패턴의 목표예요. 서비스는 리포지토리 인터페이스만 바라보고, 실제 DB 기술은 구현체가 감춰줘요.',
@@ -157,7 +157,7 @@ record UserResponse(
     String email
 ) {
   public static UserResponse from(User user) {
-    System.out.println("[변환] User 엔티티 → UserResponse DTO");
+    System.out.println("[변환] User 엔티티 -> UserResponse DTO");
     return new UserResponse(user.getId(), user.getName(), user.getEmail().value());
   }
 }`,
@@ -175,8 +175,8 @@ record UserResponse(
       ],
       expectedOutput:
         'UserResponse.from(user) 호출 시:\n' +
-        '[변환] User 엔티티 → UserResponse DTO\n' +
-        '→ UserResponse[id=1, name=kim, email=kim@test.com]',
+        '[변환] User 엔티티 -> UserResponse DTO\n' +
+        '-> UserResponse[id=1, name=kim, email=kim@test.com]',
       realWorldUsage:
         '실제 프로젝트에서 API 스펙이 변경될 때 DTO가 방어벽 역할을 해줘요. 클라이언트에게 age 필드를 추가로 내려줘야 한다면 UserResponse에 필드만 추가하면 되고, 내부 User 엔티티는 전혀 건드리지 않아요. 반대로 엔티티의 내부 필드가 변경돼도 DTO 변환 로직만 수정하면 외부 API 스펙은 유지할 수 있어요.',
       why: '외부 API 스펙과 내부 도메인 모델을 분리해서, 한쪽 변경이 다른 쪽으로 전파되는 걸 막으려고요.',
@@ -217,8 +217,8 @@ interface SaveUserPort {
       expectedOutput:
         '포트는 인터페이스라 직접 실행되지 않아요. 구현체(어댑터)가 실제 동작을 제공해요:\n' +
         'LoadUserPort.findById(1L)\n' +
-        '→ JPA 어댑터가 SELECT 쿼리 실행\n' +
-        '→ Optional[User[id=1]]',
+        '-> JPA 어댑터가 SELECT 쿼리 실행\n' +
+        '-> Optional[User[id=1]]',
       realWorldUsage:
         '실제 프로젝트에서 포트 기반 설계를 하면 "JPA를 MyBatis로, 다시 MongoDB로" 바꾸는 기술 교체가 도메인 코드 수정 없이 가능해져요. LoadUserPort의 구현체만 갈아끼우면 서비스·도메인 코드는 한 줄도 안 고쳐도 돼요. 마이크로서비스 간 통신에도 같은 포트를 써서, REST 호출을 gRPC로 교체할 때도 서비스 코드가 변하지 않아요.',
       why: '도메인이 특정 기술(JPA, REST, Kafka)에 의존하지 않게 해서, 기술 변경의 영향을 도메인에서 완전히 격리하려고요.',
@@ -345,7 +345,7 @@ public class RegisterUserUseCase {
         '[실행] RegisterUserUseCase - name: kim\n' +
         '[결과] 회원가입 완료 - id: 1',
       realWorldUsage:
-        '실제 프로젝트에서 마이크로서비스의 각 API 엔드포인트가 하나의 유스케이스 클래스로 구현돼요. POST /users → RegisterUserUseCase, PATCH /users/{id}/email → ChangeEmailUseCase, DELETE /users/{id} → WithdrawUserUseCase. 각 유스케이스는 독립적이라 병렬 개발이 쉽고, 테스트도 유스케이스 하나만 Mocking하면 완료돼요.',
+        '실제 프로젝트에서 마이크로서비스의 각 API 엔드포인트가 하나의 유스케이스 클래스로 구현돼요. POST /users -> RegisterUserUseCase, PATCH /users/{id}/email -> ChangeEmailUseCase, DELETE /users/{id} -> WithdrawUserUseCase. 각 유스케이스는 독립적이라 병렬 개발이 쉽고, 테스트도 유스케이스 하나만 Mocking하면 완료돼요.',
       why: '하나의 유스케이스가 하나의 비즈니스 흐름만 담당하게 해서, 코드 응집도는 높이고 변경 영향 범위는 최소화하려고요.',
       pitfall: '유스케이스 하나에 여러 흐름(등록+수정+삭제)을 몰아넣으면 다시 전통적인 뚱뚱한 Service가 되어버려요. 유스케이스 클래스는 단일 책임을 엄격하게 지켜야 의미가 있어요.',
     },
@@ -391,7 +391,7 @@ public record Email(String value) {
         '[결과] Email 정규화 - kim@test.com\n\n' +
         'new Email("not-valid") 호출 시:\n' +
         '[검증] Email 생성 - value: not-valid\n' +
-        '→ IllegalArgumentException: 잘못된 이메일 형식이에요: not-valid',
+        '-> IllegalArgumentException: 잘못된 이메일 형식이에요: not-valid',
       realWorldUsage:
         '실제 프로젝트에서 Email, Money, PhoneNumber, Address 같은 도메인 개념을 모두 값 객체로 만들어요. new Email(invalidString)이 생성자에서 바로 터지기 때문에, 잘못된 이메일이 서비스 레이어까지 도달하는 일이 절대 없어요. 결제 금액을 나타내는 Money 값 객체는 통화 단위와 금액을 함께 담아서, "100원 + 5달러" 같은 실수를 컴파일 타임에 막아줘요.',
       why: '도메인 규칙을 값 생성 시점에 강제해서, 잘못된 값이 시스템 내부로 진입하는 걸 원천 차단하려고요.',
@@ -438,7 +438,7 @@ public class Order {
       terms: [
         { t: 'Order (Aggregate Root)', d: '애그리거트의 진입점이에요. OrderLine에 대한 모든 변경은 Order를 거쳐야 해요.' },
         { t: 'OrderLine', d: '애그리거트 내부 구성원이에요. 외부에서 직접 참조하면 안 되고, Order를 통해서만 접근 가능해요.' },
-        { t: 'OrderStatus', d: '주문의 상태를 나타내는 enum이에요. DRAFT → CONFIRMED → SHIPPED 순으로만 변경 가능해요.' },
+        { t: 'OrderStatus', d: '주문의 상태를 나타내는 enum이에요. DRAFT -> CONFIRMED -> SHIPPED 순으로만 변경 가능해요.' },
         { t: 'addLine()', d: '구성원을 추가하는 유일한 통로예요. 상태 검증 후에만 추가를 허용해 일관성을 지켜요.' },
         { t: 'confirm()', d: '주문을 확정 상태로 전환하는 메서드예요. 비즈니스 규칙(빈 주문 금지)을 강제해요.' },
       ],
@@ -540,7 +540,7 @@ public interface OrderRepository {
         '[실행] OrderRepository.getById - id: OrderId[123]\n' +
         '[결과] 주문 조회 완료\n\n' +
         'getById(orderId) - 없는 경우:\n' +
-        '→ OrderNotFoundException: 주문을 찾을 수 없어요: OrderId[999]',
+        '-> OrderNotFoundException: 주문을 찾을 수 없어요: OrderId[999]',
       realWorldUsage:
         '실제 프로젝트에서 도메인 리포지토리 인터페이스는 domain/ 패키지에, JPA 구현체는 adapter/out/persistence/ 패키지에 위치해요. 도메인 패키지에는 JPA 관련 import가 하나도 없어서, 도메인을 다른 프로젝트에서 재사용하거나 DB 기술을 교체할 때 완벽한 격리가 보장돼요.',
       why: '도메인이 저장 기술(JPA·JDBC·MongoDB)을 모르게 해서, 기술 변경이 도메인에 전혀 영향을 주지 않게 하려고요.',
@@ -586,7 +586,7 @@ public record OrderConfirmed(
       expectedOutput:
         'OrderConfirmed.of(order) 호출 시:\n' +
         '[이벤트] OrderConfirmed 생성 - orderId: OrderId[123]\n' +
-        '→ OrderConfirmed[orderId=123, customerId=456, totalAmount=10000원, occurredAt=2025-06-29T...]',
+        '-> OrderConfirmed[orderId=123, customerId=456, totalAmount=10000원, occurredAt=2025-06-29T...]',
       realWorldUsage:
         '실제 프로젝트에서 주문 확정 이벤트가 발생하면, 이메일 서비스가 구독해서 구매 확인 메일을 보내고, 포인트 서비스가 구독해서 마일리지를 적립하고, 통계 서비스가 구독해서 실시간 매출 대시보드를 업데이트해요. 주문 서비스 코드는 이메일·포인트·통계에 대해 단 한 줄도 몰라요 - 완전한 느슨한 결합이에요.',
       why: '핵심 비즈니스 로직(주문 확정)과 부수 효과(메일·알림·통계)를 분리해서, 시스템 간 결합도를 낮추고 확장성을 높이려고요.',
@@ -804,7 +804,7 @@ class JpaEventStore implements EventStore {
     explain: {
       concept:
         '이벤트 소싱(Event Sourcing)은 데이터의 최종 상태 대신 "상태를 변화시킨 모든 사건"을 저장하는 방식이에요. ' +
-        '전통적인 방식이 "현재 잔고 10만원"만 저장한다면, 이벤트 소싱은 "입금 100만원 → 출금 90만원"이라는 모든 거래 내역을 저장해요. ' +
+        '전통적인 방식이 "현재 잔고 10만원"만 저장한다면, 이벤트 소싱은 "입금 100만원 -> 출금 90만원"이라는 모든 거래 내역을 저장해요. ' +
         'append()는 낙관적 동시성 제어(optimistic concurrency)를 적용해서, expectedVersion과 현재 버전이 일치할 때만 저장을 허용해요 - 만약 다른 요청이 먼저 저장했으면 ConcurrencyException을 던져 충돌을 알려줘요. ' +
         '상태를 직접 UPDATE/DELETE 하지 않고 INSERT만 하기 때문에, 데이터가 절대 소실되지 않는 감사 추적(audit trail)이 완성돼요.',
       terms: [
@@ -819,7 +819,7 @@ class JpaEventStore implements EventStore {
         '[실행] 이벤트 저장 - orderId: OrderId[123], eventCount: 2\n' +
         '[결과] 이벤트 저장 완료 - newVersion: 5\n\n' +
         '다른 요청이 먼저 저장해서 expectedVersion 불일치 시:\n' +
-        '→ ConcurrencyException: 동시 수정 충돌이 발생했어요',
+        '-> ConcurrencyException: 동시 수정 충돌이 발생했어요',
       realWorldUsage:
         '실제 금융·회계 시스템에서 이벤트 소싱이 널리 쓰여요. 은행 계좌의 모든 입출금 내역을 이벤트로 저장해서, 감사 시점에 "작년 3월 15일 잔고가 왜 이 금액인가"를 이벤트를 replay하며 완전히 재구성할 수 있어요. 암호화폐 거래소도 모든 거래를 이벤트로 저장해서, 해킹으로 상태가 조작되더라도 이벤트를 replay하면 원래 상태를 복원할 수 있어요.',
       why: '모든 변경 이력을 영구 보존해서 감사·디버깅·시간 여행(time travel)을 가능하게 하고, 데이터 조작을 원천 차단하려고요.',
@@ -881,7 +881,7 @@ public class Order {
         'fromHistory(orderId) 호출 시:\n' +
         '[실행] 이벤트 replay 시작 - orderId: OrderId[123]\n' +
         '[결과] replay 완료 - 이벤트 수: 5\n' +
-        '(5개 이벤트: Created → LineAdded → LineAdded → OrderConfirmed → Shipped 순 적용)',
+        '(5개 이벤트: Created -> LineAdded -> LineAdded -> OrderConfirmed -> Shipped 순 적용)',
       realWorldUsage:
         '실제 이벤트 소싱 시스템에서 버그 수정 후 "버그 발생 직전 시점까지 replay하면 어떻게 됐을까"를 검증할 때 이 replay 메커니즘을 써요. 과거 시점의 스냅숏을 떠서 별도 DB에 재구성해보고, 버그가 수정됐는지 확인한 뒤에야 운영 DB 마이그레이션을 진행해요. 금융권 감사에서도 "2024년 1월 1일 자정의 모든 계좌 잔고를 재구성해 보세요" 같은 요청을 replay로 처리해요.',
       why: '저장된 이벤트만으로 언제든지 과거·현재·미래(가정)의 상태를 완벽하게 재구성할 수 있게 하려고요.',
@@ -895,7 +895,7 @@ public class Order {
     file: 'UserMapper.java',
     code: `public class UserMapper {
   public static UserResponse toResponse(User user) {
-    System.out.println("[매핑] User → UserResponse");
+    System.out.println("[매핑] User -> UserResponse");
     return new UserResponse(
         user.getId(),
         user.getName(),
@@ -905,7 +905,7 @@ public class Order {
   }
 
   public static User toDomain(UserRequest req) {
-    System.out.println("[매핑] UserRequest → User");
+    System.out.println("[매핑] UserRequest -> User");
     return User.create(req.name(), new Email(req.email()));
   }
 }`,
@@ -924,10 +924,10 @@ public class Order {
       ],
       expectedOutput:
         'toResponse(user) 호출 시:\n' +
-        '[매핑] User → UserResponse\n' +
-        '→ UserResponse[id=1, name=kim, email=kim@test.com]\n' +
+        '[매핑] User -> UserResponse\n' +
+        '-> UserResponse[id=1, name=kim, email=kim@test.com]\n' +
         'toDomain(req) 호출 시:\n' +
-        '[매핑] UserRequest → User',
+        '[매핑] UserRequest -> User',
       realWorldUsage:
         '실제 프로젝트에서 API 버저닝 시 Mapper가 큰 역할을 해요. v1 API는 UserMapperV1.toResponse(), v2 API는 UserMapperV2.toResponse()로 서로 다른 DTO로 변환할 수 있어요. 도메인 로직은 그대로 두고 매퍼만 추가하면 API 버전이 늘어나도 도메인이 오염되지 않아요. MapStruct 같은 코드 생성 라이브러리로 Mapper 인터페이스만 정의하면 구현체를 자동 생성하기도 해요.',
       why: '변환 로직을 한 곳에 모아서 중복을 제거하고, 필드 추가·변경 시 누락을 방지하려고요.',
@@ -964,7 +964,7 @@ public class LegacyUserAdapter implements LoadUserPort {
         dto.getFullName(),
         new Email(dto.getEmailAddr())
     );
-    System.out.println("[변환] LegacyUserDto → User - 이름: " + user.getName());
+    System.out.println("[변환] LegacyUserDto -> User - 이름: " + user.getName());
     return Optional.of(user);
   }
 
@@ -996,12 +996,12 @@ public class LegacyUserAdapter implements LoadUserPort {
       expectedOutput:
         'findById(1L) - 데이터 존재 시:\n' +
         '[실행] 레거시 시스템 조회 - id: 1\n' +
-        '[변환] LegacyUserDto → User - 이름: kim\n\n' +
+        '[변환] LegacyUserDto -> User - 이름: kim\n\n' +
         'findById(999L) - 데이터 없음:\n' +
         '[실행] 레거시 시스템 조회 - id: 999\n' +
         '[결과] 레거시 데이터 없음',
       realWorldUsage:
-        '실제 프로젝트에서 메인프레임·레거시 ERP·구버전 API와 연동해야 할 때 ACL을 써요. "사용자"를 레거시는 CUST_MST 테이블에 CUST_NM 컬럼으로 관리하고, 우리는 users 테이블에 name 컬럼으로 관리한다면, ACL이 CUST_NM → name으로 맵핑해줘요. 레거시 시스템이 교체될 때 ACL 구현체만 바꾸면 되고, 도메인 코드는 영향을 받지 않아요.',
+        '실제 프로젝트에서 메인프레임·레거시 ERP·구버전 API와 연동해야 할 때 ACL을 써요. "사용자"를 레거시는 CUST_MST 테이블에 CUST_NM 컬럼으로 관리하고, 우리는 users 테이블에 name 컬럼으로 관리한다면, ACL이 CUST_NM -> name으로 맵핑해줘요. 레거시 시스템이 교체될 때 ACL 구현체만 바꾸면 되고, 도메인 코드는 영향을 받지 않아요.',
       why: '외부 시스템의 용어·모델·기술이 내부 도메인을 오염시키는 걸 방어하고, 외부 시스템 교체 시 영향을 최소화하려고요.',
       pitfall: 'ACL 없이 레거시 DTO를 서비스 레이어까지 그대로 전달하면, 레거시 용어가 도메인 전체에 퍼져나가서 나중에 수정할 곳이 수백 군데가 돼요. ACL은 경계에서 확실히 변환을 완료하고 도메인 모델만 통과시키세요.',
     },
@@ -1044,14 +1044,14 @@ package com.shop.user;`,
       expectedOutput:
         '패키지 구조는 콘솔 출력이 없어요. 대신 IDE에서 패키지 탐색기가 이렇게 보여요:\n' +
         'com.shop.user/\n' +
-        '  domain/ → User.java, Email.java, UserId.java\n' +
-        '  application/ → RegisterUserUseCase.java\n' +
-        '  adapter/in/web/ → UserController.java\n' +
-        '  adapter/out/persistence/ → JpaUserAdapter.java',
+        '  domain/ -> User.java, Email.java, UserId.java\n' +
+        '  application/ -> RegisterUserUseCase.java\n' +
+        '  adapter/in/web/ -> UserController.java\n' +
+        '  adapter/out/persistence/ -> JpaUserAdapter.java',
       realWorldUsage:
         '실제 마이크로서비스 프로젝트에서 각 서비스별로 기능 패키지 구조를 써요. user-service/는 com.shop.user 아래에, order-service/는 com.shop.order 아래에 모든 코드를 모아요. 새 개발자가 "주문 취소 로직을 고쳐주세요"라는 티켓을 받으면 order/ 폴더만 탐색하면 되고, 실수로 user/ 폴더를 건드릴 일이 없어서 변경 영향 범위가 명확해져요.',
       why: '도메인 기능 단위로 코드를 응집시켜서, 관련 코드 탐색이 쉽고 변경 영향 범위가 예측 가능하게 하려고요.',
-      pitfall: '도메인 패키지(domain/)가 웹(JPA, Controller) 패키지를 참조하면 의존성 방향이 거꾸로 흘러요. 의존성은 항상 바깥(adapter) → 안쪽(application) → 가장 안쪽(domain)으로만 향해야 해요.',
+      pitfall: '도메인 패키지(domain/)가 웹(JPA, Controller) 패키지를 참조하면 의존성 방향이 거꾸로 흘러요. 의존성은 항상 바깥(adapter) -> 안쪽(application) -> 가장 안쪽(domain)으로만 향해야 해요.',
     },
   },
 ];

@@ -36,12 +36,12 @@ export interface TypingController {
 
 /**
  * 라인 단위 타이핑 트레이너.
- * 각 줄이 독립 textarea → 중간 수정이 다른 줄에 영향 없음(연쇄 오타 방지),
+ * 각 줄이 독립 textarea -> 중간 수정이 다른 줄에 영향 없음(연쇄 오타 방지),
  * 클릭·방향키로 줄 사이 자유 이동. load()로 스니펫 교체.
  */
 export function initTypingEngine(opts: TypingOptions = {}): TypingController {
   const wrap = document.getElementById('ttWrap');
-  if (!wrap) return { load: () => {} };
+  if (!wrap) return { load: () => { } };
 
   const wpmVal = document.getElementById('wpmVal');
   const accVal = document.getElementById('accVal');
@@ -176,14 +176,14 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
       const opensBlock =
         targetLine.trimEnd().endsWith('{') ||
         (curLang === 'python' &&
-         /^\s*(def |class |if |elif |else|for |while |try |except |finally |with |match |case ).*:\s*$/.test(targetLine));
+          /^\s*(def |class |if |elif |else|for |while |try |except |finally |with |match |case ).*:\s*$/.test(targetLine));
 
       if (opensBlock) {
         const ts = appStore.getState().tabSize;
         indent += ' '.repeat(ts);
       }
 
-      // 닫는 중괄호 감지 → 아웃덴트
+      // 닫는 중괄호 감지 -> 아웃덴트
       const nextTarget = LINES[next];
       if (/^\s*\}/.test(nextTarget)) {
         const ts = appStore.getState().tabSize;
@@ -247,9 +247,9 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
     if (e.key === 'Backspace' && s === 0 && en === 0 && li > 0) {
       e.preventDefault();
       focusLine(li - 1, inputs[li - 1].value.length);
-return;
+      return;
     }
-    // 줄 안 중간 입력은 '삽입'이 아닌 '덮어쓰기' → 뒤 글자 밀림 방지
+    // 줄 안 중간 입력은 '삽입'이 아닌 '덮어쓰기' -> 뒤 글자 밀림 방지
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
       const isOverwrite = appStore.getState().overwriteMode;
       if (isOverwrite && s === en && s < len) {

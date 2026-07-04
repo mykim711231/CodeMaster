@@ -277,7 +277,7 @@ public class TaskController {
   {
     id: 'mvc-request-body',
     lang: 'java',
-    title: '@RequestBody JSON → 객체',
+    title: '@RequestBody JSON -> 객체',
     file: 'SignupController.java',
     code: `import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -578,7 +578,7 @@ public class GlobalExceptionHandler {
         '@RestControllerAdvice는 애플리케이션 전체의 모든 컨트롤러에서 발생하는 예외를 한 곳에서 통일되게 처리하는 전역 예외 처리기예요. ' +
         '각 컨트롤러마다 @ExceptionHandler를 복사할 필요 없이, IllegalArgumentExeption이 어디서 발생하든 이 클래스로 모여서 처리돼요. ' +
         '회사 안내 데스크와 같아요 - 어떤 부서(컨트롤러)에서 문제(예외)가 생겨도 안내 데스크(Advice)가 일관된 방식으로 응대해줘요. ' +
-        '실무에서는 NotFoundException → 404, IllegalArgumentException → 400, RuntimeException → 500 같은 매핑 테이블을 여기에 작성해요.',
+        '실무에서는 NotFoundException -> 404, IllegalArgumentException -> 400, RuntimeException -> 500 같은 매핑 테이블을 여기에 작성해요.',
       terms: [
         { t: '@RestControllerAdvice', d: '모든 @RestController에서 발생하는 예외를 가로채 처리하는 전역 AOP 설정이에요' },
         { t: '@ExceptionHandler', d: '처리할 예외 타입을 하나씩 등록해요 - 여러 메서드로 다양한 예외를 처리할 수 있어요' },
@@ -772,7 +772,7 @@ public class PublicController {
       ],
       why:
         '프론트엔드(React 등)가 다른 도메인의 API를 안전하게 호출할 수 있도록 허용하려고 써요. ' +
-        '개발 중에는 localhost:3000 → localhost:8080처럼 포트가 달라도 CORS가 막아서 이 설정이 필수예요.',
+        '개발 중에는 localhost:3000 -> localhost:8080처럼 포트가 달라도 CORS가 막아서 이 설정이 필수예요.',
       expectedOutput:
         'GET /public 호출 시:\n' +
         '[실행] GET /public - CORS 허용 요청\n' +

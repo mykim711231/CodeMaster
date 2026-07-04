@@ -70,7 +70,7 @@ public class UserService {
         '@Service는 @Component와 기능이 완전히 똑같지만, "이 클래스는 비즈니스 로직을 담당하는 서비스 계층이에요"라고 코드 읽는 사람에게 의미를 전달해줘요. ' +
         '식당의 주방장이 요리사와 같은 직원이지만 "주방장"이라는 역할이 다른 것처럼, @Service는 "이 클래스는 핵심 업무 규칙을 처리해요"라는 역할 표시예요. ' +
         '생성자에 UserRepository를 매개변수로 받고 있는데, 스프링이 UserService를 만들 때 UserRepository 빈을 찾아서 자동으로 넣어줘요(생성자 주입). ' +
-        '실무에서는 Controller → Service → Repository의 3계층 구조에서 중간 허리 역할을 맡아서, 컨트롤러의 요청을 받아 리포지토리에 위임하고 결과를 가공해 반환해요.',
+        '실무에서는 Controller -> Service -> Repository의 3계층 구조에서 중간 허리 역할을 맡아서, 컨트롤러의 요청을 받아 리포지토리에 위임하고 결과를 가공해 반환해요.',
       terms: [
         { t: '@Service', d: '비즈니스 로직을 처리하는 서비스 계층임을 나타내요 - @Component와 동작은 같지만 역할을 명확히 해줘요' },
         { t: 'private final UserRepository repo', d: '데이터 접근을 담당하는 리포지토리를 final로 선언해 생성 후 변경을 막아요' },
@@ -87,7 +87,7 @@ public class UserService {
         '[결과] 조회된 사용자: User{id=1, name=\'kim\'}',
       realWorldUsage:
         '실제로 회원가입 API에서 POST /users 요청이 오면 UserController.join()이 UserService.join()을 호출하고, ' +
-        '여기서 "이미 가입된 이메일인지 검사 → 비밀번호 암호화 → DB 저장"이라는 비즈니스 흐름이 실행돼요.',
+        '여기서 "이미 가입된 이메일인지 검사 -> 비밀번호 암호화 -> DB 저장"이라는 비즈니스 흐름이 실행돼요.',
       pitfall: '생성자가 1개면 @Autowired 생략이 가능하지만, 생성자가 2개 이상이면 반드시 @Autowired를 붙여야 스프링이 어떤 생성자로 주입할지 알 수 있어요.',
     },
   },
@@ -128,7 +128,7 @@ public class UserRepository {
         { t: 'save(User user)', d: '사용자 객체를 저장소에 넣는 메서드예요 - ID가 키 역할을 해요' },
       ],
       why:
-        '데이터 저장 기술(JDBC → JPA → MyBatis)이 바뀌어도 서비스 계층 코드는 변경하지 않고 리포지토리만 교체하려고 써요. ' +
+        '데이터 저장 기술(JDBC -> JPA -> MyBatis)이 바뀌어도 서비스 계층 코드는 변경하지 않고 리포지토리만 교체하려고 써요. ' +
         '서비스는 "findById"라는 인터페이스만 바라보고, 구현체가 HashMap이든 Oracle이든 상관하지 않아요.',
       expectedOutput:
         'save(new User(1L, "kim")) 후 findById(1L) 호출:\n' +
@@ -221,7 +221,7 @@ public class DataSourceConfig {
       ],
       why:
         '관련 빈들을 한 클래스에 모아서 설정을 체계적으로 관리하려고 써요. ' +
-        'DataSource → JdbcTemplate → TransactionManager처럼 의존성 체인이 있는 빈들을 한눈에 볼 수 있어요.',
+        'DataSource -> JdbcTemplate -> TransactionManager처럼 의존성 체인이 있는 빈들을 한눈에 볼 수 있어요.',
       expectedOutput:
         '스프링 부트 시작 시:\n' +
         '[실행] DataSource 빈 생성\n' +
@@ -477,7 +477,7 @@ public class NotificationService {
         '[실행] 알림 발송: hello',
       realWorldUsage:
         '실제로 메인 DB(쓰기용)와 리플리카 DB(읽기용)를 구분할 때 @Qualifier("masterDataSource")와 @Qualifier("slaveDataSource")로 구분해서 주입해요.',
-      pitfall: '빈 이름은 기본적으로 클래스명의 첫 글자를 소문자로 바꾼 값이에요 (EmailSender → emailSender). 명시적으로 이름을 지정하려면 @Component("myName")처럼 써요.',
+      pitfall: '빈 이름은 기본적으로 클래스명의 첫 글자를 소문자로 바꾼 값이에요 (EmailSender -> emailSender). 명시적으로 이름을 지정하려면 @Component("myName")처럼 써요.',
     },
   },
   {
@@ -945,7 +945,7 @@ public class ConnectionPool {
 }`,
     explain: {
       concept:
-        '@PostConstruct와 @PreDestroy는 빈의 생명주기(탄생→사용→소멸)의 특정 시점에 자동으로 호출되는 콜백 메서드예요. ' +
+        '@PostConstruct와 @PreDestroy는 빈의 생명주기(탄생->사용->소멸)의 특정 시점에 자동으로 호출되는 콜백 메서드예요. ' +
         '@PostConstruct는 빈이 생성되고 의존성 주입이 모두 완료된 직후에 한 번 실행돼서, DB 커넥션 풀 초기화나 리소스 할당 같은 시작 작업에 쓰여요. ' +
         '@PreDestroy는 스프링 컨테이너가 종료되기 직전에 실행돼서, 열었던 커넥션을 닫거나 임시 파일을 정리하는 정리 작업에 딱이에요. ' +
         'try-finally로 수동 관리할 필요 없이 스프링에게 "열고 닫는 타이밍"을 맡길 수 있어서 리소스 누수를 예방할 수 있어요.',

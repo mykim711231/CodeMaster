@@ -69,7 +69,7 @@ print(f"[변환] view(3,2):\n{z}")`,
         { t: 'torch.arange(6)', d: '0부터 5까지의 정수로 채워진 1차원 텐서를 생성해요.' },
       ],
       why:
-        '실무에서 CNN에 이미지를 입력할 때 (H, W, C) → (C, H, W) 순서로 채널 차원을 재배치하거나, 평탄화(Flatten)할 때 reshape으로 모양을 바꿔요.',
+        '실무에서 CNN에 이미지를 입력할 때 (H, W, C) -> (C, H, W) 순서로 채널 차원을 재배치하거나, 평탄화(Flatten)할 때 reshape으로 모양을 바꿔요.',
       expectedOutput:
         '실행 시:\n' +
         '[원본] shape: torch.Size([6]), 값: tensor([0, 1, 2, 3, 4, 5])\n' +
@@ -81,7 +81,7 @@ print(f"[변환] view(3,2):\n{z}")`,
         '        [2, 3],\n' +
         '        [4, 5]])',
       realWorldUsage:
-        '실제 NLP 프로젝트에서 (시퀀스길이, 배치, 은닉차원) → (배치, 시퀀스길이, 은닉차원)으로 reshape해서 RNN 레이어에 입력해요.',
+        '실제 NLP 프로젝트에서 (시퀀스길이, 배치, 은닉차원) -> (배치, 시퀀스길이, 은닉차원)으로 reshape해서 RNN 레이어에 입력해요.',
       pitfall: 'reshape과 view 모두 전체 원소 수가 정확히 일치해야 해요. 6개 원소를 2x4(8칸)로 바꾸려고 하면 RuntimeError가 발생해요.',
     },
   },
@@ -96,10 +96,10 @@ x = torch.tensor([1, 2, 3])
 print(f"[정보] 원본 dtype: {x.dtype}")
 
 f = x.float()
-print(f"[변환] float() → dtype: {f.dtype}, 값: {f}")
+print(f"[변환] float() -> dtype: {f.dtype}, 값: {f}")
 
 l = x.long()
-print(f"[변환] long() → dtype: {l.dtype}, 값: {l}")`,
+print(f"[변환] long() -> dtype: {l.dtype}, 값: {l}")`,
     explain: {
       concept:
         '텐서의 dtype은 각 원소가 어떤 자료형(정수, 실수)으로 저장되는지를 결정해요. ' +
@@ -117,8 +117,8 @@ print(f"[변환] long() → dtype: {l.dtype}, 값: {l}")`,
       expectedOutput:
         '실행 시:\n' +
         '[정보] 원본 dtype: torch.int64\n' +
-        '[변환] float() → dtype: torch.float32, 값: tensor([1., 2., 3.])\n' +
-        '[변환] long() → dtype: torch.int64, 값: tensor([1, 2, 3])',
+        '[변환] float() -> dtype: torch.float32, 값: tensor([1., 2., 3.])\n' +
+        '[변환] long() -> dtype: torch.int64, 값: tensor([1, 2, 3])',
       realWorldUsage:
         '실제 분류 모델 학습 루프에서 "모델 출력(logits)은 float32, 정답 라벨은 long"으로 dtype을 맞춰서 손실 함수에 전달하지 않으면 RuntimeError가 발생해요.',
       pitfall: 'PyTorch의 기본 dtype은 float32지만, NumPy에서 불러온 데이터는 float64인 경우가 많아서 dtype 불일치로 연산 오류가 발생할 수 있어요.',
@@ -185,7 +185,7 @@ print(f"[정보] 결과 shape: {c.shape}")`,
       terms: [
         { t: 'a @ b', d: '파이썬 3.5+에서 도입된 행렬 곱셈 연산자예요. torch.matmul(a, b)와 같아요.' },
         { t: 'torch.matmul(a, b)', d: '@ 연산자와 동일한 기능의 함수 버전이에요. 가독성에 따라 선택해요.' },
-        { t: 'c.shape', d: '행렬 곱셈 결과의 모양이에요. (2,2) @ (2,2) → (2,2)가 돼요.' },
+        { t: 'c.shape', d: '행렬 곱셈 결과의 모양이에요. (2,2) @ (2,2) -> (2,2)가 돼요.' },
         { t: '[[1.0, 2.0], [3.0, 4.0]]', d: '2행 2열의 2차원 텐서(행렬)를 직접 생성하는 구문이에요.' },
       ],
       why:
@@ -257,7 +257,7 @@ layer = nn.Linear(3, 2)
 x = torch.tensor([1.0, 2.0, 3.0])
 
 out = layer(x)
-print(f"[실행] nn.Linear(3→2) 순전파")
+print(f"[실행] nn.Linear(3->2) 순전파")
 print(f"[입력] x: {x}")
 print(f"[출력] out: {out}")
 print(f"[정보] 출력 shape: {out.shape}")
@@ -270,7 +270,7 @@ print(f"[정보] 가중치 shape: {layer.weight.shape}, 편향 shape: {layer.bia
         'nn.Linear(3, 2)는 3차원 입력을 받아 2차원 출력을 내는 층으로, weight는 (2, 3) 모양, bias는 (2,) 모양을 가져요. ' +
         '모든 신경망은 이 Linear 층과 활성 함수를 번갈아 쌓아 올린 구조예요.',
       terms: [
-        { t: 'nn.Linear(3, 2)', d: '입력 3개 → 출력 2개로 변환하는 선형 변환 층을 생성해요.' },
+        { t: 'nn.Linear(3, 2)', d: '입력 3개 -> 출력 2개로 변환하는 선형 변환 층을 생성해요.' },
         { t: 'layer(x)', d: 'nn.Module을 함수처럼 호출하면 내부의 forward()가 실행돼요.' },
         { t: 'layer.weight', d: '학습 가능한 가중치 행렬이에요. shape=(out_features, in_features).' },
         { t: 'layer.bias', d: '학습 가능한 편향 벡터예요. shape=(out_features,).' },
@@ -279,7 +279,7 @@ print(f"[정보] 가중치 shape: {layer.weight.shape}, 편향 shape: {layer.bia
         '실무에서 완전연결 신경망(Fully Connected Network)은 nn.Linear를 여러 겹 쌓고, 사이사이에 ReLU 같은 활성 함수를 넣어서 구성해요.',
       expectedOutput:
         '실행 시:\n' +
-        '[실행] nn.Linear(3→2) 순전파\n' +
+        '[실행] nn.Linear(3->2) 순전파\n' +
         '[입력] x: tensor([1., 2., 3.])\n' +
         '[출력] out: tensor([-0.5234,  0.8912], grad_fn=<AddBackward0>)\n' +
         '[정보] 출력 shape: torch.Size([2])\n' +
@@ -359,14 +359,14 @@ model = Net()
 x = torch.randn(4)
 out = model(x)
 print(f"[입력] x shape: {x.shape}")
-print(f"[순전파] fc1(4→8) → ReLU → fc2(8→1)")
+print(f"[순전파] fc1(4->8) -> ReLU -> fc2(8->1)")
 print(f"[출력] out: {out}")
 print(f"[정보] 출력 shape: {out.shape}")`,
     explain: {
       concept:
         'forward()는 입력 데이터가 모델의 모든 레이어를 순서대로 통과하면서 최종 출력을 만들어내는 경로를 정의해요. ' +
         'model(x)처럼 모델 객체를 직접 호출하면 PyTorch가 자동으로 forward()를 실행해줘요. ' +
-        '여기서는 fc1(4→8) → ReLU → fc2(8→1) 순서로 데이터가 흘러가요. ReLU는 음수를 0으로 만드는 활성 함수로, 층 사이에 비선형성을 추가해줘요. ' +
+        '여기서는 fc1(4->8) -> ReLU -> fc2(8->1) 순서로 데이터가 흘러가요. ReLU는 음수를 0으로 만드는 활성 함수로, 층 사이에 비선형성을 추가해줘요. ' +
         '실제 딥러닝 모델의 forward()는 수십 개의 레이어와 스킵 커넥션, 정규화 층 등이 복잡하게 얽혀 있어요.',
       terms: [
         { t: 'def forward(self, x)', d: '데이터가 흘러가는 순전파 경로를 정의하는 메서드예요.' },
@@ -375,11 +375,11 @@ print(f"[정보] 출력 shape: {out.shape}")`,
         { t: 'torch.randn(4)', d: '표준정규분포에서 무작위로 4개의 값을 생성해 더미 입력 데이터로 써요.' },
       ],
       why:
-        '실무에서 CNN의 forward()는 Conv → BN → ReLU → Pool을 여러 번 반복하고, Transformer의 forward()는 Self-Attention → FFN을 여러 번 쌓아요. forward를 이해하는 게 모델 설계의 핵심이에요.',
+        '실무에서 CNN의 forward()는 Conv -> BN -> ReLU -> Pool을 여러 번 반복하고, Transformer의 forward()는 Self-Attention -> FFN을 여러 번 쌓아요. forward를 이해하는 게 모델 설계의 핵심이에요.',
       expectedOutput:
         '실행 시:\n' +
         '[입력] x shape: torch.Size([4])\n' +
-        '[순전파] fc1(4→8) → ReLU → fc2(8→1)\n' +
+        '[순전파] fc1(4->8) -> ReLU -> fc2(8->1)\n' +
         '[출력] out: tensor([-0.2341], grad_fn=<AddBackward0>)\n' +
         '[정보] 출력 shape: torch.Size([1])',
       realWorldUsage:
@@ -402,7 +402,7 @@ r = F.relu(x)
 s = torch.sigmoid(x)
 t = torch.tanh(x)
 
-print(f"[ReLU] 음수→0: {r}")
+print(f"[ReLU] 음수->0: {r}")
 print(f"[Sigmoid] 0~1: {s}")
 print(f"[Tanh] -1~1: {t}")`,
     explain: {
@@ -423,7 +423,7 @@ print(f"[Tanh] -1~1: {t}")`,
       expectedOutput:
         '실행 시:\n' +
         '[입력] x: tensor([-2., -1.,  0.,  1.,  2.])\n' +
-        '[ReLU] 음수→0: tensor([0., 0., 0., 1., 2.])\n' +
+        '[ReLU] 음수->0: tensor([0., 0., 0., 1., 2.])\n' +
         '[Sigmoid] 0~1: tensor([0.1192, 0.2689, 0.5000, 0.7311, 0.8808])\n' +
         '[Tanh] -1~1: tensor([-0.9640, -0.7616,  0.0000,  0.7616,  0.9640])',
       realWorldUsage:
@@ -500,7 +500,7 @@ print(f"[갱신] step() - 가중치 업데이트 완료")`,
       concept:
         '옵티마이저(Optimizer)는 손실을 줄이는 방향으로 모델의 가중치를 조금씩 갱신하는 알고리즘이에요. ' +
         'SGD(확률적 경사 하강법)는 가장 기본적인 옵티마이저로, 현재 위치에서 손실이 가장 가파르게 감소하는 방향(기울기의 반대 방향)으로 lr(학습률)만큼 이동해요. ' +
-        '한 번의 학습 단계는 zero_grad(기울기 초기화) → 순전파 → loss 계산 → backward(기울기 계산) → step(가중치 갱신) 순서로 이뤄져요. ' +
+        '한 번의 학습 단계는 zero_grad(기울기 초기화) -> 순전파 -> loss 계산 -> backward(기울기 계산) -> step(가중치 갱신) 순서로 이뤄져요. ' +
         'zero_grad를 먼저 호출하지 않으면 이전 배치의 기울기가 누적돼서 학습이 엉망이 돼요.',
       terms: [
         { t: 'torch.optim.SGD(model.parameters(), lr=0.01)', d: 'SGD 옵티마이저를 생성하고 학습률 0.01로 설정해요.' },
@@ -517,7 +517,7 @@ print(f"[갱신] step() - 가중치 업데이트 완료")`,
         '[갱신] step() - 가중치 업데이트 완료',
       realWorldUsage:
         '실제 GPT 모델 학습 시 AdamW 옵티마이저를 사용하고, 학습률 스케줄러와 함께 수천억 파라미터의 가중치를 수개월에 걸쳐 조금씩 갱신해요.',
-      pitfall: 'zero_grad()를 backward() 직전이 아닌, 이미 backward() 이후에 호출하면 방금 계산한 기울기가 지워져서 step()이 아무 일도 안 하게 돼요. 올바른 순서: 순전파 → loss → zero_grad → backward → step.',
+      pitfall: 'zero_grad()를 backward() 직전이 아닌, 이미 backward() 이후에 호출하면 방금 계산한 기울기가 지워져서 step()이 아무 일도 안 하게 돼요. 올바른 순서: 순전파 -> loss -> zero_grad -> backward -> step.',
     },
   },
   {
@@ -548,7 +548,7 @@ for epoch in range(50):
 print(f"[완료] 최종 loss: {loss.item():.4f}")`,
     explain: {
       concept:
-        '학습 반복문(Training Loop)은 한 번의 학습이 아니라, 여러 epoch에 걸쳐 예측→손실→기울기→갱신을 반복해서 모델을 점진적으로 개선하는 과정이에요. ' +
+        '학습 반복문(Training Loop)은 한 번의 학습이 아니라, 여러 epoch에 걸쳐 예측->손실->기울기->갱신을 반복해서 모델을 점진적으로 개선하는 과정이에요. ' +
         '매 epoch마다 모든 훈련 데이터를 한 번씩 모델에 통과시켜서 예측을 만들고, 손실을 계산하고, 기울기를 구해서 가중치를 갱신해요. ' +
         'epoch가 진행될수록 loss가 감소하는 모습을 볼 수 있는데, 이게 바로 "모델이 배우고 있다"는 증거예요. ' +
         '실무에서는 전체 데이터를 한 번에 넣지 않고 DataLoader로 배치 단위로 나눠서 넣고, 수백~수천 epoch를 반복해요.',
@@ -570,7 +570,7 @@ print(f"[완료] 최종 loss: {loss.item():.4f}")`,
         '  epoch  40 - loss: 0.1234\n' +
         '[완료] 최종 loss: 0.0987',
       realWorldUsage:
-        '실제 언어 모델 학습 스크립트에서 학습 루프는 "for epoch → for batch → forward → loss → backward → step → log → checkpoint" 패턴으로 구성돼요.',
+        '실제 언어 모델 학습 스크립트에서 학습 루프는 "for epoch -> for batch -> forward -> loss -> backward -> step -> log -> checkpoint" 패턴으로 구성돼요.',
       pitfall: '손실이 처음부터 줄어들지 않고 진동하거나 NaN이 나오면, 학습률(lr)이 너무 크다는 신호예요. lr을 1/10씩 낮춰보는 게 첫 번째 대응이에요.',
     },
   },
@@ -761,7 +761,7 @@ print(f"[정보] 총 레이어 수: {len(model.layers)}")`,
         '[정보] 총 레이어 수: 3',
       realWorldUsage:
         '실제 프로토타입 개발 시 Sequential로 빠르게 모델을 만들고 실험한 뒤, 성능이 확인되면 Functional API로 리팩토링해서 Skip Connection 같은 고급 기능을 추가해요.',
-      pitfall: 'Sequential은 단일 입력 → 단일 출력의 직선 흐름만 지원해요. 다중 입력, 다중 출력, 레이어 간 분기·병합이 필요하면 Functional API를 써야 해요.',
+      pitfall: 'Sequential은 단일 입력 -> 단일 출력의 직선 흐름만 지원해요. 다중 입력, 다중 출력, 레이어 간 분기·병합이 필요하면 Functional API를 써야 해요.',
     },
   },
   {
@@ -816,7 +816,7 @@ import torch.nn as nn
 
 model = nn.Linear(3, 1)
 torch.save(model.state_dict(), "model.pt")
-print(f"[저장] 모델 가중치 저장 → model.pt")
+print(f"[저장] 모델 가중치 저장 -> model.pt")
 
 new = nn.Linear(3, 1)
 new.load_state_dict(torch.load("model.pt", weights_only=True))
@@ -839,7 +839,7 @@ print(f"[검증] 동일 구조 모델에 가중치 이식 성공")`,
         '실무에서는 수주 동안 학습한 모델의 가중치를 state_dict로 저장하고, 예측 서버에서 동일한 모델 구조를 생성한 뒤 load_state_dict로 가중치만 불러와서 서빙해요.',
       expectedOutput:
         '실행 시:\n' +
-        '[저장] 모델 가중치 저장 → model.pt\n' +
+        '[저장] 모델 가중치 저장 -> model.pt\n' +
         '[로드] 가중치 불러오기 완료\n' +
         '[검증] 동일 구조 모델에 가중치 이식 성공',
       realWorldUsage:

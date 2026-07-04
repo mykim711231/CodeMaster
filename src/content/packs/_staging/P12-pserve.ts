@@ -482,7 +482,7 @@ llm = Llama(
 )
 ctx = llm.n_ctx()
 print(f"[결과] 컨텍스트 창 크기: {ctx}")
-print(f"[정보] n_gpu_layers=0 → CPU 전용 모드")`,
+print(f"[정보] n_gpu_layers=0 -> CPU 전용 모드")`,
     explain: {
       concept:
         '양자화(Quantization)는 모델의 가중치(숫자들)를 더 적은 비트로 표현해서 파일 크기와 메모리 사용량을 줄이는 기법이에요. ' +
@@ -499,9 +499,9 @@ print(f"[정보] n_gpu_layers=0 → CPU 전용 모드")`,
       why:
         '적절한 양자화 수준을 선택하면 품질 손실을 최소화하면서도 메모리 사용량을 1/4로 줄일 수 있어서, 제한된 하드웨어에서 최대 성능을 뽑을 수 있어요.',
       expectedOutput:
-        '[결과] 컨텍스트 창 크기: 2048\n[정보] n_gpu_layers=0 → CPU 전용 모드',
+        '[결과] 컨텍스트 창 크기: 2048\n[정보] n_gpu_layers=0 -> CPU 전용 모드',
       realWorldUsage:
-        '엣지 디바이스(스마트폰, IoT 기기)에 탑재할 온디바이스 AI 모델을 선정할 때, q4_k_m → q2_k로 점점 압축률을 높여가며 "허용 가능한 품질下限"을 찾는 실험을 해요.',
+        '엣지 디바이스(스마트폰, IoT 기기)에 탑재할 온디바이스 AI 모델을 선정할 때, q4_k_m -> q2_k로 점점 압축률을 높여가며 "허용 가능한 품질下限"을 찾는 실험을 해요.',
       pitfall:
         'q2_k 같은 극단적 압축은 모델 품질이 현저히 떨어져서 말이 어색해지거나 사실을 왜곡할 수 있어요. 서비스 용도라면 q4_k_m 이상을 권장해요.',
     },
@@ -747,7 +747,7 @@ batch = tok(
 )
 shape = batch['input_ids'].shape
 print(f"[결과] 배치 텐서 shape: {shape}  (batch_size={shape[0]}, seq_len={shape[1]})")
-print(f"[정보] padding 토큰 id: {tok.pad_token_id if tok.pad_token_id else 'gpt2는 기본 pad_token 없음 → eos_token 사용'}")`,
+print(f"[정보] padding 토큰 id: {tok.pad_token_id if tok.pad_token_id else 'gpt2는 기본 pad_token 없음 -> eos_token 사용'}")`,
     explain: {
       concept:
         '배치 추론에서 여러 문장을 한 번에 GPU에 넣으려면, 모든 문장의 길이가 같아야 해요. ' +
@@ -763,7 +763,7 @@ print(f"[정보] padding 토큰 id: {tok.pad_token_id if tok.pad_token_id else '
       why:
         'GPU는 병렬 연산에 최적화되어 있어서, 텐서 모양이 깔끔한 직사각형일 때 가장 효율적으로 동작해요. 패딩으로 모양을 맞추면 GPU 활용률이 극대화돼요.',
       expectedOutput:
-        '[결과] 배치 텐서 shape: torch.Size([2, 8])  (batch_size=2, seq_len=8)\n[정보] padding 토큰 id: gpt2는 기본 pad_token 없음 → eos_token 사용',
+        '[결과] 배치 텐서 shape: torch.Size([2, 8])  (batch_size=2, seq_len=8)\n[정보] padding 토큰 id: gpt2는 기본 pad_token 없음 -> eos_token 사용',
       realWorldUsage:
         '리뷰 감정 분석 API에서 100개의 리뷰를 한 배치로 묶어 처리할 때, 트위터 길이 리뷰와 블로그 길이 리뷰가 섞여 있으면 padding으로 길이를 맞춰야 합니다. 안 그러면 shape mismatch 오류가 발생해요.',
       pitfall:

@@ -115,7 +115,7 @@ public class NameService {
     return Mono.just(name)
       .map(s -> {
         String result = s.toUpperCase();
-        System.out.println("[변환] map - " + s + " → " + result);
+        System.out.println("[변환] map - " + s + " -> " + result);
         return result;
       });
   }
@@ -138,7 +138,7 @@ public class NameService {
         'map은 1:1 변환이라서 결과 타입도 여전히 Mono<String>으로 유지돼요.',
       expectedOutput:
         '[실행] shout - input: hello\n' +
-        '[변환] map - hello → HELLO\n' +
+        '[변환] map - hello -> HELLO\n' +
         '(구독 시 "HELLO" 반환)',
       realWorldUsage:
         '실제 API에서 DB에서 조회한 Entity를 DTO로 변환하거나, ' +
@@ -188,7 +188,7 @@ public class UserService {
         'flatMap은 "앞 상자를 열고 그 값을 받아서 다음 비동기 상자로 이어주는" 연결 도구예요. ' +
         'findById(id)가 User를 담은 Mono를 반환하고, flatMap이 이 User를 꺼내서 "hi Alice"라는 인사말을 새 Mono에 담아줘요. ' +
         'map과의 차이는, flatMap은 람다 안에서 반환하는 타입이 Mono(또는 Flux)인 경우를 처리해준다는 점이에요. ' +
-        '실무에서는 DB 조회 → API 호출 → 변환 같은 비동기 체인 연결에 flatMap이 핵심이에요.',
+        '실무에서는 DB 조회 -> API 호출 -> 변환 같은 비동기 체인 연결에 flatMap이 핵심이에요.',
       terms: [
         { t: 'flatMap(u -> ...)', d: '앞 Mono의 값(u)을 받아 새 Mono(또는 Flux)로 변환하고 상자를 평탄화해요' },
         { t: 'findById(id)', d: '비동기로 사용자 정보를 조회해 Mono<User>로 반환하는 메서드예요' },
@@ -197,7 +197,7 @@ public class UserService {
         { t: 'u.getName()', d: 'flatMap이 풀어준 User 객체에서 이름을 뽑아내는 게터 호출이에요' },
       ],
       why:
-        '비동기 작업(DB 조회 → HTTP 호출 → 결과 변환)을 순서대로 이어서 하나의 흐름으로 만들려고요. ' +
+        '비동기 작업(DB 조회 -> HTTP 호출 -> 결과 변환)을 순서대로 이어서 하나의 흐름으로 만들려고요. ' +
         'flatMap 덕분에 콜백 지옥 없이 깔끔한 체이닝이 돼요.',
       expectedOutput:
         '[실행] greeting - id: 1\n' +
@@ -205,11 +205,11 @@ public class UserService {
         '[비동기] flatMap - hi Alice\n' +
         '(구독 시 "hi Alice" 반환)',
       realWorldUsage:
-        '실제 WebFlux 서비스에서 "회원 조회(findById) → 권한 확인(checkPermission, 외부 API) → 응답 변환(toDto)"처럼 ' +
+        '실제 WebFlux 서비스에서 "회원 조회(findById) -> 권한 확인(checkPermission, 외부 API) -> 응답 변환(toDto)"처럼 ' +
         '여러 비동기 단계를 flatMap 체인으로 순차 실행하는 게 표준 패턴이에요.',
       pitfall:
         'map을 쓰면 Mono 안에 Mono가 겹쳐 Mono<Mono<String>>이 돼요. ' +
-        '비동기 연쇄(앞 결과 → 다음 비동기 호출)는 항상 flatMap을 쓰세요. IDE 타입 힌트를 보면 실수를 방지할 수 있어요.',
+        '비동기 연쇄(앞 결과 -> 다음 비동기 호출)는 항상 flatMap을 쓰세요. IDE 타입 힌트를 보면 실수를 방지할 수 있어요.',
     },
   },
   {
@@ -272,7 +272,7 @@ public class PairService {
         '(구독 시 "Alice:ACTIVE" 반환)',
       realWorldUsage:
         '실제 API에서 상품 정보(ProductService, 50ms)와 리뷰 평점(ReviewService, 80ms)을 Mono.zip으로 병렬 조회해 ' +
-        '순차 130ms → 병렬 80ms로 응답 속도를 개선하는 패턴이 흔해요.',
+        '순차 130ms -> 병렬 80ms로 응답 속도를 개선하는 패턴이 흔해요.',
       pitfall:
         'zip에 참여한 Mono 중 하나라도 빈 Mono(Mono.empty())면 zip 결과 전체가 빈 Mono가 돼요. ' +
         '한쪽은 없을 수 있으면 zip 대신 defaultIfEmpty 같은 대체값을 먼저 붙이고 zip을 쓰세요.',
@@ -304,7 +304,7 @@ public class UserR2dbcDao {
       .sql("select id, name from users")
       .map((row, meta) -> {
         UserEntity user = new UserEntity(row.get("id", Long.class), row.get("name", String.class));
-        System.out.println("[매핑] row → " + user);
+        System.out.println("[매핑] row -> " + user);
         return user;
       })
       .all();
@@ -336,8 +336,8 @@ public class UserR2dbcDao {
         '논블로킹으로 DB 결과를 Flux 스트림으로 받아 리액티브 파이프라인과 자연스럽게 연결하려고요.',
       expectedOutput:
         '[실행] findAll - R2DBC 조회\n' +
-        '[매핑] row → UserEntity(id=1, name=Alice)\n' +
-        '[매핑] row → UserEntity(id=2, name=Bob)\n' +
+        '[매핑] row -> UserEntity(id=1, name=Alice)\n' +
+        '[매핑] row -> UserEntity(id=2, name=Bob)\n' +
         '(Flux<UserEntity>로 Alice, Bob 순차 방출)',
       realWorldUsage:
         '실제 실시간 모니터링 시스템에서 수백만 건의 로그를 R2DBC Flux로 스트리밍해, ' +
@@ -729,7 +729,7 @@ import org.springframework.stereotype.Service;
 public class BatchService {
 
   public Mono<List<String>> allNames() {
-    System.out.println("[실행] allNames - Flux → List");
+    System.out.println("[실행] allNames - Flux -> List");
     return findAllNames()
       .collectList()
       .doOnNext(list -> System.out.println("[결과] 수집된 개수: " + list.size()));
@@ -756,7 +756,7 @@ public class BatchService {
         '개별 항목을 스트리밍하다가 특정 시점에 전체를 모아서 일괄 처리하려고요. ' +
         '예: 100개씩 청크로 모아서 DB batch INSERT를 실행하거나, 전체를 모아서 JSON 배열로 한 번에 응답할 때 써요.',
       expectedOutput:
-        '[실행] allNames - Flux → List\n' +
+        '[실행] allNames - Flux -> List\n' +
         '[결과] 수집된 개수: 3',
       realWorldUsage:
         '실제 WebFlux API에서 DB에서 Flux로 읽은 결과를 컨트롤러 반환 직전 collectList()로 모아 ' +

@@ -81,7 +81,7 @@ initStats();
 initSettings();
 initResize();
 
-// 타이핑 트레이너 (학습팩 → 엔진, "다음 문제"·팩 전환, 완료 시 세션 기록)
+// 타이핑 트레이너 (학습팩 -> 엔진, "다음 문제"·팩 전환, 완료 시 세션 기록)
 initTrainer();
 
 updateTopbar();

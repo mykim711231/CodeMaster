@@ -241,7 +241,7 @@ print(f"[정보] PeftModel인가? {isinstance(merged, PeftModel)}")`,
       expectedOutput:
         '[실행] merge_and_unload() 완료 - 모델 타입: LlamaForCausalLM\n[정보] PeftModel인가? False',
       realWorldUsage:
-        '파인튜닝 완료 후 merge_and_unload() → save_pretrained()로 단일 모델을 저장하고, 이를 GGUF로 양자화해서 엣지 디바이스에 배포해요. 병합하지 않으면 GGUF 변환기가 LoRA 구조를 이해하지 못해요.',
+        '파인튜닝 완료 후 merge_and_unload() -> save_pretrained()로 단일 모델을 저장하고, 이를 GGUF로 양자화해서 엣지 디바이스에 배포해요. 병합하지 않으면 GGUF 변환기가 LoRA 구조를 이해하지 못해요.',
       pitfall:
         '한 번 병합하면 어댑터를 다시 분리할 수 없어요. 원본 베이스 모델과 어댑터 파일을 별도로 백업해둔 뒤에 병합해야, 나중에 다른 어댑터로 교체할 수 있어요.',
     },
@@ -279,7 +279,7 @@ print(f"[정보] compute_dtype={bnb.bnb_4bit_compute_dtype}")`,
       expectedOutput:
         '[실행] 4비트 양자화 설정 - quant_type=nf4\n[정보] compute_dtype=torch.float16',
       realWorldUsage:
-        'RTX 3090(24GB)에서 Llama-3-70B 같은 초대형 모델을 QLoRA로 파인튜닝해요. 원본을 4비트로 압축하면 70B 모델도 약 40GB → 10GB로 줄어서 소비자 GPU로 학습이 가능해져요.',
+        'RTX 3090(24GB)에서 Llama-3-70B 같은 초대형 모델을 QLoRA로 파인튜닝해요. 원본을 4비트로 압축하면 70B 모델도 약 40GB -> 10GB로 줄어서 소비자 GPU로 학습이 가능해져요.',
       pitfall:
         '4비트 양자화는 8비트보다 약간의 품질 손실이 있을 수 있어요. 정밀도가 중요한 태스크라면 load_in_8bit=True로 8비트를 먼저 시도해보고, 메모리가 부족할 때만 4비트로 내려가는 게 안전해요.',
     },
@@ -342,7 +342,7 @@ model = AutoModelForCausalLM.from_pretrained(
 print("[실행] 4비트 양자화 모델 로드 완료")
 for name, param in list(model.named_parameters())[:3]:
     print(f"  {name}: dtype={param.dtype}")
-print(f"[정보] device_map: auto → GPU 자동 배치")`,
+print(f"[정보] device_map: auto -> GPU 자동 배치")`,
     explain: {
       concept:
         'QLoRA에서 중요한 점은 "저장은 4비트로 하되, 계산은 더 정밀한 dtype(float16/bfloat16)으로 한다"는 거예요. ' +
@@ -358,7 +358,7 @@ print(f"[정보] device_map: auto → GPU 자동 배치")`,
       why:
         '저장 정밀도와 계산 정밀도를 분리하면, 메모리는 4비트로 아끼면서도 계산 품질은 16비트 수준을 유지할 수 있어서 파인튜닝 결과 품질이 크게 올라가요.',
       expectedOutput:
-        '[실행] 4비트 양자화 모델 로드 완료\n  model.decoder.embed_tokens.weight: dtype=torch.bfloat16\n  model.decoder.embed_positions.weight: dtype=torch.bfloat16\n  model.decoder.layers.0.self_attn.k_proj.weight: dtype=torch.bfloat16\n[정보] device_map: auto → GPU 자동 배치',
+        '[실행] 4비트 양자화 모델 로드 완료\n  model.decoder.embed_tokens.weight: dtype=torch.bfloat16\n  model.decoder.embed_positions.weight: dtype=torch.bfloat16\n  model.decoder.layers.0.self_attn.k_proj.weight: dtype=torch.bfloat16\n[정보] device_map: auto -> GPU 자동 배치',
       realWorldUsage:
         '파인튜닝 스크립트 시작 부분에서 모델 로드 시 quantization_config와 device_map="auto"를 항상 함께 설정해서, GPU 메모리를 자동으로 최적 활용하면서 학습을 진행해요.',
       pitfall:
@@ -626,7 +626,7 @@ print("[완료] 모델 아티팩트 저장 완료")`,
       expectedOutput:
         '[실행] PyTorch 모델과 acc=0.88 기록\n[완료] 모델 아티팩트 저장 완료',
       realWorldUsage:
-        'MLflow Model Registry에 등록된 모델은 "Staging" → "Production" 단계로 승격할 수 있고, 운영 서버에서는 mlflow.pyfunc.load_model()로 바로 불러와서 추론에 사용할 수 있어요.',
+        'MLflow Model Registry에 등록된 모델은 "Staging" -> "Production" 단계로 승격할 수 있고, 운영 서버에서는 mlflow.pyfunc.load_model()로 바로 불러와서 추론에 사용할 수 있어요.',
       pitfall:
         'sklearn 모델일 경우 mlflow.sklearn.log_model()을, PyTorch면 mlflow.pytorch.log_model()을 써야 해요. 잘못된 log_model 함수를 사용하면 로드 시 호환성 문제가 발생해요.',
     },

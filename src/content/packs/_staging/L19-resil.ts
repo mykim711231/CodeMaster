@@ -42,7 +42,7 @@ public class PaymentService {
         '사용자에게 실패를 보여주지 않고, 자동 재시도로 성공률을 높이려고요.',
       expectedOutput:
         '[실행] pay 호출 - orderId: 1001\n' +
-        '(첫 호출 실패 → 500ms 후 재시도 → 성공)\n' +
+        '(첫 호출 실패 -> 500ms 후 재시도 -> 성공)\n' +
         '"payment_success"',
       realWorldUsage:
         '실제 PG사 결제 API는 순간적인 타임아웃이 흔해요. @Retry를 걸어두면 ' +
@@ -82,7 +82,7 @@ public class PaymentService {
         '재배포 없이 환경별(dev는 1회, prod는 3회)로 다르게 가져가려고요.',
       expectedOutput:
         '(설정만으로는 콘솔 출력 없음) @Retry 적용된 메서드가 IOException으로 실패:\n' +
-        '첫 시도 실패 → 500ms 후 재시도 → 실패 → 500ms 후 재시도 → 성공 or 예외',
+        '첫 시도 실패 -> 500ms 후 재시도 -> 실패 -> 500ms 후 재시도 -> 성공 or 예외',
       realWorldUsage:
         '실제 MSA 환경에서 전체 서비스의 retry 기본값을 configs.default에 정의하고, ' +
         '중요 결제 서비스만 instances.paymentRetry로 maxAttempts를 5로 올려서 예외적으로 더 많이 재시도해요.',
@@ -139,7 +139,7 @@ public class OrderService {
         '캐시 데이터라도 반환해 부분적인 서비스를 유지하려고요.',
       expectedOutput:
         '[실행] getOrder 호출 - id: 5001\n' +
-        '(orderClient.fetch 실패 → 회로 OPEN)\n' +
+        '(orderClient.fetch 실패 -> 회로 OPEN)\n' +
         '[폴백] 캐시 조회 - id: 5001, cause: ConnectException: Connection refused',
       realWorldUsage:
         '실제 대규모 쇼핑몰에서 "상품 상세" API가 상품 서비스 장애로 응답 불가일 때, ' +
@@ -163,7 +163,7 @@ public class OrderService {
       permittedNumberOfCallsInHalfOpenState: 3`,
     explain: {
       concept:
-        '회로 차단기 상태는 CLOSED(정상 통과) → OPEN(전면 차단) → HALF_OPEN(일부 시험) 순서로 돌아요. ' +
+        '회로 차단기 상태는 CLOSED(정상 통과) -> OPEN(전면 차단) -> HALF_OPEN(일부 시험) 순서로 돌아요. ' +
         'slidingWindowSize: 10은 최근 10번의 호출을 창(window)에 기록하고, failureRateThreshold: 50은 그 중 50% 이상이 실패하면 회로를 OPEN으로 열어요. ' +
         'waitDurationInOpenState: 10s는 OPEN에서 10초 머문 뒤 HALF_OPEN으로 전환해 점검을 시작해요. ' +
         'permittedNumberOfCallsInHalfOpenState: 3은 HALF_OPEN 상태에서 3건만 시험 통과시키고, 모두 성공하면 CLOSED로 복구, 하나라도 실패하면 다시 OPEN으로 돌아가요.',
@@ -393,8 +393,8 @@ public class SearchService {
         '호출 스레드가 계속 점유되는 걸 막으려고요.',
       expectedOutput:
         '[실행] search - query: Spring Boot\n' +
-        '(searchClient 응답이 2초 이내 도착 → 정상 CompletableFuture 반환)\n' +
-        '(2초 초과 → TimeoutException 발생)',
+        '(searchClient 응답이 2초 이내 도착 -> 정상 CompletableFuture 반환)\n' +
+        '(2초 초과 -> TimeoutException 발생)',
       realWorldUsage:
         '실제 검색 API에서 타임아웃을 3초로 설정하고, 초과하면 빈 결과([])를 반환하는 폴백을 조합해 ' +
         '"검색 결과 없음"으로 정상 처리해 사용자 경험을 유지하는 패턴이 흔해요.',
@@ -453,13 +453,13 @@ public class ProductClient {
         '서로 다른 유형의 위협을 한 번의 호출에 모두 대비하려고요.',
       expectedOutput:
         '[실행] call - id: P001\n' +
-        '(1차: productService.invoke 실패 → Retry 재시도)\n' +
-        '(2차: 재시도도 실패 → CircuitBreaker 폴백)\n' +
+        '(1차: productService.invoke 실패 -> Retry 재시도)\n' +
+        '(2차: 재시도도 실패 -> CircuitBreaker 폴백)\n' +
         '[폴백] 모두 실패 - id: P001, cause: SocketTimeoutException',
       realWorldUsage:
         '실제 은행 API를 호출하는 서비스에서 Retry(3회, 네트워크 대비) + CircuitBreaker(10회 중 50% 실패 시 OPEN, 서비스 장애 대비) + Bulkhead(동시 10건 제한, 스레드 소진 대비) 조합이 표준이에요.',
       pitfall:
-        '기본 순서는 Retry → CircuitBreaker → Bulkhead 순이에요(Retry가 가장 바깥). ' +
+        '기본 순서는 Retry -> CircuitBreaker -> Bulkhead 순이에요(Retry가 가장 바깥). ' +
         '순서를 바꾸려면 각 aspect의 aspectOrder 프로퍼티를 명시적으로 설정해야 하고, 잘못된 순서는 재시도보다 회로가 먼저 열려 모든 요청이 실패할 수 있어요.',
     },
   },
@@ -500,7 +500,7 @@ public class EurekaServerApplication {
       expectedOutput:
         '[실행] Eureka Server 시작\n' +
         'Started EurekaServerApplication in 3.5s\n' +
-        '(http://localhost:8761 → Eureka 대시보드 접속 가능)',
+        '(http://localhost:8761 -> Eureka 대시보드 접속 가능)',
       realWorldUsage:
         '실제 넷플릭스에서 시작된 Eureka는 현재 Spring Cloud의 표준 서비스 디스커버리로, ' +
         'Docker/K8s 환경에서 Pod IP가 수시로 바뀌어도 서비스 이름(order-service)으로 안정적인 호출을 보장해요.',
@@ -685,7 +685,7 @@ public class ConfigServerApplication {
       expectedOutput:
         '[실행] Config Server 시작\n' +
         'Started ConfigServerApplication in 3s\n' +
-        '(http://localhost:8888/order-service/prod → 설정 파일 서빙)',
+        '(http://localhost:8888/order-service/prod -> 설정 파일 서빙)',
       realWorldUsage:
         '실제 대기업 MSA 환경에서 Config Server + Git + Spring Cloud Bus + RabbitMQ 조합으로 ' +
         '설정 파일 하나만 커밋해도 모든 서비스가 재시작 없이 설정을 갱신하는 Refresh Scope를 구현해요.',
@@ -825,7 +825,7 @@ public class StockListener {
         '(stockService.reserve 실행)\n' +
         '[이벤트] stock-reserved 발행 - orderId: 5001',
       realWorldUsage:
-        '실제 Uber의 주문 생성 Saga에서 주문 생성 → 결제 → 매칭 → 운행 완료까지의 흐름을 ' +
+        '실제 Uber의 주문 생성 Saga에서 주문 생성 -> 결제 -> 매칭 -> 운행 완료까지의 흐름을 ' +
         'Choreography 방식의 이벤트 체인으로 구현하고, 각 단계 실패 시 보상 이벤트로 롤백해요.',
       pitfall:
         '이벤트 수가 많아지면 전체 흐름을 한눈에 파악하기 어려워져 디버깅이 힘들어져요. ' +
@@ -870,11 +870,11 @@ public class OrderSaga {
     explain: {
       concept:
         '지휘자(Orchestrator) 방식 Saga는 "한 명의 지휘자가 모든 악장에게 차례로 신호를 보내는" 오케스트라 같아요. ' +
-        'OrderSaga가 중앙에서 결제→재고확보→배송예약 순으로 각 서비스를 순차 호출(execute)하고, ' +
-        '어느 단계에서 실패하면 역순으로 보상(compensate)을 실행해 데이터를 원상복구해요. 배송 취소→재고 해제→결제 환불 순서가 이에 해당해요. ' +
+        'OrderSaga가 중앙에서 결제->재고확보->배송예약 순으로 각 서비스를 순차 호출(execute)하고, ' +
+        '어느 단계에서 실패하면 역순으로 보상(compensate)을 실행해 데이터를 원상복구해요. 배송 취소->재고 해제->결제 환불 순서가 이에 해당해요. ' +
         '실무에서는 흐름이 복잡하고 보상 순서가 중요한 비즈니스(항공 예약, 호텔 예약)에 Orchestrator를 주로 써요.',
       terms: [
-        { t: 'execute(Order order)', d: '정방향 Saga 단계를 순서대로 실행하는 메서드예요. 결제→재고→배송 순으로 진행해요' },
+        { t: 'execute(Order order)', d: '정방향 Saga 단계를 순서대로 실행하는 메서드예요. 결제->재고->배송 순으로 진행해요' },
         { t: 'paymentClient.charge(order.getId())', d: '결제 단계예요. PG사를 호출해 실제 결제를 실행해요' },
         { t: 'inventoryClient.reserve(order.getItems())', d: '재고 확보 단계예요. 결제 성공 후 상품 재고를 잠가요' },
         { t: 'compensate(Order order)', d: '역방향 보상 메서드예요. execute의 역순으로 롤백을 실행해요' },
@@ -885,16 +885,16 @@ public class OrderSaga {
         '분산되어 있으면 알기 어려운 전체 흐름을 코드 한 곳에서 파악하려고요.',
       expectedOutput:
         '[실행] Saga 시작 - orderId: 5001\n' +
-        '(charge 성공 → reserve 성공 → schedule 성공)\n' +
+        '(charge 성공 -> reserve 성공 -> schedule 성공)\n' +
         '[완료] Saga 성공 - orderId: 5001\n' +
         '// 만약 reserve에서 실패:\n' +
         '[보상] Saga 롤백 - orderId: 5001\n' +
-        '(cancel → release → refund 순으로 역실행)',
+        '(cancel -> release -> refund 순으로 역실행)',
       realWorldUsage:
-        '실제 여행 예약 시스템에서 "호텔 예약 → 렌터카 예약 → 결제" Saga를 Orchestrator로 구현하고, ' +
+        '실제 여행 예약 시스템에서 "호텔 예약 -> 렌터카 예약 -> 결제" Saga를 Orchestrator로 구현하고, ' +
         '렌터카 예약 실패 시 호텔을 취소하고 결제를 환불하는 보상 로직을 중앙에서 관리해요.',
       pitfall:
-        '보상 순서는 반드시 실행 순서의 역순이어야 해요. cancel→release→refund 순서가 아니라 refund→release→cancel처럼 실행 순서를 그대로 따라가면, ' +
+        '보상 순서는 반드시 실행 순서의 역순이어야 해요. cancel->release->refund 순서가 아니라 refund->release->cancel처럼 실행 순서를 그대로 따라가면, ' +
         '먼저 환불했는데 배송은 이미 시작돼 재고가 없어지는 불일치가 발생할 수 있어요.',
     },
   },
@@ -944,10 +944,10 @@ public class OrderCompensateListener {
         '전체 시스템을 일관된 상태로 되돌리려고요.',
       expectedOutput:
         '[보상] payment-failed 수신 - orderId: 5001\n' +
-        '(orderService.cancel 실행 → 주문 상태 CANCELED로 변경)\n' +
+        '(orderService.cancel 실행 -> 주문 상태 CANCELED로 변경)\n' +
         '[이벤트] order-cancelled 발행 - orderId: 5001',
       realWorldUsage:
-        '실제 이커머스 Saga에서 결제 실패 후 payment-failed → order-cancelled → stock-released → coupon-restored 순서로 ' +
+        '실제 이커머스 Saga에서 결제 실패 후 payment-failed -> order-cancelled -> stock-released -> coupon-restored 순서로 ' +
         '각 보상 이벤트가 연쇄 발행되며, 결제 한 건 실패가 전체 Saga를 안전하게 롤백시켜요.',
       pitfall:
         '리스너는 멱등해야 해요. 카프카는 네트워크 문제나 리밸런싱 시 동일 메시지를 여러 번 전달할 수 있어서, ' +
@@ -999,7 +999,7 @@ public class ExternalApiHealthIndicator implements HealthIndicator {
         '우리 앱만 멀쩡한 게 아니라 의존하는 외부 시스템까지 정상인지 한 번에 확인하려고요.',
       expectedOutput:
         '[체크] External API Health Check\n' +
-        'GET /actuator/health → {"status":"UP","components":{"externalApi":{"status":"UP"}}}\n' +
+        'GET /actuator/health -> {"status":"UP","components":{"externalApi":{"status":"UP"}}}\n' +
         '(외부 API 다운 시: "status":"DOWN", "error":"external unreachable")',
       realWorldUsage:
         '실제 운영 환경에서 AWS ALB가 /actuator/health의 DOWN 응답을 감지하면 새 인스턴스 교체 없이 트래픽을 다른 정상 인스턴스로만 보내 ' +

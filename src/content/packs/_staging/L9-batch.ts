@@ -116,7 +116,7 @@ public Step chunkStep(JobRepository repo, PlatformTransactionManager tx,
 }`,
     explain: {
       concept:
-        'Chunk 기반 Step은 데이터를 정해진 묶음(청크) 단위로 읽고→처리하고→쓰는 반복 작업이에요. ' +
+        'Chunk 기반 Step은 데이터를 정해진 묶음(청크) 단위로 읽고->처리하고->쓰는 반복 작업이에요. ' +
         '배달 기사가 한 번에 10개씩 상자를 나르는 것과 같아요. ItemReader가 데이터를 하나씩 읽어오면, 청크 크기(10)만큼 모인 시점에 ItemWriter로 한꺼번에 저장해요. ' +
         '청크 단위로 트랜잭션이 커밋되기 때문에, 중간에 실패해도 마지막 커밋 이후부터 재시작할 수 있어요. ' +
         '대량 데이터를 한 번에 메모리에 올리지 않고 나눠서 처리하므로, 메모리 사용량이 일정하게 유지돼요.',
@@ -195,11 +195,11 @@ public ItemProcessor<String, String> upperProcessor() {
         'ItemProcessor는 읽기(ItemReader)와 쓰기(ItemWriter) 사이에서 데이터를 변환하거나 필터링하는 가공기예요. ' +
         '사과를 씻고 깎아서 포장하는 중간 가공 단계와 같아요. 입력 타입(String)을 받아서 출력 타입(String)으로 변환해서 반환해요. ' +
         'null을 반환하면 해당 아이템을 건너뛰어요. 예를 들어 유효하지 않은 데이터만 null로 반환하면 필터 역할을 할 수 있어요. ' +
-        'ItemProcessor는 선택 사항이에요. 변환 없이 읽은 그대로 저장하려면 Reader→Writer로 바로 연결할 수 있어요.',
+        'ItemProcessor는 선택 사항이에요. 변환 없이 읽은 그대로 저장하려면 Reader->Writer로 바로 연결할 수 있어요.',
       terms: [
         { t: 'ItemProcessor<I, O>', d: '입력 타입 I를 받아서 출력 타입 O로 변환하는 함수형 인터페이스예요. process() 메서드 하나만 구현하면 돼요.' },
         { t: 'String, String', d: '제너릭 타입 파라미터예요. 첫 번째 String은 입력(Reader가 넘겨주는 타입), 두 번째는 출력(Writer로 넘어가는 타입)이에요.' },
-        { t: 'toUpperCase()', d: '문자열의 모든 알파벳을 대문자로 변환해요. "kim" → "KIM"으로 바뀌어요.' },
+        { t: 'toUpperCase()', d: '문자열의 모든 알파벳을 대문자로 변환해요. "kim" -> "KIM"으로 바뀌어요.' },
         { t: 'null 반환', d: 'ItemProcessor가 null을 반환하면 해당 아이템은 Writer로 전달되지 않고 건너뛰어져요. 필터링에 활용할 수 있어요.' },
       ],
       why:
@@ -672,7 +672,7 @@ public JpaItemWriter<User> jpaWriter(EntityManagerFactory emf) {
       expectedOutput:
         '[설정] JpaItemWriter 생성',
       realWorldUsage:
-        '실제 프로젝트에서 JPA 엔티티로 구성된 도메인 모델을 배치 처리할 때, Reader→Processor→JpaItemWriter로 이어지는 완전한 JPA 기반 파이프라인을 구성해요. ' +
+        '실제 프로젝트에서 JPA 엔티티로 구성된 도메인 모델을 배치 처리할 때, Reader->Processor->JpaItemWriter로 이어지는 완전한 JPA 기반 파이프라인을 구성해요. ' +
         'Spring Data JPA를 주력으로 사용하는 프로젝트에서 가장 자연스러운 선택이에요.',
       pitfall:
         'JpaItemWriter는 JPA 엔티티만 저장할 수 있어요. 일반 DTO나 record는 JPA가 관리하지 않으므로 쓸 수 없어요. ' +
@@ -701,22 +701,22 @@ public CompositeItemProcessor<String, String> compositeProcessor(
     explain: {
       concept:
         'CompositeItemProcessor는 여러 ItemProcessor를 한 줄로 이어붙이는 합성 도구예요. ' +
-        '컨베이어 벨트 위에 "세척기 → 껍질깎기 → 포장기"가 순서대로 서 있는 것과 같아요. ' +
+        '컨베이어 벨트 위에 "세척기 -> 껍질깎기 -> 포장기"가 순서대로 서 있는 것과 같아요. ' +
         '첫 번째 Processor의 출력이 두 번째 Processor의 입력으로 들어가면서 데이터가 차례로 변환돼요. ' +
-        'trim(String) → upper(String) 순서라면, "  hello  " → trim → "hello" → upper → "HELLO" 식으로 변환돼요. ' +
-        '각 Processor의 입출력 타입이 연결 가능해야 해요. A→B Processor와 B→C Processor를 이어붙이면 A→C로 합성할 수 있어요.',
+        'trim(String) -> upper(String) 순서라면, "  hello  " -> trim -> "hello" -> upper -> "HELLO" 식으로 변환돼요. ' +
+        '각 Processor의 입출력 타입이 연결 가능해야 해요. A->B Processor와 B->C Processor를 이어붙이면 A->C로 합성할 수 있어요.',
       terms: [
         { t: 'CompositeItemProcessor', d: '여러 Processor를 리스트로 받아서 순차적으로 실행하는 합성 Processor예요.' },
         { t: 'setDelegates(List)', d: '실행할 Processor 목록을 순서대로 설정해요. delegates.get(0)부터 delegates.get(n-1) 순서로 실행돼요.' },
         { t: 'List.of(trim, upper)', d: '두 Processor의 실행 순서를 지정해요. trim이 먼저 실행되고, 그 결과가 upper의 입력으로 들어가요.' },
-        { t: '타입 연결 (A→B→C)', d: '앞 Processor의 출력 타입과 다음 Processor의 입력 타입이 일치해야 연결할 수 있어요.' },
+        { t: '타입 연결 (A->B->C)', d: '앞 Processor의 출력 타입과 다음 Processor의 입력 타입이 일치해야 연결할 수 있어요.' },
       ],
       why:
         '가공 단계가 여러 개일 때 하나의 Processor에 욱여넣지 않고, 단계별로 분리해서 재사용·조립할 수 있게 하려고 해요.',
       expectedOutput:
         '[설정] CompositeProcessor - trim -> upper 순서',
       realWorldUsage:
-        '실제 프로젝트에서 CSV 데이터 정제 파이프라인: trim(공백 제거) → validate(형식 검증) → enrich(외부 API로 정보 보강) → transform(최종 변환) 순서로 Processor를 합성해요. ' +
+        '실제 프로젝트에서 CSV 데이터 정제 파이프라인: trim(공백 제거) -> validate(형식 검증) -> enrich(외부 API로 정보 보강) -> transform(최종 변환) 순서로 Processor를 합성해요. ' +
         '각 Processor를 독립적으로 단위 테스트할 수 있어서 유지보수성이 크게 향상돼요.',
       pitfall:
         'delegates 목록에 등록된 순서가 곧 실행 순서예요. 순서를 바꾸면 결과가 완전히 달라져요. ' +
@@ -764,7 +764,7 @@ public Step listeningStep(JobRepository repo, PlatformTransactionManager tx,
         '이 정보를 바탕으로 진행률(%)을 계산해서 로깅하거나 메트릭을 발행할 수 있어요.',
       terms: [
         { t: 'ChunkListener', d: '청크의 beforeChunk(시작 전), afterChunk(완료 후), afterChunkError(실패 시)를 수신하는 리스너 인터페이스예요.' },
-        { t: 'afterChunk(ChunkContext)', d: '청크 처리(reader→processor→writer)가 완료되고 커밋된 후에 호출돼요.' },
+        { t: 'afterChunk(ChunkContext)', d: '청크 처리(reader->processor->writer)가 완료되고 커밋된 후에 호출돼요.' },
         { t: 'ChunkContext', d: '현재 청크의 실행 컨텍스트 정보를 담는 객체예요. StepExecution에 접근할 수 있어요.' },
         { t: 'getCommitCount()', d: '현재까지 완료된 청크(커밋) 개수를 반환해요. 1이면 첫 번째 청크 처리 완료를 의미해요.' },
       ],
@@ -864,7 +864,7 @@ public Job flowJob(JobRepository repo, Step ok, Step fallback) {
         '길을 가다가 표지판을 보고 갈림길을 선택하는 것과 같아요. ' +
         'ok Step이 실패(FAILED)하면 fallback Step으로 이동하고, 성공(*)이면 Job을 종료해요. ' +
         'on()에는 ExitStatus 코드(문자열)를 지정해서 세밀한 분기를 만들 수 있어요. ' +
-        '"성공 시 A→B 순서로, 실패 시 C로 이동" 같은 if-else 흐름을 배치 안에서 선언적으로 구성할 수 있어요.',
+        '"성공 시 A->B 순서로, 실패 시 C로 이동" 같은 if-else 흐름을 배치 안에서 선언적으로 구성할 수 있어요.',
       terms: [
         { t: 'on("FAILED")', d: '이전 Step의 ExitStatus가 "FAILED"일 때 매칭되는 조건이에요. 실패 시 대체 경로를 지정할 수 있어요.' },
         { t: 'to(fallback)', d: 'on 조건이 만족됐을 때 이동할 Step을 지정해요. 성공 경로와 실패 경로를 분리할 수 있어요.' },

@@ -57,7 +57,7 @@ async function loadPatternMasteries(): Promise<void> {
   }
 }
 
-// 학습팩 ↔ 엔진. 사이드바 팝업 서브메뉴: 학습팩 → 레벨 → 문제(3단).
+// 학습팩 ↔ 엔진. 사이드바 팝업 서브메뉴: 학습팩 -> 레벨 -> 문제(3단).
 // 버튼 클릭 시 팝업이 뜨고, 팩/레벨을 펼쳐 문제를 클릭하면 이동. 이전/다음은 전체를 가로질러 이어짐.
 export function initTrainer(): void {
   const titleEl = document.getElementById('practiceTitle');
@@ -654,8 +654,8 @@ export function initTrainer(): void {
         const name = snip.title.split('/').pop()!;
         const active = index === activeSnipIdx;
         const icon = name.endsWith('.java') ? '☕' : name.endsWith('.py') ? '🐍' :
-                     name.endsWith('.xml') ? '📄' : name.endsWith('.yml') ? '⚙' :
-                     name.endsWith('.sql') ? '🗄' : '📋';
+          name.endsWith('.xml') ? '📄' : name.endsWith('.yml') ? '⚙' :
+            name.endsWith('.sql') ? '🗄' : '📋';
         const row = document.createElement('button');
         row.className = 'sidebar-item snip-sidebar-item' + (active ? ' active' : '');
         row.style.paddingLeft = `${depth * 10 + 8}px`;

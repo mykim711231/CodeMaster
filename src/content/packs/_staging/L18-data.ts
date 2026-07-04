@@ -155,7 +155,7 @@ public class MemberService {
     MemberEntity m = em.find(MemberEntity.class, memberId);
     System.out.println("[실행] printTeams - memberId: " + memberId + ", name: " + m.getName());
     for (TeamEntity t : m.getTeams()) {
-      System.out.println("[쿼리] getTeams() → " + t.getName());
+      System.out.println("[쿼리] getTeams() -> " + t.getName());
     }
   }
 }`,
@@ -178,9 +178,9 @@ public class MemberService {
       expectedOutput:
         '[실행] printTeams - memberId: 1, name: Alice\n' +
         'Hibernate: select ... from member where id=?\n' +
-        '[쿼리] getTeams() → TeamA\n' +
+        '[쿼리] getTeams() -> TeamA\n' +
         'Hibernate: select ... from team where member_id=?\n' +
-        '[쿼리] getTeams() → TeamB\n' +
+        '[쿼리] getTeams() -> TeamB\n' +
         'Hibernate: select ... from team where member_id=?',
       realWorldUsage:
         '실제 "회원 상세 + 소속 팀 목록" API를 처음 구현할 때 LAZY 로딩만 믿고 개발했다가, ' +
@@ -431,7 +431,7 @@ public List<OrderEntity> expensiveOrders() {
       ],
       why:
         '비교 기준(전체 평균)을 한 번의 DB 왕복으로 계산해서, ' +
-        '"평균 조회 API → 평균값으로 다시 필터 API"라는 두 번의 왕복을 없애려고요.',
+        '"평균 조회 API -> 평균값으로 다시 필터 API"라는 두 번의 왕복을 없애려고요.',
       expectedOutput:
         '[실행] expensiveOrders - 평균보다 높은 금액\n' +
         'Hibernate: select ... from orders where amount > (select avg(amount) from orders)\n' +

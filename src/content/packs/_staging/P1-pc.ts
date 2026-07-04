@@ -21,7 +21,7 @@ print(f"[완료] 최종 메시지: {msg}")`,
         '한 번 만들어두면 필요할 때마다 꺼내 쓸 수 있어서 코드 중복을 줄이고 수정도 한 곳에서만 하면 돼요. ' +
         '실무에서는 데이터베이스 조회, API 호출, 계산 로직 등 반복되는 작업을 함수로 묶어서 관리해요. ' +
         '함수를 잘게 쪼갤수록 테스트하기 쉬워지고, 코드 읽기도 편해져요. ' +
-        '입문 단계에서는 "입력 → 처리 → 출력"의 흐름을 익히는 게 가장 중요해요.',
+        '입문 단계에서는 "입력 -> 처리 -> 출력"의 흐름을 익히는 게 가장 중요해요.',
       terms: [
         { t: 'def', d: '함수를 새로 정의할 때 쓰는 예약어예요. def 다음에 함수 이름을 붙여요.' },
         { t: 'name: str', d: '매개변수 name이 문자열(str) 타입이라는 타입 힌트예요.' },
@@ -273,7 +273,7 @@ print(f"[결과] b: owner={b.owner}, balance={b.balance}")`,
   def make(cls, title: str) -> 'Book':
     print(f"[실행] Book.make() - title: {title}, 현재 count: {cls.count}")
     cls.count += 1
-    print(f"[결과] count 증가 → {cls.count}")
+    print(f"[결과] count 증가 -> {cls.count}")
     return cls(title)
 
   def __init__(self, title: str) -> None:
@@ -301,7 +301,7 @@ print(f"[완료] Book.count = {Book.count}, b.title = {b.title}")`,
       expectedOutput:
         "Book.make('python') 호출 시:\n" +
         '[실행] Book.make() - title: python, 현재 count: 0\n' +
-        '[결과] count 증가 → 1\n' +
+        '[결과] count 증가 -> 1\n' +
         '[완료] Book.count = 1, b.title = python',
       realWorldUsage:
         '실제 Django ORM에서 User.objects.create(name="jimin")를 호출하면, 내부적으로 @classmethod로 구현된 create()가 User 인스턴스를 만들어 반환해요.',
@@ -366,7 +366,7 @@ class Rect:
 
   def area(self) -> int:
     result = self.w * self.h
-    print(f"[실행] area() - w={self.w}, h={self.h} → 넓이={result}")
+    print(f"[실행] area() - w={self.w}, h={self.h} -> 넓이={result}")
     return result
 
 
@@ -388,7 +388,7 @@ print(f"[완료] 사각형 넓이: {r.area()}")`,
         '로직이 여기저기 퍼지지 않고 데이터 바로 옆에 있어 유지보수가 쉬워져요.',
       expectedOutput:
         'Rect(5, 3).area() 호출 시:\n' +
-        '[실행] area() - w=5, h=3 → 넓이=15\n' +
+        '[실행] area() - w=5, h=3 -> 넓이=15\n' +
         '[완료] 사각형 넓이: 15',
       realWorldUsage:
         '실제 결제 시스템에서 Payment 객체에 tax(), total_amount() 같은 계산 메서드를 붙여서, 결제 데이터와 계산 로직을 한 곳에 모아 관리해요.',
@@ -404,7 +404,7 @@ print(f"[완료] 사각형 넓이: {r.area()}")`,
     code: `def first(nums: list[int]) -> int:
   print(f"[실행] first() 호출 - 리스트: {nums}")
   if not nums:
-    print(f"[결과] 빈 리스트 → 0 반환")
+    print(f"[결과] 빈 리스트 -> 0 반환")
     return 0
   result = nums[0]
   print(f"[결과] 첫 번째 원소: {result}")
@@ -433,7 +433,7 @@ print(first([]))`,
         '[결과] 첫 번째 원소: 10\n' +
         '10\n' +
         '[실행] first() 호출 - 리스트: []\n' +
-        '[결과] 빈 리스트 → 0 반환\n' +
+        '[결과] 빈 리스트 -> 0 반환\n' +
         '0',
       realWorldUsage:
         '실제 FastAPI 엔드포인트에서 GET /users 응답을 list[User]로 타입 힌트를 붙이면, 자동 생성된 OpenAPI 문서에도 반환 타입이 명시돼서 프론트엔드 개발자가 응답 형태를 정확히 알 수 있어요.',
@@ -449,7 +449,7 @@ print(first([]))`,
     code: `def top(scores: dict[str, int]) -> str:
   print(f"[실행] top() 호출 - 점수표: {scores}")
   best = max(scores, key=scores.get)
-  print(f"[결과] 최고점: {best} → {scores[best]}점")
+  print(f"[결과] 최고점: {best} -> {scores[best]}점")
   return best
 
 
@@ -467,12 +467,12 @@ print(top({'jimin': 90, 'soyi': 95}))`,
         { t: '-> str', d: '가장 높은 점수를 가진 사람의 이름(문자열)을 반환한다는 의미예요.' },
       ],
       why:
-        '실무에서 API 응답 데이터를 JSON → dict[str, Any]로 파싱한 뒤, 특정 필드 중 최댓값을 찾거나 필터링할 때 써요. ' +
+        '실무에서 API 응답 데이터를 JSON -> dict[str, Any]로 파싱한 뒤, 특정 필드 중 최댓값을 찾거나 필터링할 때 써요. ' +
         '예를 들어 게임 리더보드에서 최고 점수 플레이어를 찾는 로직에 활용돼요.',
       expectedOutput:
         "top({'jimin': 90, 'soyi': 95}) 호출 시:\n" +
         "[실행] top() 호출 - 점수표: {'jimin': 90, 'soyi': 95}\n" +
-        '[결과] 최고점: soyi → 95점\n' +
+        '[결과] 최고점: soyi -> 95점\n' +
         'soyi',
       realWorldUsage:
         '실제 랭킹 시스템에서 수백만 플레이어의 점수를 dict로 관리하고, max()로 최고 득점자를 찾아 리더보드에 표시해요.',
@@ -494,7 +494,7 @@ def find(items: list[int], target: int) -> Optional[int]:
     if v == target:
       print(f"[결과] 인덱스 {i}에서 발견")
       return i
-  print(f"[결과] 찾지 못함 → None 반환")
+  print(f"[결과] 찾지 못함 -> None 반환")
   return None
 
 
@@ -521,7 +521,7 @@ print(find([1, 2, 3], 5))`,
         '[결과] 인덱스 1에서 발견\n' +
         '1\n' +
         '[실행] find() - 리스트: [1, 2, 3], 찾는 값: 5\n' +
-        '[결과] 찾지 못함 → None 반환\n' +
+        '[결과] 찾지 못함 -> None 반환\n' +
         'None',
       realWorldUsage:
         '실제 ORM에서 User.objects.filter(id=999).first()는 결과가 있으면 User 객체를, 없으면 None을 반환해요. 이때 반환 타입이 Optional[User]가 돼요.',
@@ -604,7 +604,7 @@ print(f"[결과] 짝수만 필터링: {evens}")`,
     code: `names = ['jimin', 'soyi', 'tae']
 print(f"[실행] 이름 리스트: {names}")
 pairs = {name: len(name) for name in names}
-print(f"[결과] 이름 → 길이 매핑: {pairs}")`,
+print(f"[결과] 이름 -> 길이 매핑: {pairs}")`,
     explain: {
       concept:
         '딕셔너리 컴프리헨션은 한 줄로 키-값 쌍을 만들어 딕셔너리를 구성하는 문법이에요. 리스트 컴프리헨션의 사전 버전이라고 생각하면 돼요. ' +
@@ -623,7 +623,7 @@ print(f"[결과] 이름 → 길이 매핑: {pairs}")`,
       expectedOutput:
         '실행 시:\n' +
         "[실행] 이름 리스트: ['jimin', 'soyi', 'tae']\n" +
-        "[결과] 이름 → 길이 매핑: {'jimin': 5, 'soyi': 4, 'tae': 3}",
+        "[결과] 이름 -> 길이 매핑: {'jimin': 5, 'soyi': 4, 'tae': 3}",
       realWorldUsage:
         '실제 사용자 관리 시스템에서 "사용자 ID 리스트로 사용자 정보를 빠르게 찾아라"는 요구사항이 있을 때, 먼저 {id: user} 딕셔너리를 딕셔너리 컴프리헨션으로 만들고 키 검색으로 처리해요.',
       pitfall:
@@ -707,7 +707,7 @@ with Timer():
         { t: 'return self', d: '__enter__에서 반환한 값이 as 뒤에 지정한 변수에 담겨요.' },
       ],
       why:
-        '실무에서 "DB 트랜잭션 시작 → 비즈니스 로직 → 커밋 또는 롤백" 같은 패턴을 컨텍스트 매니저로 만들면, ' +
+        '실무에서 "DB 트랜잭션 시작 -> 비즈니스 로직 -> 커밋 또는 롤백" 같은 패턴을 컨텍스트 매니저로 만들면, ' +
         '트랜잭션 처리 코드가 비즈니스 로직과 섞이지 않아 깔끔하게 분리돼요.',
       expectedOutput:
         '실행 시:\n' +
@@ -729,7 +729,7 @@ with Timer():
   def wrapper(*a, **k):
     print(f"[실행] {fn.__name__}() 호출됨")
     result = fn(*a, **k)
-    print(f"[결과] {fn.__name__}() → {result}")
+    print(f"[결과] {fn.__name__}() -> {result}")
     return result
   return wrapper
 
@@ -758,7 +758,7 @@ print(hi('jimin'))`,
       expectedOutput:
         "hi('jimin') 호출 시:\n" +
         '[실행] hi() 호출됨\n' +
-        '[결과] hi() → hi jimin\n' +
+        '[결과] hi() -> hi jimin\n' +
         'hi jimin',
       realWorldUsage:
         '실제 Flask·FastAPI 프로젝트에서 @login_required 데코레이터를 만들어서, 로그인한 사용자만 특정 API를 호출할 수 있게 제어해요. 데코레이터 하나가 수십 개 엔드포인트의 인증을 담당해요.',

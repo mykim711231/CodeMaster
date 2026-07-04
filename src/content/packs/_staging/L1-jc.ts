@@ -69,7 +69,7 @@ export const javaCore: Snippet[] = [
         '식당으로 치면 "요리사는 요리할 수 있다"는 계약이고, 한식 요리사·중식 요리사가 각자 자기 방식으로 구현하는 거예요. ' +
         'default 메서드가 추가되면서 인터페이스도 기본 구현을 제공할 수 있게 됐어요 - 텅 빈 계약서가 아니라 기본 양식도 줄 수 있는 거죠. ' +
         '실무에서는 Service 인터페이스를 먼저 정의하고, 실제 로직은 ServiceImpl 클래스가 구현하는 식으로 많이 써요. ' +
-        '이렇게 하면 나중에 구현체를 바꿔도(예: 진짜 결제 → 가짜 결제) 인터페이스를 쓰는 쪽 코드는 전혀 안 바뀌어요.',
+        '이렇게 하면 나중에 구현체를 바꿔도(예: 진짜 결제 -> 가짜 결제) 인터페이스를 쓰는 쪽 코드는 전혀 안 바뀌어요.',
       terms: [
         { t: 'interface', d: '동작의 약속만 모아둔 틀이에요 - 몸체 없는 메서드 시그니처를 선언해요' },
         { t: 'double area();', d: '구현 클래스가 반드시 작성해야 하는 추상 메서드예요 - 세미콜론만 있고 몸체는 없어요' },
@@ -78,7 +78,7 @@ export const javaCore: Snippet[] = [
       ],
       why:
         '여러 클래스가 같은 방식으로 동작하도록 공통 규격을 정하려고 써요. ' +
-        '실무에서는 Repository 인터페이스로 데이터 접근 규약을 정하고, 필요하면 구현체만 통째로 바꿔요 (JPA → MyBatis 등).',
+        '실무에서는 Repository 인터페이스로 데이터 접근 규약을 정하고, 필요하면 구현체만 통째로 바꿔요 (JPA -> MyBatis 등).',
       expectedOutput:
         'Circle 구현체 기준:\n' +
         '[결과] area = 78.53981633974483',
@@ -128,7 +128,7 @@ export const javaCore: Snippet[] = [
       ],
       why:
         '"active" 같은 문자열 오타를 막고, 정해진 값만 쓰게 안전장치를 두려고 써요. ' +
-        '실무에서는 주문상태(ORDERED→PAID→SHIPPED→DELIVERED), 회원등급(BRONZE→SILVER→GOLD) 등을 Enum으로 관리해요.',
+        '실무에서는 주문상태(ORDERED->PAID->SHIPPED->DELIVERED), 회원등급(BRONZE->SILVER->GOLD) 등을 Enum으로 관리해요.',
       expectedOutput:
         'java Status\n' +
         '[결과] 상태: ACTIVE (활성)',
@@ -398,7 +398,7 @@ public class Maps {
         'merge()는 특별한 메서드인데, 키가 이미 있으면 기존 값에 새 값을 함수로 합치고, 없으면 그냥 넣어줘요 - 카운터나 누적 집계에 아주 편리해요. ' +
         'forEach로 모든 키-값 쌍을 하나씩 순회할 수 있어서, 결과 출력이나 집계 작업을 간결하게 작성할 수 있어요.',
       terms: [
-        { t: 'Map<String, Integer>', d: '"문자열 키 → 정수 값" 구조의 사전을 만들어요 - 타입 안전하게 키와 값의 타입을 지정해요' },
+        { t: 'Map<String, Integer>', d: '"문자열 키 -> 정수 값" 구조의 사전을 만들어요 - 타입 안전하게 키와 값의 타입을 지정해요' },
         { t: 'put("math", 90)', d: 'math라는 키에 90을 저장해요 - 이미 있으면 값이 덮어써져요' },
         { t: 'merge(key, 5, Integer::sum)', d: '키가 있으면 기존 값에 5를 더하고, 없으면 5를 새로 넣어요' },
         { t: 'forEach((k, v) -> ...)', d: '모든 키-값 쌍을 하나씩 꺼내 람다로 처리해요' },
@@ -817,7 +817,7 @@ public class Async {
     explain: {
       concept:
         '패턴 매칭(Pattern Matching for switch)은 Java 21에서 정식 도입된 기능으로, 타입을 검사하면서 동시에 그 타입의 변수로 바로 받아 쓸 수 있어요. ' +
-        '예전에는 instanceof로 타입 확인 → (Circle)로 형변환 → 지역 변수 할당까지 3줄 필요했는데, 이제 case Circle c 한 줄로 끝나요. ' +
+        '예전에는 instanceof로 타입 확인 -> (Circle)로 형변환 -> 지역 변수 할당까지 3줄 필요했는데, 이제 case Circle c 한 줄로 끝나요. ' +
         'sealed 인터페이스와 조합하면 가능한 모든 하위 타입을 컴파일러가 알고 있어서 default 없이도 완벽한 분기 처리가 돼요. ' +
         '타입 안전성과 간결함을 동시에 잡은 문법이어서, 실무에서 다형성 분기 처리를 완전히 새로 쓰게 만드는 기능이에요.',
       terms: [

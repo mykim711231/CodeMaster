@@ -32,7 +32,7 @@ export function initPanels(): void {
   };
 
   const toggleRight = (): void => {
-    // 우측 패널 → 이제 설명 패널 토글
+    // 우측 패널 -> 이제 설명 패널 토글
     const explainPanel = document.getElementById('explainPanel');
     if (explainPanel) {
       explainPanel.classList.toggle('closed');

@@ -342,7 +342,7 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
         '[정리] MDC.clear()',
       realWorldUsage:
         '실제 마이크로서비스에서 들어온 traceparent 헤더를 MDC에 담아 ' +
-        'API Gateway → Order Service → Payment Service까지 동일 traceId로 모든 로그를 연결해요.',
+        'API Gateway -> Order Service -> Payment Service까지 동일 traceId로 모든 로그를 연결해요.',
       pitfall:
         'finally에서 MDC.clear()를 호출하지 않으면 A 요청의 traceId가 B 요청의 로그에 묻어나올 수 있어요. ' +
         '스레드 풀 환경에서는 항상 try-finally로 감싸서 반드시 청소해야 해요.',
@@ -515,7 +515,7 @@ dependencies {
         { t: 'spring-boot-starter-actuator', d: '/actuator/health, /actuator/metrics 등 관리 엔드포인트를 제공하는 스타터예요' },
       ],
       why:
-        '분산 환경에서 한 사용자의 요청이 A→B→C 서비스를 거칠 때, ' +
+        '분산 환경에서 한 사용자의 요청이 A->B->C 서비스를 거칠 때, ' +
         '각 서비스의 로그를 traceId 하나로 묶어 전체 흐름을 한 번에 추적하려고요.',
       expectedOutput:
         '앱 시작 로그 중:\n' +
@@ -576,7 +576,7 @@ public class OrderClient {
         '[실행] pay 호출 - orderId: 1001\n' +
         'POST http://payment/api/charge/1001 (헤더에 b3: a1b2c3d4... 자동 포함)',
       realWorldUsage:
-        '실제 스프링 클라우드 환경에서 Order Service → Payment Service → Notification Service 순서로 호출이 연쇄될 때, ' +
+        '실제 스프링 클라우드 환경에서 Order Service -> Payment Service -> Notification Service 순서로 호출이 연쇄될 때, ' +
         '개발자는 코드에 trace 관련 로직을 한 줄도 쓰지 않아도 Zipkin에 완전한 트레이스 트리가 그려져요.',
       pitfall:
         '직접 만든 HTTP 클라이언트(java.net.HttpURLConnection, Apache HC)는 Micrometer 자동 전파 대상이 아니에요. ' +
@@ -814,8 +814,8 @@ public class OrderService {
         'k8s의 liveness/readiness 프로브 의미 그대로 Spring Boot 레벨에서도 ' +
         '생존 여부와 트래픽 수용 가능 여부를 구분해 안전한 롤링 배포를 하려고요.',
       expectedOutput:
-        'curl http://localhost:8080/actuator/health  → {"status":"UP"}\n' +
-        'curl http://localhost:8080/actuator/health/readiness → {"status":"UP","components":{"db":{"status":"UP"},"redis":{"status":"UP"}}}',
+        'curl http://localhost:8080/actuator/health  -> {"status":"UP"}\n' +
+        'curl http://localhost:8080/actuator/health/readiness -> {"status":"UP","components":{"db":{"status":"UP"},"redis":{"status":"UP"}}}',
       realWorldUsage:
         '실제 프로덕션 k8s Deployment의 livenessProbe는 /actuator/health/liveness를, ' +
         'readinessProbe는 /actuator/health/readiness를 바라보게 설정해 새 Pod가 DB 연결을 맺기 전까지 트래픽을 받지 않게 해요.',
@@ -870,7 +870,7 @@ public class OrderMetrics {
       expectedOutput:
         '[등록] 커스텀 메트릭 codemaster.orders.placed 등록\n' +
         '[실행] 주문 카운터 증가 - 현재 근사값: 3.0\n' +
-        'GET /actuator/metrics/codemaster.orders.placed → {"measurements":[{"statistic":"COUNT","value":3.0}]}',
+        'GET /actuator/metrics/codemaster.orders.placed -> {"measurements":[{"statistic":"COUNT","value":3.0}]}',
       realWorldUsage:
         '실제 서비스에서 주문 카운터를 Prometheus+Grafana로 시각화하면, ' +
         '하루 중 주문량 추이를 시간대별로 볼 수 있고 전일 대비 급감 시 Slack 알람을 보내 대응할 수 있어요.',

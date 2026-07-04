@@ -229,7 +229,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
         'RewritePath는 요청 경로를 정규식으로 변환해서 백엔드 서비스에 전달하는 필터예요. ' +
         '"프론트에서는 /api/users로 요청하지만, 실제 user-service는 /users로 받아야 한다" 같은 상황에서 써요. ' +
         '첫 번째 인자는 잡아낼 정규식 패턴, 두 번째 인자는 대체할 문자열이에요. (.*)는 캡처 그룹으로 /api/ 뒤의 모든 문자열을 잡아서 $1로 참조해요. ' +
-        '/api/users/123 → /users/123 으로 변환돼서 백엔드에 전달돼요. 이렇게 하면 백엔드 서비스는 게이트웨이 접두사(/api)를 전혀 신경 쓰지 않아도 돼요.',
+        '/api/users/123 -> /users/123 으로 변환돼서 백엔드에 전달돼요. 이렇게 하면 백엔드 서비스는 게이트웨이 접두사(/api)를 전혀 신경 쓰지 않아도 돼요.',
       terms: [
         { t: 'rewritePath(regexp, replacement)', d: '첫 인자(정규식)로 경로를 매칭하고, 두 번째 인자로 변환된 경로를 만들어요.' },
         { t: '/api/(.*)', d: '/api/ 뒤에 오는 모든 문자를 첫 번째 캡처 그룹으로 잡아요. (.*)는 0개 이상의 모든 문자를 의미해요.' },
@@ -326,7 +326,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       expectedOutput:
         '[설정] 경로 앞부분 제거 필터 - 2칸 제거',
       realWorldUsage:
-        '실제 프로젝트에서 Spring Cloud Gateway를 API Gateway로 사용할 때, /api/user-service/users/123 → stripPrefix(2) → /users/123 으로 변환해서 user-service에 전달해요. ' +
+        '실제 프로젝트에서 Spring Cloud Gateway를 API Gateway로 사용할 때, /api/user-service/users/123 -> stripPrefix(2) -> /users/123 으로 변환해서 user-service에 전달해요. ' +
         '마이크로서비스마다 다른 서비스 이름을 경로에 포함하지만, 실제 서비스 내부에서는 짧은 경로만 사용하는 구조가 일반적이에요.',
       pitfall:
         '잘라낼 세그먼트 수를 잘못 지정하면 경로가 완전히 엉켜요. 예를 들어 stripPrefix(3)으로 /api/user/1을 처리하면 빈 경로(/)가 돼서 백엔드가 예상치 못한 엔드포인트로 요청을 받을 수 있어요.',
@@ -411,7 +411,7 @@ public class AuthFilter implements GlobalFilter, Ordered {
         'GlobalFilter가 여러 개일 때 실행 순서를 정하는 게 중요해요. Ordered 인터페이스를 구현하면 숫자로 순서를 지정할 수 있어요. ' +
         '숫자가 작을수록 먼저 실행돼요. 인증 필터는 모든 필터 중 가장 먼저 실행되어야 하므로 아주 작은 음수(-100)를 반환해요. ' +
         '인증에 실패하면 Mono.error()로 요청을 중단시키고, 성공하면 chain.filter()로 다음 필터에 넘겨줘요. ' +
-        '일반적으로 인증(-100) → 로깅(0) → 라우팅(Ordered.LOWEST_PRECEDENCE) 순서가 돼요. ' +
+        '일반적으로 인증(-100) -> 로깅(0) -> 라우팅(Ordered.LOWEST_PRECEDENCE) 순서가 돼요. ' +
         'getOrder()를 구현하지 않으면 기본값(0)이 적용돼서 필터 간 순서가 예측 불가능해질 수 있어요.',
       terms: [
         { t: 'Ordered', d: '스프링이 관리하는 컴포넌트의 실행 순서를 정하는 인터페이스예요. getOrder()로 우선순위를 반환해요.' },
@@ -638,7 +638,7 @@ public RouteLocator routes(RouteLocatorBuilder b) {
       expectedOutput:
         '[설정] 외부 직접 라우트 - legacy.example.com',
       realWorldUsage:
-        '실제 프로젝트에서 모놀리스 → 마이크로서비스 전환 과정에서, 아직 분리되지 않은 레거시 시스템으로의 요청을 게이트웨이가 직접 URL로 전달해요. ' +
+        '실제 프로젝트에서 모놀리스 -> 마이크로서비스 전환 과정에서, 아직 분리되지 않은 레거시 시스템으로의 요청을 게이트웨이가 직접 URL로 전달해요. ' +
         '또한 외부 결제사(PG), SMS 발송 서비스, 지도 API 등 서드파티 서비스와의 통합 지점을 게이트웨이로 중앙화할 때도 직접 URL을 사용해요.',
       pitfall:
         'https://를 사용할 때 대상 서버의 SSL 인증서가 유효하지 않으면 TLS 핸드셰이크가 실패해서 요청이 전달되지 않아요. 테스트 환경에서는 자체 서명 인증서로 인한 문제가 자주 발생해요. ' +

@@ -141,7 +141,7 @@ asyncio.run(main())`,
 async def task(n):
   print(f"[실행] task({n}) 시작")
   await asyncio.sleep(n * 0.5)
-  print(f"[완료] task({n}) 종료 → 결과: {n * 2}")
+  print(f"[완료] task({n}) 종료 -> 결과: {n * 2}")
   return n * 2
 
 async def main():
@@ -171,8 +171,8 @@ asyncio.run(main())`,
         '[실행] TaskGroup - 두 작업 동시 시작\n' +
         '[실행] task(1) 시작\n' +
         '[실행] task(2) 시작\n' +
-        '[완료] task(1) 종료 → 결과: 2\n' +
-        '[완료] task(2) 종료 → 결과: 4\n' +
+        '[완료] task(1) 종료 -> 결과: 2\n' +
+        '[완료] task(2) 종료 -> 결과: 4\n' +
         '[결과] t1=2, t2=4',
       realWorldUsage:
         '실제 결제 시스템에서 "잔액 확인, 사기 검증, 포인트 적립"을 TaskGroup으로 묶어서, 하나라도 실패하면 전체 결제를 취소하고 롤백하는 패턴으로 구현해요.',

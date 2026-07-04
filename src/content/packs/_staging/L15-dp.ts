@@ -98,7 +98,7 @@ public class NotificationFactory {
         'NotificationFactory.of("sms"):\n' +
         '[실행] 팩터리 생성 요청 - type: sms\n' +
         'NotificationFactory.of("push"):\n' +
-        '→ IllegalArgumentException: 알 수 없는 타입: push',
+        '-> IllegalArgumentException: 알 수 없는 타입: push',
       realWorldUsage:
         '실제 프로젝트에서 결제 수단(카드·계좌이체·간편결제), 알림 채널(이메일·SMS·푸시), 파일 형식(PDF·Excel·CSV)별로 서로 다른 처리기를 생성할 때 Simple Factory를 써요. 신규 결제 수단이 추가되면 case 하나만 추가하면 되고, 기존 코드는 전혀 건드리지 않아서 안전해요.',
       why: '객체 생성 코드를 한 곳에 모아서, 생성할 타입이 늘어나도 호출 코드는 변경되지 않게 하려고요.',
@@ -164,9 +164,9 @@ public class NotificationFactory {
       expectedOutput:
         'User.builder().name("kim").email("kim@test.com").age(25).build():\n' +
         '[실행] User 빌드 - name: kim, email: kim@test.com, age: 25\n' +
-        '→ User{name="kim", email="kim@test.com", age=25}\n\n' +
+        '-> User{name="kim", email="kim@test.com", age=25}\n\n' +
         'User.builder().email("test").build() (name 누락):\n' +
-        '→ IllegalStateException: name은 필수값이에요',
+        '-> IllegalStateException: name은 필수값이에요',
       realWorldUsage:
         '실제 프로젝트에서 엔티티·DTO·요청 객체처럼 필드가 5개 이상인 객체는 거의 모두 빌더로 만들어요. 특히 필수값과 선택값이 섞여 있는 경우, 빌더가 없으면 생성자 오버로딩이 수십 개 필요해지는 조합 폭발 문제가 생겨요. Lombok의 @Builder를 쓰면 이 코드 전체가 한 줄로 대체돼요.',
       why: '파라미터가 많은 객체 생성을 가독성 좋게 하고, 필수값 검증을 생성 시점에 강제하려고요.',
@@ -224,10 +224,10 @@ public class OrderService {
         { t: 'Math.max(0, price - amount)', d: '할인액이 원가보다 크면 0원이 반환돼요. 마이너스 금액을 방지하는 방어 로직이에요.' },
       ],
       expectedOutput:
-        'setStrategy(new PercentDiscount(10)) → calculatePrice(10000):\n' +
+        'setStrategy(new PercentDiscount(10)) -> calculatePrice(10000):\n' +
         '[전략] 할인 전략 교체: PercentDiscount\n' +
         '[실행] 10% 할인 - 10000 -> 9000\n\n' +
-        'setStrategy(new FixedDiscount(2000)) → calculatePrice(10000):\n' +
+        'setStrategy(new FixedDiscount(2000)) -> calculatePrice(10000):\n' +
         '[전략] 할인 전략 교체: FixedDiscount\n' +
         '[실행] 2000원 할인 - 10000 -> 8000',
       realWorldUsage:
@@ -282,16 +282,16 @@ public class NewsPublisher {
         { t: 'publish(article)', d: '모든 구독자에게 기사를 전파하는 메서드예요. for 루프로 순회하며 update()를 호출해요.' },
       ],
       expectedOutput:
-        'subscribe(user1) → publish("속보: ..."):\n' +
+        'subscribe(user1) -> publish("속보: ..."):\n' +
         '[구독] 새 구독자 등록\n' +
         '[발행] 새 기사: 속보: ...\n' +
         '(구독자 user1.update("속보: ...") 호출)\n\n' +
-        'unsubscribe(user1) → publish("두 번째 기사"):\n' +
+        'unsubscribe(user1) -> publish("두 번째 기사"):\n' +
         '[해지] 구독자 제거\n' +
         '[발행] 새 기사: 두 번째 기사\n' +
         '(구독자 없음 - 알림 전파 안 됨)',
       realWorldUsage:
-        '실제 프로젝트에서 주문 완료 → 이메일 발송 + 포인트 적립 + 재고 감소 + 통계 업데이트처럼 하나의 이벤트에 여러 후속 작업이 연결될 때 옵저버 패턴을 써요. 주문 로직은 "주문 완료"만 신경 쓰고, 나머지는 각 구독자가 알아서 처리해요. 주문 코드에 이메일·포인트·재고 코드가 전혀 없어서, 새 후속 작업이 추가돼도 주문 코드를 수정하지 않아도 돼요.',
+        '실제 프로젝트에서 주문 완료 -> 이메일 발송 + 포인트 적립 + 재고 감소 + 통계 업데이트처럼 하나의 이벤트에 여러 후속 작업이 연결될 때 옵저버 패턴을 써요. 주문 로직은 "주문 완료"만 신경 쓰고, 나머지는 각 구독자가 알아서 처리해요. 주문 코드에 이메일·포인트·재고 코드가 전혀 없어서, 새 후속 작업이 추가돼도 주문 코드를 수정하지 않아도 돼요.',
       why: '주체(Subject)와 구독자(Observer)를 느슨하게 연결해서, 한쪽 변경이 다른 쪽으로 전파되지 않게 하고 새 구독자를 자유롭게 추가하려고요.',
       pitfall: '구독 해제를 안 하면 구독자 객체가 가비지 컬렉션되지 않고 계속 메모리에 남는 누수(leak)가 발생할 수 있어요. 생명주기가 끝나는 컴포넌트는 반드시 unsubscribe()를 호출해야 해요.',
     },
@@ -324,7 +324,7 @@ public class SalesReport extends AbstractReport {
     explain: {
       concept:
         '템플릿 메서드(Template Method) 패턴은 요리 레시피처럼 "전체 흐름은 내가 정할게, 세부 단계는 네가 알아서 해"라고 하는 패턴이에요. ' +
-        'AbstractReport의 generate()가 final로 선언돼서, 자식 클래스가 전체 흐름(준비→수집→포맷→전송)을 절대 바꿀 수 없어요. ' +
+        'AbstractReport의 generate()가 final로 선언돼서, 자식 클래스가 전체 흐름(준비->수집->포맷->전송)을 절대 바꿀 수 없어요. ' +
         'collect()와 format()은 abstract라서 자식이 반드시 구현해야 하고, prepare()와 deliver()는 기본 구현을 제공하면서도 protected라서 자식이 필요하면 오버라이드할 수 있어요. ' +
         'SalesReport는 collect()와 format()만 자신의 방식으로 구현하고, 흐름은 부모가 정한 대로 그대로 따라가요.',
       terms: [
@@ -343,7 +343,7 @@ public class SalesReport extends AbstractReport {
         '[단계] 이메일 전송\n' +
         '[결과] 리포트 생성 완료',
       realWorldUsage:
-        '실제 프로젝트에서 스프링의 JdbcTemplate, RestTemplate, TransactionTemplate 모두 템플릿 메서드 패턴의 실전 예예요. "커넥션 열기 → SQL 실행 → 결과 매핑 → 커넥션 닫기"에서 SQL 실행과 결과 매핑만 우리가 채우고, 커넥션 관리라는 뼈대는 JdbcTemplate이 알아서 해줘요. 에러 처리와 자원 해제 코드를 매번 반복 작성하지 않아도 돼요.',
+        '실제 프로젝트에서 스프링의 JdbcTemplate, RestTemplate, TransactionTemplate 모두 템플릿 메서드 패턴의 실전 예예요. "커넥션 열기 -> SQL 실행 -> 결과 매핑 -> 커넥션 닫기"에서 SQL 실행과 결과 매핑만 우리가 채우고, 커넥션 관리라는 뼈대는 JdbcTemplate이 알아서 해줘요. 에러 처리와 자원 해제 코드를 매번 반복 작성하지 않아도 돼요.',
       why: '공통 흐름을 한 곳에 모으고, 변경이 필요한 부분만 자식 클래스에서 구현해서 코드 중복을 제거하려고요.',
       pitfall: 'generate()에 붙은 final을 빼먹으면 자식 클래스가 순서를 마음대로 바꿀 수 있어요. 템플릿 메서드는 반드시 final로 고정해서 흐름의 무결성을 보장해야 해요.',
     },
@@ -391,13 +391,13 @@ public class SugarDecorator implements Coffee {
       ],
       expectedOutput:
         'new SugarDecorator(new MilkDecorator(new BasicCoffee())):\n' +
-        'description() → "커피 + 우유 + 설탕"\n' +
-        'cost() → 2000 + 500 + 200 = 2700\n\n' +
+        'description() -> "커피 + 우유 + 설탕"\n' +
+        'cost() -> 2000 + 500 + 200 = 2700\n\n' +
         'new MilkDecorator(new BasicCoffee()):\n' +
-        'description() → "커피 + 우유"\n' +
-        'cost() → 2000 + 500 = 2500',
+        'description() -> "커피 + 우유"\n' +
+        'cost() -> 2000 + 500 = 2500',
       realWorldUsage:
-        '실제 프로젝트에서 스프링의 Servlet Filter Chain, InputStream/OutputStream 래퍼(BufferedInputStream, GZIPOutputStream), HTTP 요청 인터셉터가 모두 데코레이터 패턴이에요. 요청이 들어오면 인증 필터 → 로깅 필터 → 압축 필터 → 실제 서블릿 순으로 데코레이터가 중첩돼서 실행돼요.',
+        '실제 프로젝트에서 스프링의 Servlet Filter Chain, InputStream/OutputStream 래퍼(BufferedInputStream, GZIPOutputStream), HTTP 요청 인터셉터가 모두 데코레이터 패턴이에요. 요청이 들어오면 인증 필터 -> 로깅 필터 -> 압축 필터 -> 실제 서블릿 순으로 데코레이터가 중첩돼서 실행돼요.',
       why: '상속 없이도 런타임에 객체의 기능을 유연하게 조합하고 확장하려고요. 상속은 컴파일 타임에 고정되지만 데코레이터는 런타임에 자유롭게 조립할 수 있어요.',
       pitfall: '데코레이터가 많이 중첩되면 디버깅이 어려워져요. 어느 데코레이터에서 문제가 생겼는지 콜스택을 따라가기 힘들 수 있어서, 지나친 중첩은 피하는 게 좋아요.',
     },
@@ -547,7 +547,7 @@ public class OrderFacade {
     explain: {
       concept:
         '퍼사드(Facade) 패턴은 복잡한 내부를 감추고 단순한 출입구 하나만 제공하는 건물 관리인 같은 패턴이에요. ' +
-        '주문 처리 하나를 하려면 재고 확인 → 결제 → 배송 지시라는 3개 서비스와 협력해야 하는데, 클라이언트가 이걸 하나하나 순서대로 호출하는 건 실수의 여지가 많아요. ' +
+        '주문 처리 하나를 하려면 재고 확인 -> 결제 -> 배송 지시라는 3개 서비스와 협력해야 하는데, 클라이언트가 이걸 하나하나 순서대로 호출하는 건 실수의 여지가 많아요. ' +
         'OrderFacade가 placeOrder()라는 단 하나의 메서드로 이 모든 과정을 대신 처리해줘서, 클라이언트는 "주문해줘"라고만 하면 돼요. ' +
         '내부 서비스(Inventory·Payment·Shipping)의 복잡한 상호작용을 퍼사드 뒤에 숨기니까, 내부 로직이 바뀌어도 클라이언트 코드는 전혀 수정하지 않아도 돼요.',
       terms: [
@@ -555,7 +555,7 @@ public class OrderFacade {
         { t: 'InventoryService', d: '재고 확인과 확보를 담당하는 서비스예요. 상품이 충분한지 확인하고 재고를 차감해요.' },
         { t: 'PaymentService', d: '결제 처리를 담당하는 서비스예요. 실제 결제 게이트웨이 연동은 이 서비스 안에 숨겨져 있어요.' },
         { t: 'ShippingService', d: '배송 지시를 담당하는 서비스예요. 물류 시스템과의 연동을 추상화해요.' },
-        { t: 'placeOrder(order)', d: '주문의 전 과정을 한 번에 처리하는 퍼사드 메서드예요. reserve → charge → dispatch 순서를 보장해요.' },
+        { t: 'placeOrder(order)', d: '주문의 전 과정을 한 번에 처리하는 퍼사드 메서드예요. reserve -> charge -> dispatch 순서를 보장해요.' },
       ],
       expectedOutput:
         'placeOrder(order) 호출 시:\n' +
@@ -675,7 +675,7 @@ public class WordDocument implements Document {
     explain: {
       concept:
         'GoF Factory Method는 부모 클래스가 "어떤 객체를 만들지"는 서브클래스에게 결정권을 넘기는 패턴이에요. ' +
-        'DocumentCreator는 문서를 열고→편집하고→저장하는 전체 흐름(템플릿 메서드)을 정의하고, createDocument()라는 팩터리 메서드는 abstract로 비워둬서 "어떤 문서를 만들지는 자식이 결정해"라고 해요. ' +
+        'DocumentCreator는 문서를 열고->편집하고->저장하는 전체 흐름(템플릿 메서드)을 정의하고, createDocument()라는 팩터리 메서드는 abstract로 비워둬서 "어떤 문서를 만들지는 자식이 결정해"라고 해요. ' +
         'PdfCreator는 PdfDocument를, WordCreator는 WordDocument를 생성해서, 같은 newDocument() 메서드라도 서브클래스에 따라 전혀 다른 타입의 문서가 생성돼요. ' +
         'Simple Factory와 달리, 새 문서 타입을 추가하려면 Creator 서브클래스 하나만 새로 만들면 되고, 기존 Creator 코드는 전혀 건드리지 않아도 돼요(OCP).',
       terms: [
@@ -683,18 +683,18 @@ public class WordDocument implements Document {
         { t: 'DocumentCreator', d: '공통 흐름을 정의하는 추상 Creator 클래스예요. 템플릿 메서드와 팩터리 메서드를 함께 사용해요.' },
         { t: 'PdfCreator / WordCreator', d: '구체적인 제품을 결정하는 ConcreteCreator 서브클래스예요. createDocument()를 구현해요.' },
         { t: 'Document (인터페이스)', d: '생성 대상 제품의 공통 타입이에요. PdfDocument와 WordDocument가 이걸 구현해요.' },
-        { t: 'final newDocument()', d: '템플릿 메서드예요. 생성→열기→편집→저장 흐름을 고정하고, 생성만 서브클래스에 위임해요.' },
+        { t: 'final newDocument()', d: '템플릿 메서드예요. 생성->열기->편집->저장 흐름을 고정하고, 생성만 서브클래스에 위임해요.' },
       ],
       expectedOutput:
         'new PdfCreator().newDocument():\n' +
         '[실행] 문서 생성 시작\n' +
         '[팩터리] PDF 문서 생성\n' +
-        '[PDF] 열기 → [PDF] 편집 → [PDF] 저장\n' +
+        '[PDF] 열기 -> [PDF] 편집 -> [PDF] 저장\n' +
         '[결과] 문서 생성 완료\n\n' +
         'new WordCreator().newDocument():\n' +
         '[실행] 문서 생성 시작\n' +
         '[팩터리] Word 문서 생성\n' +
-        '[Word] 열기 → [Word] 편집 → [Word] 저장\n' +
+        '[Word] 열기 -> [Word] 편집 -> [Word] 저장\n' +
         '[결과] 문서 생성 완료',
       realWorldUsage:
         '실제 프로젝트에서 파일 변환기(PDF 변환·Excel 변환·CSV 변환), 결제 수단(카드·계좌이체·간편결제), 리포트 생성기 등이 GoF Factory Method로 구현돼요. "어떤 포맷으로 변환할지", "어떤 결제 수단으로 처리할지" 같은 결정을 서브클래스에 맡기고, 공통 실행 흐름은 부모 클래스가 관리해요.',
@@ -950,7 +950,7 @@ public class UserDao {
     explain: {
       concept:
         'JdbcTemplate은 템플릿 메서드 패턴의 실전 사례로, 스프링에서 가장 성공적인 패턴 적용 중 하나예요. ' +
-        '"커넥션 열기 → PreparedStatement 생성 → SQL 실행 → ResultSet 순회 → 자원 닫기 + 예외 변환"이라는 복잡한 뼈대는 JdbcTemplate이 알아서 처리하고, 우리는 SQL 문자열과 결과 매핑 로직만 딱 채워 넣으면 돼요. ' +
+        '"커넥션 열기 -> PreparedStatement 생성 -> SQL 실행 -> ResultSet 순회 -> 자원 닫기 + 예외 변환"이라는 복잡한 뼈대는 JdbcTemplate이 알아서 처리하고, 우리는 SQL 문자열과 결과 매핑 로직만 딱 채워 넣으면 돼요. ' +
         'query()에 전달된 람다 (rs, rowNum) -> rs.getString("name")는 RowMapper라고 부르는 콜백이에요 - JdbcTemplate이 ResultSet의 각 행에 이 람다를 호출해서 결과 리스트를 만들어줘요. ' +
         'JDBC에서 직접 Connection·PreparedStatement·ResultSet을 try-catch-finally로 관리하던 지저분한 코드가 모두 사라지는 이유가 바로 템플릿 메서드 패턴 덕분이에요.',
       terms: [
@@ -1130,7 +1130,7 @@ public class CheckoutFacade {
     explain: {
       concept:
         '트랜잭션 퍼사드는 퍼사드 패턴과 @Transactional을 조합해서, 여러 서비스에 걸친 복잡한 작업을 하나의 원자적 단위로 묶는 고급 패턴이에요. ' +
-        '체크아웃은 (1)장바구니 조회 → (2)쿠폰 적용 → (3)주문 생성 → (4)포인트 적립 → (5)장바구니 비우기라는 5개 서비스의 협력이 필요한데, 이 중 하나라도 실패하면 전체가 롤백돼야 데이터 정합성이 보장돼요. ' +
+        '체크아웃은 (1)장바구니 조회 -> (2)쿠폰 적용 -> (3)주문 생성 -> (4)포인트 적립 -> (5)장바구니 비우기라는 5개 서비스의 협력이 필요한데, 이 중 하나라도 실패하면 전체가 롤백돼야 데이터 정합성이 보장돼요. ' +
         'CheckoutFacade에 @Transactional을 선언하면, checkout() 메서드의 모든 DB 작업이 하나의 트랜잭션으로 묶여서 "전부 성공 또는 전부 실패"가 자동 보장돼요. ' +
         '클라이언트(컨트롤러)는 그냥 facade.checkout()만 호출하면 되고, 내부의 복잡한 5단계 흐름은 퍼사드 뒤에 완전히 숨겨져 있어요.',
       terms: [

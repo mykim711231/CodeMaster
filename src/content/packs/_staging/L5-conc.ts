@@ -185,7 +185,7 @@ public class AsyncService {
         '[결과] 받은 데이터: 데이터\n' +
         '[실행] 파이프라인 완료',
       realWorldUsage:
-        '실제로 결제 API 호출(supplyAsync) → 결과 로깅(thenAccept) → 사용자에게 알림 발송(thenAccept)처럼 여러 단계로 이어지는 비동기 워크플로우에 써요.',
+        '실제로 결제 API 호출(supplyAsync) -> 결과 로깅(thenAccept) -> 사용자에게 알림 발송(thenAccept)처럼 여러 단계로 이어지는 비동기 워크플로우에 써요.',
       pitfall: '예외 처리를 따로 하지 않으면 비동기 작업에서 예외가 발생해도 조용히 실패해요. exceptionally()나 whenComplete()로 예외 처리를 꼭 추가하세요.',
     },
   },
@@ -232,7 +232,7 @@ public class Pipeline {
         '[실행] 2단계: \'1\'에 \'2\' 추가\n' +
         '[결과] 최종: 12',
       realWorldUsage:
-        '실제로 "사용자 조회(비동기 DB 호출) → 조회 결과로 권한 확인(비동기 API 호출)"처럼, 이전 결과가 필요한 연쇄 비동기 호출에 thenCompose를 써요.',
+        '실제로 "사용자 조회(비동기 DB 호출) -> 조회 결과로 권한 확인(비동기 API 호출)"처럼, 이전 결과가 필요한 연쇄 비동기 호출에 thenCompose를 써요.',
       pitfall: 'thenApply는 동기 변환(Function<T,U>), thenCompose는 비동기 연결(Function<T, CompletableFuture<U>>)이에요. 헷갈리면 "thenApply = map, thenCompose = flatMap"이라고 기억하세요.',
     },
   },
@@ -809,7 +809,7 @@ public class StartGate {
         'volatile은 "이 변수의 값은 항상 메인 메모리에서 직접 읽고 써라"라고 JVM에게 지시하는 키워드예요. ' +
         '일반 변수는 성능 향상을 위해 각 스레드가 CPU 캐시에 복사본을 두고 작업하는데, 이러면 한 스레드가 값을 바꿨는데 다른 스레드는 옛날 캐시 값을 계속 볼 수 있는 "가시성 문제"가 생겨요. ' +
         'volatile을 붙이면 한 스레드가 running = false로 바꾸는 순간, 다른 모든 스레드가 즉시 변경된 값을 볼 수 있어요 - 게시판에 공지를 붙이면 모든 사람이 바로 보는 것과 같아요. ' +
-        '하지만 읽기·쓰기 한 번의 원자성만 보장하고, running = !running 같은 복합 연산(읽고→뒤집고→쓰기)은 원자적이지 않아요.',
+        '하지만 읽기·쓰기 한 번의 원자성만 보장하고, running = !running 같은 복합 연산(읽고->뒤집고->쓰기)은 원자적이지 않아요.',
       terms: [
         { t: 'volatile', d: '변수의 값을 항상 메인 메모리에서 읽고 쓰게 해줘요 - CPU 캐시로 인한 가시성 문제를 막아요' },
         { t: 'boolean running', d: '스레드의 실행 여부를 제어하는 플래그 변수예요 - volatile이 없으면 다른 스레드가 false로 바꾼 걸 못 볼 수 있어요' },
@@ -859,7 +859,7 @@ public class StartGate {
       concept:
         'synchronized는 "이 블록 안에는 한 번에 한 스레드만 들어올 수 있어"라고 정하는 Java의 기본 동기화 문법이에요. ' +
         'synchronized(this)는 "이 객체(this)를 열쇠로 써서, 같은 열쇠를 기다리는 다른 스레드는 이 블록이 끝날 때까지 대기해"라는 뜻이에요. ' +
-        'count++는 실제로 읽기→증가→쓰기 3단계로 이뤄져서, synchronized 없이 여러 스레드가 동시에 실행하면 값이 정확히 증가하지 않을 수 있어요. ' +
+        'count++는 실제로 읽기->증가->쓰기 3단계로 이뤄져서, synchronized 없이 여러 스레드가 동시에 실행하면 값이 정확히 증가하지 않을 수 있어요. ' +
         'synchronized는 가장 오래된 동기화 방식이지만, 요즘은 Lock 인터페이스나 AtomicXxx 클래스를 더 많이 써요.',
       terms: [
         { t: 'synchronized (this)', d: 'this 객체를 락으로 써서 한 스레드만 블록 내부에 들어올 수 있게 해요' },

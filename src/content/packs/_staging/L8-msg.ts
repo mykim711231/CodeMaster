@@ -40,7 +40,7 @@ try (KafkaProducer<String, String> producer = new KafkaProducer<>(props)) {
         '[실행] KafkaProducer 생성 - broker: localhost:9092\n' +
         '[전송] 토픽=hello, key=k1, value=안녕',
       realWorldUsage:
-        '실제 프로젝트에서 사용자 가입 → Kafka "user-registered" 토픽 발행 → 알림 서비스·마케팅 서비스·분석 서비스가 각각 소비하는 이벤트 기반 아키텍처를 구성해요. ' +
+        '실제 프로젝트에서 사용자 가입 -> Kafka "user-registered" 토픽 발행 -> 알림 서비스·마케팅 서비스·분석 서비스가 각각 소비하는 이벤트 기반 아키텍처를 구성해요. ' +
         '우버는 Kafka로 하루 수조 개의 메시지를 처리해요.',
       pitfall:
         'serializer 설정을 빠뜨리면 "No serializer found" 예외가 발생해요. key와 value 모두 serializer를 지정해야 해요. ' +
@@ -261,12 +261,12 @@ public class HelloService {
         { t: 'ListenableFuture/CompletableFuture', d: 'send()의 반환 타입으로, 비동기 결과를 다루는 표준 API예요. 콜백이나 thenApply로 후속 처리를 붙여요.' },
       ],
       why:
-        '스프링 환경에서 Kafka를 최소한의 코드로 사용하려고 해요. Producer의 수명 주기(생성→사용→종료)를 스프링이 모두 관리해줘요.',
+        '스프링 환경에서 Kafka를 최소한의 코드로 사용하려고 해요. Producer의 수명 주기(생성->사용->종료)를 스프링이 모두 관리해줘요.',
       expectedOutput:
         '[실행] KafkaTemplate send - msg: 안녕하세요\n' +
         '[전송] 토픽=hello, 비동기 발행 완료',
       realWorldUsage:
-        '실제 프로젝트에서 컨트롤러→서비스→KafkaTemplate 흐름으로 사용자 요청을 이벤트로 변환해서 발행해요. ' +
+        '실제 프로젝트에서 컨트롤러->서비스->KafkaTemplate 흐름으로 사용자 요청을 이벤트로 변환해서 발행해요. ' +
         '주문 컨트롤러에서 POST /orders 요청을 받으면 OrderService가 KafkaTemplate.send("orders", orderEvent)로 발행하는 식이에요.',
       pitfall:
         'send()는 기본적으로 비동기로 동작해요. 전송이 확실히 성공했는지 확인하려면 .addCallback()으로 콜백을 붙이거나, .get(timeout)으로 동기 대기하세요. ' +
@@ -301,7 +301,7 @@ public class NotifyService {
         'RabbitTemplate은 RabbitMQ라는 AMQP 메시지 브로커에 메시지를 보내는 스프링의 템플릿 도구예요. ' +
         'convertAndSend(exchange, routingKey, message) 세 가지 인자로 목적지를 정해요. ' +
         'exchange는 우체국의 분류 센터 같은 존재로, routingKey를 보고 어떤 큐로 배달할지 결정해요. ' +
-        'Kafka의 토픽과 가장 큰 차이는 RabbitMQ가 "exchange → binding → queue"라는 3단계 라우팅 구조를 가진다는 점이에요. ' +
+        'Kafka의 토픽과 가장 큰 차이는 RabbitMQ가 "exchange -> binding -> queue"라는 3단계 라우팅 구조를 가진다는 점이에요. ' +
         'RabbitMQ는 메시지가 소비자에게 전달되면 삭제되는 휘발성 구조라서, 이벤트보다는 작업 명령이나 알림에 더 적합해요.',
       terms: [
         { t: 'RabbitTemplate', d: '스프링 AMQP가 제공하는 RabbitMQ 발송 템플릿이에요. convertAndSend로 객체를 자동 직렬화해서 전송해요.' },
@@ -476,7 +476,7 @@ public class JmsConsumer {
         '@JmsListener는 JMS 목적지(큐/토픽)를 구독하고 메시지가 도착하면 자동으로 호출되는 메서드를 만들어줘요. ' +
         'destination으로 큐 이름을 지정하면, 스프링이 백그라운드에서 MessageListenerContainer를 생성해서 폴링 방식으로 메시지를 가져와요. ' +
         '@KafkaListener, @RabbitListener와 동일한 사용 패턴이라서, 어떤 메시지 브로커를 쓰든 코드 구조가 거의 같아요. ' +
-        'Converter가 JMS Message → Java 객체 변환을 자동으로 처리해줘서, 비즈니스 로직에만 집중할 수 있어요.',
+        'Converter가 JMS Message -> Java 객체 변환을 자동으로 처리해줘서, 비즈니스 로직에만 집중할 수 있어요.',
       terms: [
         { t: '@JmsListener', d: 'JMS 큐/토픽에서 메시지를 수신하는 리스너 어노테이션이에요. destination으로 구독할 목적지를 지정해요.' },
         { t: 'destination = "mailbox"', d: '"mailbox"라는 이름의 큐에서 메시지를 받아요. 큐 이름은 브로커에 이미 존재해야 해요.' },
@@ -576,7 +576,7 @@ public class OrderEventListener {
         '[메일] 발송 대상 주문: 12345',
       realWorldUsage:
         '실제 프로젝트에서 DDD(도메인 주도 설계)의 도메인 이벤트 패턴을 구현할 때 @EventListener를 사용해요. ' +
-        '주문 완료 → 포인트 적립·쿠폰 발급·통계 업데이트 같은 여러 액션을 각각의 리스너로 분리해서 관리해요.',
+        '주문 완료 -> 포인트 적립·쿠폰 발급·통계 업데이트 같은 여러 액션을 각각의 리스너로 분리해서 관리해요.',
       pitfall:
         '기본적으로 @EventListener도 동기로 실행돼요. 여러 리스너가 같은 이벤트를 받으면 순차 실행되며, 하나가 느리면 나머지도 지연돼요. ' +
         '또한 리스너에서 예외가 발생하면 발행자에게 전파돼서 주 로직까지 실패할 수 있어요. try-catch로 방어하는 게 좋아요.',

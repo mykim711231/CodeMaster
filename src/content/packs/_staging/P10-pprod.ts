@@ -277,7 +277,7 @@ print("[실행] POST /users - Pydantic 본문 검증 등록")`,
         'FastAPI+Pydantic 조합이 이 모든 검증을 선언적으로 처리해줘서, 코드량이 70% 이상 줄고 버그도 크게 감소해요.',
       expectedOutput:
         '[실행] POST /users - Pydantic 본문 검증 등록\n' +
-        '(POST /users body={"name":"kim","age":20}) → {"created":"kim"}',
+        '(POST /users body={"name":"kim","age":20}) -> {"created":"kim"}',
       realWorldUsage:
         '이커머스 주문 API에서 OrderCreate 모델에 상품ID, 수량, 배송지 주소를 Pydantic 필드로 정의해두면, ' +
         '프론트엔드가 잘못된 형식으로 보낸 주문 요청이 DB에 저장되기 전에 자동으로 차단돼서 데이터 무결성이 보장돼요.',

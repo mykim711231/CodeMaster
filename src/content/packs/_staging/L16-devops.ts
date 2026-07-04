@@ -364,7 +364,7 @@ networks:
         '(app은 두 네트워크에 연결, db는 backend만, nginx는 frontend만 연결됨)',
       realWorldUsage:
         '실제 AWS ECS나 Docker Swarm에서도 동일한 네트워크 분리 개념을 사용해요. ' +
-        'ALB→API→DB 순서로 트래픽이 흐르고, DB는 절대 공인 IP를 가지지 않아요.',
+        'ALB->API->DB 순서로 트래픽이 흐르고, DB는 절대 공인 IP를 가지지 않아요.',
       pitfall:
         '서로 다른 네트워크에 속한 컨테이너들은 서비스 이름으로 통신할 수 없어요. ' +
         'app이 db와 통신하려면 둘 다 backend 네트워크에 속해야 해요.',
@@ -416,7 +416,7 @@ spec:
       expectedOutput:
         'kubectl apply -f deployment.yaml 실행 시:\n' +
         'deployment.apps/api created\n' +
-        '[kubectl get pods] → api-xxxx-yyy1, api-xxxx-yyy2, api-xxxx-yyy3 (3개 Pod Running)',
+        '[kubectl get pods] -> api-xxxx-yyy1, api-xxxx-yyy2, api-xxxx-yyy3 (3개 Pod Running)',
       realWorldUsage:
         '실제 서비스에서 RollingUpdate 전략으로 배포 시, ' +
         '3개의 replicas 중 1개씩 새 버전으로 교체되며 기존 요청을 유실 없이 처리해요.',
@@ -500,7 +500,7 @@ spec:
         'Ingress는 클러스터 정문의 "안내 데스크"예요. api.codemaster.com 도메인으로 들어온 HTTP 요청을 ' +
         '어떤 Service로 라우팅할지 결정하는 규칙을 담고 있어요. ' +
         'ingressClassName: nginx는 NGINX Ingress Controller가 이 규칙을 실제로 구현하게 해요. ' +
-        '실무에서는 하나의 Ingress에 path 기반으로 /api → api-service, /front → web-service 같이 여러 서비스를 매핑해요.',
+        '실무에서는 하나의 Ingress에 path 기반으로 /api -> api-service, /front -> web-service 같이 여러 서비스를 매핑해요.',
       terms: [
         { t: 'ingressClassName: nginx', d: '이 Ingress 규칙을 해석하고 실행할 Ingress Controller를 지정해요' },
         { t: 'host: api.codemaster.com', d: '이 도메인으로 들어온 요청만 아래 규칙을 적용해요' },
@@ -513,7 +513,7 @@ spec:
       expectedOutput:
         'kubectl apply -f ingress.yaml 실행 시:\n' +
         'ingress.networking.k8s.io/api-ingress created\n' +
-        '[curl -H "Host: api.codemaster.com" http://<INGRESS_IP>/] → (api Service가 응답)',
+        '[curl -H "Host: api.codemaster.com" http://<INGRESS_IP>/] -> (api Service가 응답)',
       realWorldUsage:
         '실제 프로덕션 환경에서 cert-manager와 함께 Ingress를 사용하면 ' +
         'api.codemaster.com에 대한 Let\'s Encrypt TLS 인증서가 자동 발급·갱신돼요.',
@@ -563,7 +563,7 @@ stringData:
         'kubectl apply -f config.yaml 실행 시:\n' +
         'configmap/api-config created\n' +
         'secret/api-secret created\n' +
-        '[kubectl get secret api-secret -o jsonpath="{.data.DB_PASSWORD}" | base64 -d] → secret',
+        '[kubectl get secret api-secret -o jsonpath="{.data.DB_PASSWORD}" | base64 -d] -> secret',
       realWorldUsage:
         '실제 프로덕션 환경에서 Secret은 etcd 암호화를 켜고 RBAC로 접근을 제한해요. ' +
         'AWS EKS에서는 IRSA로 Pod가 Secret Manager에 직접 접근하는 패턴도 흔해요.',
@@ -662,7 +662,7 @@ spec:
       expectedOutput:
         'kubectl apply -f hpa.yaml 실행 시:\n' +
         'horizontalpodautoscaler.autoscaling/api-hpa created\n' +
-        '[kubectl get hpa api-hpa] → TARGETS: 45%/70%, MINPODS: 2, MAXPODS: 10',
+        '[kubectl get hpa api-hpa] -> TARGETS: 45%/70%, MINPODS: 2, MAXPODS: 10',
       realWorldUsage:
         '실제 블랙프라이데이 같은 트래픽 급증 이벤트에 대비해 HPA를 미리 설정해두고, ' +
         'maxReplicas만 충분히 잡아주면 사람이 새벽에 일어나 수동으로 스케일링할 필요가 없어요.',
@@ -838,7 +838,7 @@ jobs:
     explain: {
       concept:
         'GitHub Actions는 코드를 push하면 "로봇 비서"가 자동으로 빌드·테스트를 수행하는 CI 도구예요. ' +
-        'main 브랜치에 push되거나 PR이 올라올 때마다 ubuntu-latest 가상머신에서 checkout → JDK 21 설치 → Gradle build를 차례로 실행해요. ' +
+        'main 브랜치에 push되거나 PR이 올라올 때마다 ubuntu-latest 가상머신에서 checkout -> JDK 21 설치 -> Gradle build를 차례로 실행해요. ' +
         '실무에서는 이 워크플로우가 통과해야만 PR을 머지할 수 있도록 Branch Protection Rule을 걸어 코드 품질을 지켜요.',
       terms: [
         { t: 'name: build', d: '이 워크플로우의 표시 이름이에요. GitHub Actions 탭에서 보여요' },
@@ -850,12 +850,12 @@ jobs:
       why:
         '모든 변경 사항을 자동으로 빌드·테스트해 "내 PC에서는 잘 되는데" 문제를 조기에 차단하려고요.',
       expectedOutput:
-        'Actions 탭 → build 워크플로우 로그:\n' +
+        'Actions 탭 -> build 워크플로우 로그:\n' +
         'Run ./gradlew build --no-daemon\n' +
         'BUILD SUCCESSFUL in 45s',
       realWorldUsage:
         '실제 오픈소스 프로젝트에서도 main 브랜치에 직접 push하는 대신 ' +
-        'feature 브랜치 → PR 생성 → Actions 자동 빌드 → 리뷰 통과 후 merge 순서로 운영해요.',
+        'feature 브랜치 -> PR 생성 -> Actions 자동 빌드 -> 리뷰 통과 후 merge 순서로 운영해요.',
       pitfall:
         './gradlew build 명령은 이미 test 태스크를 포함하고 있어요. ' +
         '별도로 ./gradlew test 스텝을 추가하면 테스트가 두 번 실행돼 CI 시간이 낭비돼요.',
@@ -894,7 +894,7 @@ jobs:
       terms: [
         { t: "on.push.tags: ['v*']", d: 'v로 시작하는 Git 태그가 push될 때만 이 워크플로우를 실행해요' },
         { t: 'docker/login-action@v3', d: 'Docker 레지스트리에 로그인하는 공식 액션이에요' },
-        { t: 'secrets.DOCKER_USER', d: 'GitHub Settings → Secrets에 등록된 민감 변수를 안전하게 읽어와요' },
+        { t: 'secrets.DOCKER_USER', d: 'GitHub Settings -> Secrets에 등록된 민감 변수를 안전하게 읽어와요' },
         { t: 'docker/build-push-action@v6', d: 'Dockerfile을 빌드하고 지정된 레지스트리로 push하는 최신 액션이에요' },
         { t: 'tags: codemaster/api:latest', d: '빌드된 이미지에 붙일 태그를 지정해요. latest는 항상 최신 버전을 가리켜요' },
       ],
@@ -902,7 +902,7 @@ jobs:
         '릴리스 태그를 붙이는 것만으로 Docker 이미지 빌드·푸시까지 ' +
         '완전 자동화해 사람의 실수 없는 배포 준비를 하려고요.',
       expectedOutput:
-        'Actions 탭 → docker 워크플로우 로그:\n' +
+        'Actions 탭 -> docker 워크플로우 로그:\n' +
         'Login Succeeded!\n' +
         'pushing codemaster/api:latest to docker.io',
       realWorldUsage:

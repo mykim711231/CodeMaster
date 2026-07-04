@@ -788,7 +788,7 @@ System.out.println("[실행] 라인 기반 서버 시작 - port: 8080");`,
     explain: {
       concept:
         '파이프라인에 디코더를 끼우면 바이트 덩어리를 의미 있는 메시지(문자열)로 변환해서 다음 핸들러에게 넘겨줘요. ' +
-        '컨베이어 벨트 위에 "자르는 기계 → 포장 기계 → 검수 담당자"가 순서대로 서 있는 것과 같은 구조예요. ' +
+        '컨베이어 벨트 위에 "자르는 기계 -> 포장 기계 -> 검수 담당자"가 순서대로 서 있는 것과 같은 구조예요. ' +
         'LineBasedFrameDecoder가 바이트 스트림을 줄바꿈(\\n) 기준으로 잘라서 프레임을 만들고, StringDecoder가 그 프레임을 String으로 변환해요. ' +
         'StringEncoder는 반대 방향(응답)에서 String을 바이트로 인코딩해요. ' +
         '이렇게 프레임·인코딩을 파이프라인으로 분리해 놓으면 각 단계를 독립적으로 바꾸거나 조합할 수 있어서 유연성이 높아져요.',
@@ -847,7 +847,7 @@ try (Socket socket = new Socket("localhost", 8080);
         '실제 프로젝트에서 하둡의 RPC 프로토콜이나, 커스텀 바이너리 프로토콜로 게임 서버-클라이언트 간 통신을 할 때 DataInputStream/DataOutputStream 쌍을 사용해요. ' +
         'Thrift, Protocol Buffers 같은 직렬화 프레임워크도 내부적으로 유사한 원리를 사용해요.',
       pitfall:
-        '쓴 순서와 읽는 순서가 다르면 값이 완전히 깨져요. 예를 들어 writeInt(25) → writeUTF("홍길동") 순으로 보냈다면, 읽을 때도 readInt() → readUTF() 순서를 반드시 지켜야 해요. ' +
+        '쓴 순서와 읽는 순서가 다르면 값이 완전히 깨져요. 예를 들어 writeInt(25) -> writeUTF("홍길동") 순으로 보냈다면, 읽을 때도 readInt() -> readUTF() 순서를 반드시 지켜야 해요. ' +
         '또한 writeUTF로 쓴 데이터는 표준 UTF-8이 아닌 수정된 UTF-8을 사용하므로 다른 언어와 호환되지 않을 수 있어요.',
     },
   },
@@ -937,7 +937,7 @@ System.out.println("[전송] 메시지 전송 완료");`,
         'Bootstrap은 Netty 클라이언트를 조립하는 키트예요. 서버의 ServerBootstrap과 짝을 이루는 클라이언트용 빌더예요. ' +
         'EventLoopGroup을 하나만 지정한다는 점이 ServerBootstrap(boss+worker 분리)과의 가장 큰 차이예요. ' +
         'connect()로 서버에 연결을 시도하고, sync()로 연결이 완료될 때까지 기다린 뒤 channel()로 활성 채널을 얻어와요. ' +
-        '연결된 채널에 writeAndFlush()로 데이터를 보내면 파이프라인의 핸들러 체인을 통과하며 인코딩→전송돼요. ' +
+        '연결된 채널에 writeAndFlush()로 데이터를 보내면 파이프라인의 핸들러 체인을 통과하며 인코딩->전송돼요. ' +
         '비동기 특성상 실제 데이터는 이벤트 루프 스레드에서 송수신되고, 메인 스레드는 다른 작업을 할 수 있어요.',
       terms: [
         { t: 'Bootstrap', d: 'Netty 클라이언트를 설정하고 연결을 시작하는 빌더예요. ServerBootstrap의 클라이언트 버전이에요.' },

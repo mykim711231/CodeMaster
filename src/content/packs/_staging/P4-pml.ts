@@ -57,7 +57,7 @@ score = model.score(X_test, y_test)
 print(f"[결과] 정확도: {score:.4f}")`,
     explain: {
       concept:
-        '사이킷런의 모든 모델은 fit() → predict() → score()라는 공통 인터페이스를 따라요. ' +
+        '사이킷런의 모든 모델은 fit() -> predict() -> score()라는 공통 인터페이스를 따라요. ' +
         'fit()은 "이 데이터를 보고 규칙을 찾아라"는 학습 명령이고, predict()는 "새 데이터에 대해 답을 맞혀봐"라는 예측 명령이에요. ' +
         '이 단순한 인터페이스 덕분에 모델을 바꾸려면 LogisticRegression을 RandomForestClassifier로 한 줄만 바꾸면 돼요. ' +
         'max_iter=1000은 학습 반복 횟수의 상한으로, 기본값(100)으로는 수렴하지 못할 때 늘려줘요.',
@@ -133,7 +133,7 @@ pipe = Pipeline([
 pipe.fit(X_train, y_train)
 score = pipe.score(X_test, y_test)
 print(f"[결과] Pipeline 정확도: {score:.4f}")
-print(f"[정보] Pipeline 단계: scaler → clf")`,
+print(f"[정보] Pipeline 단계: scaler -> clf")`,
     explain: {
       concept:
         'Pipeline은 전처리 단계와 모델을 하나의 작업 흐름으로 묶어주는 도구예요. ' +
@@ -152,9 +152,9 @@ print(f"[정보] Pipeline 단계: scaler → clf")`,
       expectedOutput:
         '예시:\n' +
         '[결과] Pipeline 정확도: 0.9500\n' +
-        '[정보] Pipeline 단계: scaler → clf',
+        '[정보] Pipeline 단계: scaler -> clf',
       realWorldUsage:
-        '실제 신용 평가 모델에서 "결측치 처리 → 표준화 → 특성 선택 → 로지스틱 회귀"의 4단계를 Pipeline으로 묶어서, 운영 환경에 배포할 때도 동일한 파이프라인으로 예측해요.',
+        '실제 신용 평가 모델에서 "결측치 처리 -> 표준화 -> 특성 선택 -> 로지스틱 회귀"의 4단계를 Pipeline으로 묶어서, 운영 환경에 배포할 때도 동일한 파이프라인으로 예측해요.',
       pitfall: '마지막 단계를 제외한 모든 중간 단계는 반드시 transform() 메서드가 있어야 해요. fit()만 있고 transform()이 없으면 Pipeline 구성이 안 돼요.',
     },
   },
@@ -452,7 +452,7 @@ print(f"[정보] kernel=rbf, C=1.0, StandardScaler 선행")`,
         'SVM(Support Vector Machine)은 클래스 사이에 가장 넓은 여백(margin)을 만드는 결정 경계를 찾는 모델이에요. ' +
         'kernel="rbf"는 직선으로 분리되지 않는 데이터를 고차원 공간으로 보내서 구부러진 경계를 만들 수 있게 해줘요. ' +
         'SVM은 특성의 단위 차이에 극도로 민감해서, 반드시 표준화(StandardScaler)를 먼저 적용해야 해요. ' +
-        'Pipeline으로 둘을 묶으면 "표준화 → SVM"이 한 세트로 관리돼서, 테스트 시에도 자동으로 표준화가 먼저 적용돼요. ' +
+        'Pipeline으로 둘을 묶으면 "표준화 -> SVM"이 한 세트로 관리돼서, 테스트 시에도 자동으로 표준화가 먼저 적용돼요. ' +
         'C=1.0은 허용 오차를 조절하는 파라미터로, 클수록 훈련 데이터에 엄격히 맞추고(과적합 위험), 작을수록 여유를 둬요.',
       terms: [
         { t: 'SVC(kernel=\'rbf\', C=1.0)', d: 'RBF 커널을 사용하는 SVM 분류기를 생성해요. C는 오차 허용도예요.' },
@@ -748,7 +748,7 @@ print(f"[정보] MSE가 작을수록, R²가 1에 가까울수록 좋아요")`,
     code: `import joblib
 
 joblib.dump(model, 'model.pkl')
-print(f"[저장] 모델 저장 완료 → model.pkl")
+print(f"[저장] 모델 저장 완료 -> model.pkl")
 loaded = joblib.load('model.pkl')
 score = loaded.score(X_test, y_test)
 print(f"[로드] 모델 불러오기 완료")
@@ -769,7 +769,7 @@ print(f"[검증] 불러온 모델 정확도: {score:.4f}")`,
         '실무에서 모델 학습 파이프라인과 예측 서빙 서버는 완전히 분리돼 있어요. 학습된 모델을 joblib으로 저장해서 예측 서버에 배포하는 게 표준 MLOps 패턴이에요.',
       expectedOutput:
         '예시:\n' +
-        '[저장] 모델 저장 완료 → model.pkl\n' +
+        '[저장] 모델 저장 완료 -> model.pkl\n' +
         '[로드] 모델 불러오기 완료\n' +
         '[검증] 불러온 모델 정확도: 0.9725',
       realWorldUsage:
