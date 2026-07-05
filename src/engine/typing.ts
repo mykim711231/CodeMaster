@@ -176,7 +176,8 @@ export function initTypingEngine(opts: TypingOptions = {}): TypingController {
       const opensBlock =
         targetLine.trimEnd().endsWith('{') ||
         (curLang === 'python' &&
-          /^\s*(def |class |if |elif |else|for |while |try |except |finally |with |match |case ).*:\s*$/.test(targetLine));
+          targetLine.trimEnd().endsWith(':') &&
+          /^\s*(def|class|if|elif|else|for|while|try|except|finally|with|match|case)\b/.test(targetLine));
 
       if (opensBlock) {
         const ts = appStore.getState().tabSize;
