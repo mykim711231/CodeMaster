@@ -401,7 +401,7 @@ export function initTrainer(): void {
     const lvl = levelOf(p);
     const snip = snippetOf(p);
     engine.load(snip.code, snip.lang, snip.id);
-    if (titleEl) titleEl.textContent = `${pack.name} :( L${p.levelNo}) ${lvl.name} · ${snip.title}`;
+    if (titleEl) titleEl.textContent = `${pack.name} : (L${p.levelNo}) :  ${lvl.name} · ${snip.title}`;
     if (fileEl) fileEl.textContent = snip.file;
     if (curEl) curEl.textContent = `${pack.name} · ${snip.title}`;
     renderExplain(snip);
