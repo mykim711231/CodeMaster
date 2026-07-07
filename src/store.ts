@@ -65,7 +65,7 @@ export const appStore = createStore<AppState>((set) => ({
   setAnalysisProgress: (msg) => set({ analysisProgress: msg }),
   clearProjectPack: () => set({ projectPack: null, projectPackSnippets: [] }),
 
-  tabSize: 4,
+  tabSize: 2,
   fontSize: 14,
   setTabSize: (n) => set({ tabSize: n }),
   setFontSize: (n) => set({ fontSize: n }),
@@ -75,7 +75,7 @@ export const appStore = createStore<AppState>((set) => ({
 
   autoIndent: true,
   setAutoIndent: (v) => set({ autoIndent: v }),
-  autoNext: false,
+  autoNext: true,
   setAutoNext: (v) => set({ autoNext: v }),
 
   lineNum: true,
